@@ -1,9 +1,9 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, INTEGER } from "sequelize";
 import sequelize from "../config/database";
 import User from "./user-m";
-import UserGroupRelation from "./user_group_rel-m";
+import Group from "./group-m";
 
-const Group = sequelize.define("Group", {
+const UserGroupRelation = sequelize.define("UserGroupRelation", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -11,7 +11,15 @@ const Group = sequelize.define("Group", {
     autoIncrement: true,
     unique: true,
   },
-  teacher: {
+  group: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Group,
+      key: "id",
+    },
+  },
+  student: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -21,6 +29,4 @@ const Group = sequelize.define("Group", {
   },
 });
 
-Group.belongsToMany(User, { through: UserGroupRelation, foreignKey: "group" });
-
-export default Group;
+export default UserGroupRelation;

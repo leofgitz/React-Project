@@ -21,7 +21,7 @@ const Evaluation = sequelize.define(
         key: "id",
       },
     },
-    evaluatedBy: {
+    evaluated: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
@@ -106,14 +106,7 @@ const Evaluation = sequelize.define(
   }
 );
 
-Evaluation.belongsTo(User, { foreignKey: "id" });
+Evaluation.belongsTo(User, { foreignKey: "evaluator" });
+Evaluation.belongsTo(User, { foreignKey: "evaluated" });
 
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Table synchronized successfully!");
-    module.exports = Evaluation;
-  })
-  .catch((error) => {
-    console.error("Unable to create table:", error);
-  });
+export default Evaluation;

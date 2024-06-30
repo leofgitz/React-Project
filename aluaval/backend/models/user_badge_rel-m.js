@@ -37,16 +37,4 @@ const UserBadgeRelation = sequelize.define("UserBadgeRelation", {
   },
 });
 
-UserBadgeRelation.belongsTo(Badge, { foreignKey: "id" });
-UserBadgeRelation.belongsTo(User, { foreignKey: "id" });
-
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Table synchronized successfully!");
-    module.exports = UserBadgeRelation;
-  })
-  .catch((error) => {
-    console.error("Unable to create table:", error);
-  });
-
+export default UserBadgeRelation;

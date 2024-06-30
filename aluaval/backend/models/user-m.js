@@ -1,5 +1,10 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
+import Badge from "./badge-m";
+import UserBadgeRelation from "./user_badge_rel-m";
+import UserGroupRelation from "./user_group_rel-m";
+import Group from "./group-m";
+import Evaluation from "./evaluation-m";
 
 const User = sequelize.define(
   "User",
@@ -35,12 +40,16 @@ const User = sequelize.define(
   }
 );
 
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Table synchronized successfully!");
-    module.exports = User;
-  })
-  .catch((error) => {
-    console.error("Unable to create table:", error);
-  });
+User.belongsToMany(Badge, { through: UserBadgeRelation, foreignKey: "giver" });
+User.belongsToMany(Badge, {
+  through: UserBadgeRelation,
+  foreignKey: "receiver",
+});
+User.belongsToMany(Group, {
+  through: UserGroupRelation,
+  foreignKey: "student",
+});
+User.hasMany(Evaluation, { foreignKey: "evaluator" });
+User.hasMany(Evaluation, { foreignKey: "evaluated" });
+
+export default User;

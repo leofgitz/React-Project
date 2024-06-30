@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
+import User from "./user-m";
 
 const Badge = sequelize.define(
   "Badge",
@@ -26,12 +27,6 @@ const Badge = sequelize.define(
   }
 );
 
-sequelize
-  .sync()
-  .then(() => {
-    console.log("Table synchronized successfully!");
-    module.exports = Badge;
-  })
-  .catch((error) => {
-    console.error("Unable to create table:", error);
-  });
+Badge.belongsToMany(User, { through: UserBadgeRelation, foreignKey: "badge" });
+
+export default Badge;
