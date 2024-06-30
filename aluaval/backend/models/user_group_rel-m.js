@@ -27,6 +27,8 @@ const UserGroupRelation = sequelize.define("UserGroupRelation", {
       key: "id",
     },
   },
+}, {
+  timestamps: true
 });
 
 export default UserGroupRelation;
