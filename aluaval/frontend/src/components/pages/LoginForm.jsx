@@ -1,5 +1,3 @@
-function LoginForm(){
-}
+function LoginForm() {}
 
 export default LoginForm;
-
