@@ -1,11 +1,11 @@
-import User from "../models/user-m";
+import User from "../models/user-m"; 
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import "dotenv/config";
 import UserSubjectRelation from "../models/user_subject_rel-m";
 
-const err500 = "Erro Interno";
+const err500 = "Internal Server Error";
 
 const UserController = {
   getUserByID: async (req, res) => {
@@ -14,7 +14,7 @@ const UserController = {
     try {
       const user = await User.findByPk(id);
       if (!user) {
-        return res.status(404).json({ error: "Utilizador não encontrado" });
+        return res.status(404).json({ error: "User not found" });
       }
       res.status(200).json(user);
     } catch (err) {
@@ -144,7 +144,7 @@ const UserController = {
       if (!name || !email) {
         return res
           .status(400)
-          .json({ error: "Todos os campos são necessários" });
+          .json({ error: "All fields are necessary" });
       }
 
       const existingUser = await User.findOne({
@@ -154,7 +154,7 @@ const UserController = {
       if (existingUser) {
         return res
           .status(400)
-          .json({ error: "Este endereço eletrónico já existe" });
+          .json({ error: "This email is already in use" });
       }
 
       const password = crypto.randomBytes(10).toString("hex");
@@ -186,7 +186,7 @@ const UserController = {
       );
 
       if (updatedRows === 0) {
-        return res.status(404).json({ error: "Utilizador não encontrado" });
+        return res.status(404).json({ error: "User not found" });
       }
 
       res.status(200).json({ updatedUser });
@@ -203,9 +203,9 @@ const UserController = {
         where: { id: id },
       });
       if (deletedRows === 0) {
-        return res.status(404).json({ error: "Utilizador não encontrado" });
+        return res.status(404).json({ error: "User not found" });
       }
-      res.status(200).json({ message: "Utilizador removido com sucesso" });
+      res.status(200).json({ message: "User successfully deleted" });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
@@ -217,7 +217,7 @@ const UserController = {
       const { email, password } = req.body;
       if (!email || !password) {
         return res.status(400).json({
-          error: "Endereço eletrónico e palavra passe são necessários",
+          error: "All fields are necessary",
         });
       }
 
@@ -227,7 +227,7 @@ const UserController = {
       if (!user || !validPass) {
         return res
           .status(401)
-          .json({ error: "Endereço eletrónico e palavra passe inválidos" });
+          .json({ error: "Invalid data" });
       }
 
       const token = jwt.sign({ id: user.id }, process.env.jwtKEY, {

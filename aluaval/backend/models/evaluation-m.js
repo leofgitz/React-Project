@@ -106,6 +106,25 @@ const Evaluation = sequelize.define(
   }
 );
 
+/* Evaluation.beforeCreate(async (evaluation, options) => {
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+  const recentEvaluation = await Evaluation.findOne({
+    where: {
+      evaluator: evaluation.evaluator,
+      evaluated: evaluation.evaluated,
+      createdAt: { [Op.gt]: oneWeekAgo },
+    },
+  });
+
+  if (recentEvaluation) {
+    throw new Error(
+      "An evaluation for this user pair has already been submitted within the last week."
+    );
+  }
+}); */
+
 Evaluation.belongsTo(User, { foreignKey: "evaluator" });
 Evaluation.belongsTo(User, { foreignKey: "evaluated" });
 
