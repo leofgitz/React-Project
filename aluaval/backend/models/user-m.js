@@ -5,6 +5,8 @@ import UserBadgeRelation from "./user_badge_rel-m";
 import UserGroupRelation from "./user_group_rel-m";
 import Group from "./group-m";
 import Evaluation from "./evaluation-m";
+import Subject from "./subject-m";
+import UserSubjectRelation from "./user_subject_rel-m";
 
 const User = sequelize.define(
   "User",
@@ -45,16 +47,22 @@ const User = sequelize.define(
   }
 );
 
+// Badge Relations
 User.belongsToMany(Badge, { through: UserBadgeRelation, foreignKey: "giver" });
-User.belongsToMany(Badge, {
-  through: UserBadgeRelation,
-  foreignKey: "receiver",
-});
-User.belongsToMany(Group, {
-  through: UserGroupRelation,
-  foreignKey: "student",
-});
+User.belongsToMany(Badge, { through: UserBadgeRelation, foreignKey: "receiver" });
+
+// Group Relations
+User.belongsToMany(Group, { through: UserGroupRelation, foreignKey: "student" });
+User.hasMany(Group, { foreignKey: "teacher" });
+
+// Evaluation Relations
 User.hasMany(Evaluation, { foreignKey: "evaluator" });
 User.hasMany(Evaluation, { foreignKey: "evaluated" });
+
+// Subject Relations
+User.hasMany(Subject, { foreignKey: "teacher" });
+User.belongsToMany(Subject, { through: UserSubjectRelation, foreignKey: "teacher"});
+User.belongsToMany(Subject, { through: UserSubjectRelation, foreignKey: "student"});
+
 
 export default User;

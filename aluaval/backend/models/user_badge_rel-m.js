@@ -12,7 +12,7 @@ const UserBadgeRelation = sequelize.define(
       allowNull: false,
       autoIncrement: true,
       unique: true,
-    },
+    },  
     badge: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -1,16 +1,15 @@
 import User from "../models/user-m";
-import Group from "../models/group-m";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import "dotenv/config";
-import UserGroupRelation from "../models/user_group_rel-m";
+import UserSubjectRelation from "../models/user_subject_rel-m";
 
 const err500 = "Erro Interno";
 
 const UserController = {
   getUserByID: async (req, res) => {
-    const id = req.param.id;
+    const id = req.params.id;
 
     try {
       const user = await User.findByPk(id);
@@ -26,8 +25,42 @@ const UserController = {
 
   getAllStudents: async (req, res) => {
     try {
+      const { id } = req.params;
+
+      const userSubjectRelations = await UserSubjectRelation.findAll({
+        where: { teacher: id },
+      });
+
+      const subjectIDs = userSubjectRelations.map(
+        (relation) => relation.subject
+      );
+
       const students = await User.findAll({
         where: { role: 0 },
+        include: [
+          {
+            model: UserSubjectRelation,
+            where: {
+              subject: subjectIDs,
+            },
+            attributes: [],
+          },
+        ],
+        attributes: {
+          include: [
+            [
+              sequelize.literal(`
+                EXISTS (
+                SELECT 1
+                FROM UserGroupRelation
+                WHERE UserGroupRelation.student = User.id
+                )
+                `),
+              "inGroup",
+            ],
+          ],
+        },
+        raw: true,
       });
       res.status(200).json(students);
     } catch (err) {
@@ -36,20 +69,22 @@ const UserController = {
     }
   },
 
-  getStudentsWithoutGroup: async (req, res) => {
+  /*   getStudentsWithoutGroup: async (req, res) => {
     try {
+      const studentsWithGroupIDs = await UserGroupRelation.findAll({
+        attributes: ["student"],
+        raw: true,
+      });
+
+      const studentIDs = studentsWithGroupIDs.map(
+        (relation) => relation.student
+      );
+
       const groupless = await User.findAll({
-        include: [
-          {
-            model: Group,
-            through: {
-              model: UserGroupRelation,
-            },
-            required: false,
-          },
-        ],
         where: {
-          "$Group.id$": null,
+          id: {
+            [Op.notIn]: studentIDs,
+          },
         },
       });
       res.status(200).json(groupless);
@@ -57,29 +92,9 @@ const UserController = {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
-  },
+  }, */
 
-  getUserByEmail: async (req, res) => {
-    try {
-      const { name } = req.params;
-
-      if (name) {
-        const user = await User.findOne({
-          where: { name },
-        });
-
-        if (!user) {
-          return res.status(404).json({ error: "Utilizador não encontrado" });
-        }
-        res.status(200).json(user);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err500 });
-    }
-  },
-
-  getStudentByName: async (req, res) => {
+  /* getStudentByName: async (req, res) => {
     try {
       const { name } = req.params;
 
@@ -91,6 +106,21 @@ const UserController = {
               [Op.like]: `%${name}%`,
             },
           },
+          attributes: {
+            include: [
+              [
+                sequelize.literal(`
+                  EXISTS (
+                    SELECT 1
+                    FROM UserGroupRelation
+                    WHERE UserGroupRelation.student = User.id
+                  )
+                `),
+                "inGroup",
+              ],
+            ],
+          },
+          raw: true,
         });
 
         if (users.length === 0) {
@@ -105,7 +135,7 @@ const UserController = {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
-  },
+  }, */
 
   createUser: async (req, res) => {
     try {
@@ -185,7 +215,7 @@ const UserController = {
   loginUser: async (req, res) => {
     try {
       const { email, password } = req.body;
-      if (email || password) {
+      if (!email || !password) {
         return res.status(400).json({
           error: "Endereço eletrónico e palavra passe são necessários",
         });
@@ -200,7 +230,9 @@ const UserController = {
           .json({ error: "Endereço eletrónico e palavra passe inválidos" });
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.jwtKEY);
+      const token = jwt.sign({ id: user.id }, process.env.jwtKEY, {
+        expiresIn: "1h",
+      });
 
       res.status(200).json({ user, token });
     } catch (err) {

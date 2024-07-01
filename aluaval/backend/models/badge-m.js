@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
 import User from "./user-m";
+import UserBadgeRelation from "./user_badge_rel-m";
 
 const Badge = sequelize.define(
   "Badge",
