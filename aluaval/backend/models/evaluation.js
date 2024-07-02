@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
-import User from "./user-m";
+import Student from "./student";
 
 const Evaluation = sequelize.define(
   "Evaluation",
@@ -10,14 +10,21 @@ const Evaluation = sequelize.define(
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
-      unique: true,
+    },
+    assignment: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Assignment,
+        key: "id",
+      },
     },
     evaluator: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
       references: {
-        model: User,
+        model: Student,
         key: "id",
       },
     },
@@ -26,7 +33,7 @@ const Evaluation = sequelize.define(
       primaryKey: true,
       allowNull: false,
       references: {
-        model: User,
+        model: Student,
         key: "id",
       },
     },
@@ -120,12 +127,13 @@ const Evaluation = sequelize.define(
 
   if (recentEvaluation) {
     throw new Error(
-      "An evaluation for this user pair has already been submitted within the last week."
+      "An evaluation for this Student pair has already been submitted within the last week."
     );
   }
 }); */
 
-Evaluation.belongsTo(User, { foreignKey: "evaluator" });
-Evaluation.belongsTo(User, { foreignKey: "evaluated" });
+Evaluation.belongsTo(Student, { foreignKey: "evaluator" });
+Evaluation.belongsTo(Student, { foreignKey: "evaluated" });
+Evaluation.belongsTo(Assignment, { foreignKey: "assignment" });
 
 export default Evaluation;
