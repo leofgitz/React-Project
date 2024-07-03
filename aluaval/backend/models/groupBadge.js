@@ -57,4 +57,13 @@ Student.hasMany(GroupBadge, { foreignKey: 'student' });
 GroupBadge.belongsTo(Student, { foreignKey: 'student', as: 'Giver' });
 GroupBadge.belongsTo(Student, { foreignKey: 'recipient', as: 'Recipient' });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default GroupBadge;

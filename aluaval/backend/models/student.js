@@ -40,4 +40,13 @@ Student.belongsToMany(StudentGroup, {
 Student.hasMany(GroupBadge, { foreignKey: "student", as: "Giver" });
 Student.hasMany(GroupBadge, { foreignKey: "recipient", as: "Recipient" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Student;

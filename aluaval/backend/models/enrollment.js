@@ -34,4 +34,13 @@ Class.hasMany(Enrollment, { foreignKey: "classe" });
 Enrollment.belongsTo(Student, { foreignKey: "student" });
 Student.hasMany(Enrollment, { foreignKey: "student" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Enrollment;

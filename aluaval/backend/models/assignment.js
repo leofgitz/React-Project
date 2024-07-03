@@ -39,4 +39,13 @@ const Assignment = sequelize.define("Assignment", {
 Assignment.belongsTo(Group, { foreignKey: "group" });
 Group.hasMany(Assignment, { foreignKey: "group" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Assignment;

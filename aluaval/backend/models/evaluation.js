@@ -137,4 +137,13 @@ Evaluation.belongsTo(Student, { foreignKey: "evaluator" });
 Evaluation.belongsTo(Student, { foreignKey: "evaluated" });
 Evaluation.belongsTo(Assignment, { foreignKey: "assignment" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Evaluation;

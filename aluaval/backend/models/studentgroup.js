@@ -38,4 +38,13 @@ Student.belongsToMany(Group, { through: StudentGroup, foreignKey: "student" });
 Group.belongsToMany(Student, { through: StudentGroup, foreignKey: "group" });
 Group.hasMany(StudentGroup, { foreignKey: "group" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default StudentGroup;

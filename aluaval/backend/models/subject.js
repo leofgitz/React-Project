@@ -32,4 +32,13 @@ Subject.belongsTo(Course, { foreignKey: "course" });
 Course.hasMany(Subject, { foreignKey: "course" });
 Subject.hasMany(Class, { foreignKey: "subject" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Subject;

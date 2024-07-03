@@ -50,4 +50,13 @@ Enrollment.belongsTo(Class, { foreignKey: "class" });
 Class.hasMany(Group, { foreignKey: "class" });
 Group.belongsTo(Class, { foreignKey: "class" });
 
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("Database and tables have been synchronized.");
+  })
+  .catch((error) => {
+    console.error("Error synchronizing database:", error);
+  });
+
 export default Class;
