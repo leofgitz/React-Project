@@ -22,6 +22,7 @@ const Student = sequelize.define("Student", {
   email: {
     type: DataTypes.STRING(100),
     allowNull: false,
+    unique: true,
   },
   password: {
     type: DataTypes.STRING(100),
@@ -32,6 +33,11 @@ const Student = sequelize.define("Student", {
 Student.hasMany(Enrollment, { foreignKey: "student" });
 Student.hasMany(Evaluation, { foreignKey: "evaluator" });
 Student.hasMany(Evaluation, { foreignKey: "evaluated" });
-Student.belongsToMany(StudentGroup, { through: "StudentGroup", foreignKey: "student" });
+Student.belongsToMany(StudentGroup, {
+  through: "StudentGroup",
+  foreignKey: "student",
+});
+Student.hasMany(GroupBadge, { foreignKey: "student", as: "Giver" });
+Student.hasMany(GroupBadge, { foreignKey: "recipient", as: "Recipient" });
 
 export default Student;

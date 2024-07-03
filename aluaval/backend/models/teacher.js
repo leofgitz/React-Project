@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database";
 import Class from "./class";
+import Course from "./course";
 
 const Teacher = sequelize.define("Teacher", {
   id: {
@@ -28,5 +29,6 @@ const Teacher = sequelize.define("Teacher", {
 });
 
 Teacher.hasMany(Class, { foreignKey: "teacher" });
+Teacher.hasOne(Course, { foreignKey: "responsibleTeacher" });
 
 export default Teacher;

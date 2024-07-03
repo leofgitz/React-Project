@@ -16,7 +16,7 @@ const Class = sequelize.define("Class", {
     type: DataTypes.STRING(100),
     allowNull: false,
   },
-  subjectId: {
+  subject: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -24,7 +24,7 @@ const Class = sequelize.define("Class", {
       key: "id",
     },
   },
-  teacherId: {
+  teacher: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {

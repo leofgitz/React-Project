@@ -106,6 +106,7 @@ const Evaluation = sequelize.define(
     isFinal: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
     },
   },
   {

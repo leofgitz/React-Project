@@ -10,7 +10,7 @@ const Enrollment = sequelize.define("Enrollment", {
     allowNull: false,
     autoIncrement: true,
   },
-  class: {
+  classe: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -28,10 +28,10 @@ const Enrollment = sequelize.define("Enrollment", {
   },
 });
 
-Enrollment.belongsTo(Class, { foreignKey: "classId" });
-Class.hasMany(Enrollment, { foreignKey: "classId" });
+Enrollment.belongsTo(Class, { foreignKey: "classe" });
+Class.hasMany(Enrollment, { foreignKey: "classe" });
 
-Enrollment.belongsTo(Student, { foreignKey: "studentId" });
-Student.hasMany(Enrollment, { foreignKey: "studentId" });
+Enrollment.belongsTo(Student, { foreignKey: "student" });
+Student.hasMany(Enrollment, { foreignKey: "student" });
 
 export default Enrollment;

@@ -29,6 +29,11 @@ const Assignment = sequelize.define("Assignment", {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  isSubmitted: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 });
 
 Assignment.belongsTo(Group, { foreignKey: "group" });

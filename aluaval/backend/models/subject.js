@@ -16,7 +16,7 @@ const Subject = sequelize.define("Subject", {
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: false,
+    allowNull: true,
   },
   course: {
     type: DataTypes.INTEGER,

@@ -11,7 +11,7 @@ const Group = sequelize.define("Group", {
     allowNull: false,
     autoIncrement: true,
   },
-  class: {
+  classe: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
@@ -21,8 +21,8 @@ const Group = sequelize.define("Group", {
   },
 });
 
-Group.belongsTo(Class, { foreignKey: "class" });
-Class.hasMany(Group, { foreignKey: "class" });
+Group.belongsTo(Class, { foreignKey: "classe" });
+Class.hasMany(Group, { foreignKey: "classe" });
 
 Group.hasMany(StudentGroup, { foreignKey: "group" });
 StudentGroup.belongsTo(Group, { foreignKey: "group" });
