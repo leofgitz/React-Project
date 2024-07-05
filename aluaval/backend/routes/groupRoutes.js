@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const groupRouter = express.Router();
-const groupController = require('../controllers/groupController');
+import GroupController from "../controllers/groupController.js";
 
-groupRouter.post('/', groupController.createGroup);
-groupRouter.get('/', groupController.getAllGroups);
-groupRouter.get('/:id', groupController.getGroupByID);
-groupRouter.put('/:id', groupController.updateGroupByID);
-groupRouter.delete('/:id', groupController.deleteGroup);
+groupRouter.post("/", GroupController.createGroup);
+groupRouter.get("/", GroupController.getAllGroups);
+groupRouter.get("/:id", GroupController.getGroupByID);
+groupRouter.put("/:id", GroupController.updateGroupByID);
+groupRouter.delete("/:id", GroupController.deleteGroup);
 
 export default groupRouter;

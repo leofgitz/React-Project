@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const badgeRouter = express.Router();
-const badgeController = require('../controllers/badgeController');
+import BadgeController from "../controllers/badgeController.js";
 
-badgeRouter.post('/', badgeController.createBadge);
-badgeRouter.get('/', badgeController.getAllBadges);
-badgeRouter.get('/:id', badgeController.getBadgeByID);
-badgeRouter.put('/:id', badgeController.updateBadgeByID);
-badgeRouter.delete('/:id', badgeController.deleteBadge);
+badgeRouter.post("/", BadgeController.createBadge);
+badgeRouter.get("/", BadgeController.getAllBadges);
+badgeRouter.get("/:id", BadgeController.getBadgeByID);
+badgeRouter.put("/:id", BadgeController.updateBadgeByID);
+badgeRouter.delete("/:id", BadgeController.deleteBadge);
 
 export default badgeRouter;

@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const enrollmentRouter = express.Router();
-const enrollmentController = require('../controllers/enrollmentController');
+import EnrollmentController from "../controllers/enrollmentController.js";
 
-enrollmentRouter.post('/', enrollmentController.createEnrollment);
-enrollmentRouter.get('/', enrollmentController.getAllEnrollments);
-enrollmentRouter.get('/:id', enrollmentController.getEnrollmentByID);
-enrollmentRouter.put('/:id', enrollmentController.updateEnrollmentByID);
-enrollmentRouter.delete('/:id', enrollmentController.deleteEnrollment);
+enrollmentRouter.post("/", EnrollmentController.createEnrollment);
+enrollmentRouter.get("/", EnrollmentController.getAllEnrollments);
+enrollmentRouter.get("/:id", EnrollmentController.getEnrollmentByID);
+enrollmentRouter.put("/:id", EnrollmentController.updateEnrollmentByID);
+enrollmentRouter.delete("/:id", EnrollmentController.deleteEnrollment);
 
 export default enrollmentRouter;

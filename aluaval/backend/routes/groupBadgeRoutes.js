@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const groupBadgeRouter = express.Router();
-const groupBadgeController = require('../controllers/groupBadgeController');
+import GroupBadgeController from "../controllers/groupBadgeController.js";
 
-groupBadgeRouter.post('/', groupBadgeController.createGroupBadge);
-groupBadgeRouter.get('/', groupBadgeController.getAllGroupBadges);
-groupBadgeRouter.get('/:id', groupBadgeController.getGroupBadgeByID);
-groupBadgeRouter.put('/:id', groupBadgeController.updateGroupBadgeByID);
-groupBadgeRouter.delete('/:id', groupBadgeController.deleteGroupBadge);
+groupBadgeRouter.post("/", GroupBadgeController.createGroupBadge);
+groupBadgeRouter.get("/", GroupBadgeController.getAllGroupBadges);
+groupBadgeRouter.get("/:id", GroupBadgeController.getGroupBadgeByID);
+groupBadgeRouter.put("/:id", GroupBadgeController.updateGroupBadgeByID);
+groupBadgeRouter.delete("/:id", GroupBadgeController.deleteGroupBadge);
 
 export default groupBadgeRouter;

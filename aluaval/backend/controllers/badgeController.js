@@ -1,4 +1,4 @@
-import Badge from "../models/badge";
+import { Badge } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const BadgeController = {

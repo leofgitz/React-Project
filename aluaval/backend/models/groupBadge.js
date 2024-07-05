@@ -1,69 +1,61 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database';
-import Student from './student';
-import Badge from './badge';
-import Group from './group';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/database.js";
+import Student from "./student.js";
+import Badge from "./badge.js";
+import Group from "./group.js";
 
-const GroupBadge = sequelize.define('GroupBadge', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  student: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Student,
-      key: 'id',
+const GroupBadge = sequelize.define(
+  "GroupBadge",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    student: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Student,
+        key: "id",
+      },
+    },
+    badge: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Badge,
+        key: "id",
+      },
+    },
+    group: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Group,
+        key: "id",
+      },
+    },
+    recipient: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Student,
+        key: "id",
+      },
     },
   },
-  badge: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Badge,
-      key: 'id',
+  {
+    timestamps: true,
+    uniqueKeys: {
+      unique_student_badge_per_group: {
+        fields: ["student", "badge", "group"],
+      },
     },
   },
-  group: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Group,
-      key: 'id',
-    },
-  },
-  recipient: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Student,
-      key: 'id',
-    },
-  },
-}, {
-  timestamps: true,
-  uniqueKeys: {
-    unique_student_badge_per_group: {
-      fields: ['student', 'badge', 'group']
-    }
+  {
+    timestamps: true,
   }
-});
-
-Badge.belongsToMany(Group, { through: GroupBadge, foreignKey: 'badge' });
-Group.belongsToMany(Badge, { through: GroupBadge, foreignKey: 'group' });
-Student.hasMany(GroupBadge, { foreignKey: 'student' });
-GroupBadge.belongsTo(Student, { foreignKey: 'student', as: 'Giver' });
-GroupBadge.belongsTo(Student, { foreignKey: 'recipient', as: 'Recipient' });
-
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database and tables have been synchronized.");
-  })
-  .catch((error) => {
-    console.error("Error synchronizing database:", error);
-  });
+);
 
 export default GroupBadge;

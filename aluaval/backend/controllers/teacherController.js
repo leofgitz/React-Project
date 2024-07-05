@@ -1,4 +1,4 @@
-import Teacher from "../models/teacher";
+import { Teacher } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const TeacherController = {
@@ -10,7 +10,7 @@ const TeacherController = {
     }
 
     try {
-      const user = await Teacher.findOne({ where: { email } });
+      let user = await Teacher.findOne({ where: { email } });
       if (user) {
         return res
           .status(400)

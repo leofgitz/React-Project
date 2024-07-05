@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const studentGroupRouter = express.Router();
-const studentGroupController = require('../controllers/studentGroupController');
+import StudentGroupController from "../controllers/studentGroupController.js";
 
-studentGroupRouter.post('/', studentGroupController.createStudentGroup);
-studentGroupRouter.get('/', studentGroupController.getAllStudentGroups);
-studentGroupRouter.get('/:id', studentGroupController.getStudentGroupByID);
-studentGroupRouter.put('/:id', studentGroupController.updateStudentGroupByID);
-studentGroupRouter.delete('/:id', studentGroupController.deleteStudentGroup);
+studentGroupRouter.post("/", StudentGroupController.createStudentGroup);
+studentGroupRouter.get("/", StudentGroupController.getAllStudentGroups);
+studentGroupRouter.get("/:id", StudentGroupController.getStudentGroupByID);
+studentGroupRouter.put("/:id", StudentGroupController.updateStudentGroupByID);
+studentGroupRouter.delete("/:id", StudentGroupController.deleteStudentGroup);
 
 export default studentGroupRouter;

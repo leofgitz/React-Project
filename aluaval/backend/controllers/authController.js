@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
-import Student from "../models/student";
-import Teacher from "../models/teacher";
+import { Student, Teacher } from "../models/index.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 
 const err500 = "Internal Server Error";
 
-const authController = {
+const AuthController = {
   login: async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -41,4 +40,4 @@ const authController = {
   },
 };
 
-export default authController;
+export default AuthController;

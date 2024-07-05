@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database";
-import Student from "./student";
+import sequelize from "../config/database.js";
+import Student from "./student.js";
+import Assignment from "./assignment.js";
 
 const Evaluation = sequelize.define(
   "Evaluation",
@@ -21,7 +22,6 @@ const Evaluation = sequelize.define(
     },
     evaluator: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       allowNull: false,
       references: {
         model: Student,
@@ -30,7 +30,6 @@ const Evaluation = sequelize.define(
     },
     evaluated: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       allowNull: false,
       references: {
         model: Student,
@@ -132,18 +131,5 @@ const Evaluation = sequelize.define(
     );
   }
 }); */
-
-Evaluation.belongsTo(Student, { foreignKey: "evaluator" });
-Evaluation.belongsTo(Student, { foreignKey: "evaluated" });
-Evaluation.belongsTo(Assignment, { foreignKey: "assignment" });
-
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database and tables have been synchronized.");
-  })
-  .catch((error) => {
-    console.error("Error synchronizing database:", error);
-  });
 
 export default Evaluation;

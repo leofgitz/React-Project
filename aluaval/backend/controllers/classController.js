@@ -1,4 +1,4 @@
-import Class from "../models/class";
+import { Class } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const ClassController = {
@@ -18,7 +18,7 @@ const ClassController = {
     }
   },
 
-  getAllClasss: async (req, res) => {
+  getAllClasses: async (req, res) => {
     try {
       const classes = await Class.findAll();
       res.status(200).json(classes);

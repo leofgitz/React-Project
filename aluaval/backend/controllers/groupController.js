@@ -1,4 +1,4 @@
-import Group from "../models/group";
+import { Group } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupController = {

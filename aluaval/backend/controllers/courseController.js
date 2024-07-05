@@ -1,4 +1,4 @@
-import Course from "../models/course";
+import { Course } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const CourseController = {
@@ -10,7 +10,7 @@ const CourseController = {
     }
 
     try {
-      const course = await Course.findOne({ where: { name } });
+      let course = await Course.findOne({ where: { name } });
 
       if (course) {
         return res.status(400).json({ error: "This course already exists" });

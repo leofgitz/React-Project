@@ -1,4 +1,4 @@
-import Evaluation from "../models/evaluation";
+import {Evaluation} from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EvaluationController = {

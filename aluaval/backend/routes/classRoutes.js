@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const classRouter = express.Router();
-const classController = require('../controllers/classController');
+import ClassController from "../controllers/classController.js";
 
-classRouter.post('/', classController.createClass);
-classRouter.get('/', classController.getAllClasses);
-classRouter.get('/:id', classController.getClassByID);
-classRouter.put('/:id', classController.updateClassByID);
-classRouter.delete('/:id', classController.deleteClass);
+classRouter.post("/", ClassController.createClass);
+classRouter.get("/", ClassController.getAllClasses);
+classRouter.get("/:id", ClassController.getClassByID);
+classRouter.put("/:id", ClassController.updateClassByID);
+classRouter.delete("/:id", ClassController.deleteClass);
 
 export default classRouter;

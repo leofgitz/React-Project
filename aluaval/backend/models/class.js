@@ -1,62 +1,45 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database";
-import Subject from "./subject";
-import Teacher from "./teacher";
-import Enrollment from "./enrollment";
-import Group from "./group";
+import sequelize from "../config/database.js";
+import Subject from "./subject.js";
+import Teacher from "./teacher.js";
 
-const Class = sequelize.define("Class", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    allowNull: false,
-    autoIncrement: true,
-  },
-  name: {
-    type: DataTypes.STRING(100),
-    allowNull: false,
-  },
-  subject: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Subject,
-      key: "id",
+const Class = sequelize.define(
+  "Class",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    subject: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Subject,
+        key: "id",
+      },
+    },
+    teacher: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Teacher,
+        key: "id",
+      },
+    },
+    schedule: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
     },
   },
-  teacher: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Teacher,
-      key: "id",
-    },
-  },
-  schedule: {
-    type: DataTypes.STRING(50),
-    allowNull: true,
-  },
-});
-
-Class.belongsTo(Subject, { foreignKey: "subject" });
-Subject.hasMany(Class, { foreignKey: "subject" });
-
-Class.belongsTo(Teacher, { foreignKey: "teacher" });
-Teacher.hasMany(Class, { foreignKey: "teacher" });
-
-Class.hasMany(Enrollment, { foreignKey: "class" });
-Enrollment.belongsTo(Class, { foreignKey: "class" });
-
-Class.hasMany(Group, { foreignKey: "class" });
-Group.belongsTo(Class, { foreignKey: "class" });
-
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database and tables have been synchronized.");
-  })
-  .catch((error) => {
-    console.error("Error synchronizing database:", error);
-  });
+  {
+    timestamps: true,
+  }
+);
 
 export default Class;

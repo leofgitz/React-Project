@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const assignmentRouter = express.Router();
-const assignmentController = require('../controllers/assignmentController');
+import AssignmentController from "../controllers/assignmentController.js";
 
-assignmentRouter.post('/', assignmentController.createAssignment);
-assignmentRouter.get('/', assignmentController.getAllAssignments);
-assignmentRouter.get('/:id', assignmentController.getAssignmentByID);
-assignmentRouter.put('/:id', assignmentController.updateAssignmentByID);
-assignmentRouter.delete('/:id', assignmentController.deleteAssignment);
+assignmentRouter.post("/", AssignmentController.createAssignment);
+assignmentRouter.get("/", AssignmentController.getAllAssignments);
+assignmentRouter.get("/:id", AssignmentController.getAssignmentByID);
+assignmentRouter.put("/:id", AssignmentController.updateAssignmentByID);
+assignmentRouter.delete("/:id", AssignmentController.deleteAssignment);
 
 export default assignmentRouter;

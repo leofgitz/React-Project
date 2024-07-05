@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database";
+import sequelize from "../config/database.js";
 
 const Badge = sequelize.define(
   "Badge",
@@ -20,19 +20,8 @@ const Badge = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 );
-
-Badge.hasMany(GroupBadge, { foreignKey: 'badge' });
-
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database and tables have been synchronized.");
-  })
-  .catch((error) => {
-    console.error("Error synchronizing database:", error);
-  });
 
 export default Badge;

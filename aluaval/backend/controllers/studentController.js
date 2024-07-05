@@ -1,4 +1,4 @@
-import Student from "../models/student";
+import { Student } from "../models/index.js";
 import bcrypt from "bcrypt";
 const err500 = "Internal Server Error";
 
@@ -11,7 +11,7 @@ const StudentController = {
     }
 
     try {
-      const user = await Student.findOne({ where: { email } });
+      let user = await Student.findOne({ where: { email } });
 
       if (user) {
         return res

@@ -1,4 +1,4 @@
-import StudentGroup from "../models/studentgroup";
+import { StudentGroup } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const StudentGroupController = {
@@ -10,7 +10,7 @@ const StudentGroupController = {
     }
 
     try {
-      const studentGroup = await StudentGroup.findOne({
+      let studentGroup = await StudentGroup.findOne({
         where: {
           student,
           subject,
@@ -66,9 +66,9 @@ const StudentGroupController = {
         return res.status(404).json({ error: "StudentGroup not found" });
       }
 
-      studentGroup.studentId = student || studentGroup.studentId;
-      studentGroup.groupId = group || studentGroup.groupId;
-      studentGroup.subjectId = subject || studentGroup.subjectId;
+      studentGroup.student = student || studentGroup.student;
+      studentGroup.group = group || studentGroup.group;
+      studentGroup.subject = subject || studentGroup.subject;
 
       await studentGroup.save();
       res.status(200).json(studentGroup);

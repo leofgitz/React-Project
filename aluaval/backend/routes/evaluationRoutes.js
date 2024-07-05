@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 const evaluationRouter = express.Router();
-const evaluationController = require('../controllers/evaluationController');
+import EvaluationController from '../controllers/evaluationController.js';
 
-evaluationRouter.post('/', evaluationController.createEvaluation);
-evaluationRouter.get('/', evaluationController.getAllEvaluations);
-evaluationRouter.get('/:id', evaluationController.getEvaluationByID);
-evaluationRouter.put('/:id', evaluationController.updateEvaluationByID);
-evaluationRouter.delete('/:id', evaluationController.deleteEvaluation);
+evaluationRouter.post('/', EvaluationController.createEvaluation);
+evaluationRouter.get('/', EvaluationController.getAllEvaluations);
+evaluationRouter.get('/:id', EvaluationController.getEvaluationByID);
+evaluationRouter.put('/:id', EvaluationController.updateEvaluationByID);
+evaluationRouter.delete('/:id', EvaluationController.deleteEvaluation);
 
 export default evaluationRouter;

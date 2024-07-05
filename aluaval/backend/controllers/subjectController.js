@@ -1,4 +1,4 @@
-import Subject from "../models/subject";
+import Subject from "../models/subject.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -10,7 +10,7 @@ const SubjectController = {
     }
 
     try {
-      const subject = await Subject.findOne({
+      let subject = await Subject.findOne({
         where: {
           name,
           course,

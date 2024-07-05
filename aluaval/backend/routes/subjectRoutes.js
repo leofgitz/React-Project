@@ -1,11 +1,11 @@
-const express = require('express');
+import express from "express";
 const subjectRouter = express.Router();
-const subjectController = require('../controllers/subjectController');
+import SubjectController from "../controllers/subjectController.js";
 
-subjectRouter.post('/', subjectController.createSubject);
-subjectRouter.get('/', subjectController.getAllSubjects);
-subjectRouter.get('/:id', subjectController.getSubjectByID);
-subjectRouter.put('/:id', subjectController.updateSubjectByID);
-subjectRouter.delete('/:id', subjectController.deleteSubject);
+subjectRouter.post("/", SubjectController.createSubject);
+subjectRouter.get("/", SubjectController.getAllSubjects);
+subjectRouter.get("/:id", SubjectController.getSubjectByID);
+subjectRouter.put("/:id", SubjectController.updateSubjectByID);
+subjectRouter.delete("/:id", SubjectController.deleteSubject);
 
 export default subjectRouter;

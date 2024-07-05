@@ -1,4 +1,4 @@
-import Assignment from "../models/assignment";
+import { Assignment } from "../models/index.js";
 
 const err500 = "Internal Server Error";
 

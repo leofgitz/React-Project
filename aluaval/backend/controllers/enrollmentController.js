@@ -1,4 +1,4 @@
-import Enrollment from "../models/enrollment";
+import { Enrollment } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EnrollmentController = {
@@ -10,7 +10,7 @@ const EnrollmentController = {
     }
 
     try {
-      const enrollment = await Enrollment.findOne({
+      let enrollment = await Enrollment.findOne({
         where: {
           classe,
           student,

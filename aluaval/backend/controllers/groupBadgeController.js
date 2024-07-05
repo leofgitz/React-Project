@@ -1,4 +1,4 @@
-import GroupBadge from "../models/groupBadge";
+import { GroupBadge } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupBadgeController = {
@@ -55,7 +55,7 @@ const GroupBadgeController = {
 
   updateGroupBadgeByID: async (req, res) => {
     const { id } = req.params;
-    const { studentId, badgeId, groupId, recipientId } = req.body;
+    const { student, badge, group, recipient } = req.body;
 
     try {
       const groupBadge = await GroupBadge.findByPk(id);
@@ -63,10 +63,10 @@ const GroupBadgeController = {
         return res.status(404).json({ error: "GroupBadge not found" });
       }
 
-      groupBadge.studentId = studentId || groupBadge.studentId;
-      groupBadge.badgeId = badgeId || groupBadge.badgeId;
-      groupBadge.groupId = groupId || groupBadge.groupId;
-      groupBadge.recipientId = recipientId || groupBadge.recipientId;
+      groupBadge.student = student || groupBadge.student;
+      groupBadge.badge = badge || groupBadge.badge;
+      groupBadge.group = group || groupBadge.group;
+      groupBadge.recipient = recipient || groupBadge.recipient;
 
       await groupBadge.save();
       res.status(200).json(groupBadge);
