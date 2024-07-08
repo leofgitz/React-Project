@@ -1,4 +1,4 @@
-import Subject from "../models/subject.js";
+import { Subject } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -58,17 +58,17 @@ const SubjectController = {
   updateSubjectByID: async (req, res) => {
     const { id } = req.params;
     const { name, description, courseId } = req.body;
-  
+
     try {
       const subject = await Subject.findByPk(id);
       if (!subject) {
         return res.status(404).json({ error: "Subject not found" });
       }
-  
+
       subject.name = name || subject.name;
       subject.description = description || subject.description;
       subject.courseId = courseId || subject.courseId;
-  
+
       await subject.save();
       res.status(200).json(subject);
     } catch (err) {
@@ -76,7 +76,6 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
-  
 
   deleteSubject: async (req, res) => {
     const id = req.params.id;

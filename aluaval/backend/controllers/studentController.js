@@ -1,33 +1,50 @@
 import { Student } from "../models/index.js";
 import bcrypt from "bcrypt";
+import sequelize from '../config/database.js';
 const err500 = "Internal Server Error";
 
 const StudentController = {
   createStudent: async (req, res) => {
-    const { name, surname, email, password } = req.body;
+    const { name, surname, password } = req.body;
 
-    if (!name || !surname || !email || !password) {
-      return res.status(400).json({ error: "All fields required" });
+    if (!name || !surname || !password) {
+      return res.status(400).json({ error: "All fields are necessary" });
     }
 
     try {
-      let user = await Student.findOne({ where: { email } });
+      let existingStudent = await Student.findOne({ where: { name, surname } });
 
-      if (user) {
-        return res
-          .status(400)
-          .json({ error: "This student already is in the database" });
+      if (existingStudent) {
+        return res.status(400).json({
+          error:
+            "A student with this name and surname already exists in the database",
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      user = await Student.create({
-        name,
-        surname,
-        email,
-        password: hashedPassword,
+
+      const result = await sequelize.transaction(async (t) => {
+        const placeholderEmail = "placeholder@ispgaya.pt";
+
+        let user = await Student.create(
+          {
+            name,
+            surname,
+            email: placeholderEmail,
+            password: hashedPassword,
+          },
+          { transaction: t }
+        );
+
+        const generatedEmail = `ispg${user.id}@ispgaya.pt`;
+
+        user.email = generatedEmail;
+        await user.save({ transaction: t });
+
+        return user;
       });
 
-      res.status(201).json({ user });
+      res.status(201).json({ user: result });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

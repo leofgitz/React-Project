@@ -22,7 +22,6 @@ const AuthController = {
       if (!user || !validPass) {
         return res.status(401).json({ error: "Invalid data" });
       }
-
       const token = jwt.sign(
         {
           id: user.id,
@@ -32,7 +31,7 @@ const AuthController = {
         { expiresIn: "1h" }
       );
 
-      res.status(200).json({ user, token });
+      res.status(200).json({ token });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

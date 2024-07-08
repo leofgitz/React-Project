@@ -66,3 +66,31 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Navbar only */
+.active-link {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+/* Questionnaire only */
+.question-card {
+  position: fixed;
+  width: 100%;
+}
+
+.question-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+  display: flex;
+}
+
+.slide-right {
+  transform: translateX(100%);
+}
+
+.slide-left {
+  transform: translateX(-100%);
+}
