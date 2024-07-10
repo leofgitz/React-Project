@@ -18,7 +18,7 @@ const LoginForm = () => {
 
   return (
     <div className="w3-container w3-display-middle w3-card w3-round-xxlarge" style={{ width: "30%" }}>
-      <h2 className="w3-center">Login</h2>
+      <h2 className="w3-center"> <i class="fa fa-address-book"></i> Login</h2>
       <form onSubmit={handleSubmit} className="w3-container">
         <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
         <PasswordInput

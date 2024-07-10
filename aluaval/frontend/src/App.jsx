@@ -4,6 +4,7 @@ import Homepage from "./pages/Homepage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Questionnaire from "./pages/Questionnaire.jsx";
+import GroupCreation from "./pages/GroupCreation.jsx";
 
 function App() {
   return (
@@ -13,14 +14,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginForm />} />
           <Route path="/" element={<Homepage />} />
-          <Route
-            path="/evaluation/peer"
-            element={<Questionnaire key="peer" evaluationType="peer" />}
-          />
-          <Route
-            path="/evaluation/self"
-            element={<Questionnaire key="self" evaluationType="self" />}
-          />
+          <Route path="/evaluation/:type" element={<Questionnaire />} />
+          <Route path="/group-creation" element={<GroupCreation />} />
         </Routes>
       </div>
       <Footer />

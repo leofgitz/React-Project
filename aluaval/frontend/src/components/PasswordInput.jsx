@@ -3,6 +3,9 @@ import React from "react";
 const PasswordInput = ({ value, onChange }) => {
   return (
     <div className="w3-section">
+      <label className="w3-text-blue">
+        <i className="fa fa-lock"></i> Password
+      </label>
       <input
         type="password"
         className="w3-input w3-border w3-round"
