@@ -1,4 +1,4 @@
-import { StudentGroup } from "../models/index.js";
+import { Assignment, Group, StudentGroup, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const StudentGroupController = {
@@ -94,6 +94,69 @@ const StudentGroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  getStudentGroupsByGroup: async (req, res) => {
+    const { group } = req.params;
+
+    try {
+      const studentGroups = await StudentGroup.findAll({
+        where: { group },
+        include: [{ model: User, as: "student" }],
+      });
+      const students = studentGroups.map(
+        (studentGroup) => studentGroup.student
+      );
+
+      res.status(200).json(students);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentGroupsByStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const studentGroups = await StudentGroup.findAll({ where: { student } });
+      res.status(200).json(studentGroups);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getAssignmentsForUser: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const studentGroups = await StudentGroup.findAll({
+        where: { student: id },
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: Assignment,
+              },
+            ],
+          },
+        ],
+      });
+
+      const assignments = studentGroups.flatMap((studentGroup) => {
+        const group = studentGroup.group;
+        return group && group.assignment ? group.assignment : [];
+      });
+
+      res.stataus(200).json(assignments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  
+  getGroupMembers
 };
 
 export default StudentGroupController;

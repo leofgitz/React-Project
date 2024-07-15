@@ -11,6 +11,9 @@ function authentication(req, res, next) {
 
   try {
     const decoded = verify(token, process.env.jwtKEY);
+    if (!decoded || !decoded.user) {
+      return res.status(401).json({ error: "Invalid token structure" });
+    }
     req.user = decoded.user;
     next();
   } catch (err) {

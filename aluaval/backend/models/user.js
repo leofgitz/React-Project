@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 
-const Student = sequelize.define(
-  "Student",
+const User = sequelize.define(
+  "User",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -27,10 +27,15 @@ const Student = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
+    role: {
+      type: DataTypes.ENUM("Student", "Teacher", "Admin"),
+      allowNull: false,
+      defaultValue: "Student",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default Student;
+export default User;

@@ -8,4 +8,7 @@ groupRouter.get("/:id", GroupController.getGroupByID);
 groupRouter.put("/:id", GroupController.updateGroupByID);
 groupRouter.delete("/:id", GroupController.deleteGroup);
 
+router.get("/subject/:subject", GroupController.getGroupsBySubject);
+router.get("/assignment/:assignment", GroupController.getGroupsByAssignment);
+
 export default groupRouter;

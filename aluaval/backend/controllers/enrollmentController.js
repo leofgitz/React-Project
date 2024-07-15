@@ -93,6 +93,44 @@ const EnrollmentController = {
       res.status(500).json({ error: err500 });
     }
   },
+  bulkEnrollStudents: async (req, res) => {
+    const { classe, students } = req.body;
+
+    try {
+      const enrollments = studentIds.map((studentId) => ({
+        classe,
+        studentId,
+      }));
+      await Enrollment.bulkCreate(enrollments);
+      res.status(201).json({ message: "Students enrolled successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getEnrollmentsByClass: async (req, res) => {
+    const { classId } = req.params;
+
+    try {
+      const enrollments = await Enrollment.findAll({ where: { classId } });
+      res.status(200).json(enrollments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getEnrollmentsByStudent: async (req, res) => {
+    const { studentId } = req.params;
+
+    try {
+      const enrollments = await Enrollment.findAll({ where: { studentId } });
+      res.status(200).json(enrollments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default EnrollmentController;

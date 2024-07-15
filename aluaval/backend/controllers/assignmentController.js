@@ -4,15 +4,14 @@ const err500 = "Internal Server Error";
 
 const AssignmentController = {
   createAssignment: async (req, res) => {
-    const { group, title, dueDate, submissionDate } = req.body;
+    const { title, dueDate, submissionDate } = req.body;
 
-    if (!group || !title || !dueDate || !submissionDate) {
+    if (!title || !dueDate || !submissionDate) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
       const assignment = await Assignment.create({
-        group,
         title,
         dueDate,
         submissionDate,
@@ -26,9 +25,7 @@ const AssignmentController = {
 
   getAllAssignments: async (req, res) => {
     try {
-      const assignments = await Assignment.findAll({
-        order: [["group", "ASC"]],
-      });
+      const assignments = await Assignment.findAll();
       res.status(200).json(assignments);
     } catch (err) {
       console.error(err);
@@ -53,7 +50,7 @@ const AssignmentController = {
 
   updateAssignmentByID: async (req, res) => {
     const id = req.params.id;
-    const { group, title, dueDate, submissionDate, isSubmitted } = req.body;
+    const { title, dueDate, submissionDate } = req.body;
 
     try {
       const assignment = await Assignment.findByPk(id);
@@ -61,12 +58,9 @@ const AssignmentController = {
         return res.status(404).json({ error: "Assignment not found" });
       }
 
-      assignment.group = group || assignment.group;
       assignment.title = title || assignment.title;
       assignment.dueDate = dueDate || assignment.dueDate;
       assignment.submissionDate = submissionDate || assignment.submissionDate;
-      assignment.isSubmitted =
-        isSubmitted !== undefined ? isSubmitted : assignment.isSubmitted;
 
       await assignment.save();
       res.status(200).json(assignment);

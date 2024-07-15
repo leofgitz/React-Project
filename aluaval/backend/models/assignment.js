@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Group from "./group.js";
 
 const Assignment = sequelize.define(
   "Assignment",
@@ -11,14 +10,6 @@ const Assignment = sequelize.define(
       allowNull: false,
       autoIncrement: true,
     },
-    group: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Group,
-        key: "id",
-      },
-    },
     title: {
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -26,15 +17,6 @@ const Assignment = sequelize.define(
     dueDate: {
       type: DataTypes.DATE,
       allowNull: false,
-    },
-    submissionDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    isSubmitted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
   },
   {

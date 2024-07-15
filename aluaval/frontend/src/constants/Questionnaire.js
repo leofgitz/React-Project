@@ -75,3 +75,25 @@ export const commentHeaders = [
   "Describe an episode where the colleague handled feedback well or where there were challenges in accepting feedback:",
   "Summarize your overall impression of the colleague's performance. Highlight strengths and areas for growth:",
 ];
+
+export const answerKeys = [
+  "attendanceScore",
+  "participationScore",
+  "teamworkScore",
+  "qualityScore",
+  "attitudeScore",
+  "feedbackScore",
+  "impressionScore",
+];
+
+export const commentKeys = [
+  "attendanceComment",
+  "participationComment",
+  "teamworkComment",
+  "qualityComment",
+  "attitudeComment",
+  "feedbackComment",
+  "impressionComment",
+  "goalsComment",
+  "additionalComment",
+];

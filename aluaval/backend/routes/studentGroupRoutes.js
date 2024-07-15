@@ -8,4 +8,11 @@ studentGroupRouter.get("/:id", StudentGroupController.getStudentGroupByID);
 studentGroupRouter.put("/:id", StudentGroupController.updateStudentGroupByID);
 studentGroupRouter.delete("/:id", StudentGroupController.deleteStudentGroup);
 
+router.get("/group/:group", StudentGroupController.getStudentGroupsByGroup);
+router.get(
+  "/student/:student",
+  StudentGroupController.getStudentGroupsByStudent
+);
+router.get("assignments/:id", StudentGroupController.getAssignmentsForUser);
+
 export default studentGroupRouter;

@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import Subject from "./subject.js";
-import Teacher from "./teacher.js";
+import User from "./user.js";
 
 const Class = sequelize.define(
   "Class",
@@ -11,10 +11,6 @@ const Class = sequelize.define(
       primaryKey: true,
       allowNull: false,
       autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
     },
     subject: {
       type: DataTypes.INTEGER,
@@ -28,13 +24,9 @@ const Class = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Teacher,
+        model: User,
         key: "id",
       },
-    },
-    schedule: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
     },
   },
   {

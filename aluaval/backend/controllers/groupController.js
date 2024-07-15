@@ -1,4 +1,4 @@
-import { Group } from "../models/index.js";
+import { Group, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupController = {
@@ -72,6 +72,27 @@ const GroupController = {
         return res.status(404).json({ error: "Group not found" });
       }
       res.status(200).json({ message: "Group removed successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getGroupsBySubject: async (req, res) => {
+    const { subject } = req.params;
+
+    try {
+      const groups = await Group.findAll({ where: { subject } });
+      res.status(200).json(groups);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getGroupsByAssignment: async (req, res) => {
+    const { assignment } = req.params;
+    try {
+      const groups = await Group.findAll({ where: { assignment } });
+      res.status(200).json(groups);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

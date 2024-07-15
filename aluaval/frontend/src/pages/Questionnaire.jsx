@@ -5,15 +5,20 @@ import {
   titles,
   possibleAnswers,
   commentHeaders,
+  answerKeys,
+  commentKeys,
 } from "../constants/Questionnaire.js";
 import { useNavigate, useParams } from "react-router-dom";
 import Question from "../components/Question.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import Navigation from "../components/NavigationButtons.jsx";
+import { useAuth } from "../context/authProvider.js";
+import { getById, updateById, create } from "../services/dataFetch.js";
 
 const Questionnaire = () => {
-  const { type } = useParams();
-  const isPeer = type === "peer";
+  const { user } = useAuth();
+  const { id, evaluation, group } = useParams();
+  const isPeer = id !== user.id;
   const questions = isPeer ? peerQuestions : selfQuestions;
   const commentTitles = isPeer
     ? commentHeaders
@@ -28,12 +33,33 @@ const Questionnaire = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentQuestion === 6 && type === "self") {
+    const fetchExistingAnswers = async () => {
+      if (evaluation) {
+        try {
+          const existingData = await getById("evaluations", evaluation);
+          setAnswers(existingData.answers);
+          setComments(existingData.comments);
+          setAnsweredQuestions(
+            existingData.answers
+              .map((answer, index) => (answer ? index : null))
+              .filter((index) => index !== null)
+          );
+        } catch (error) {
+          console.error("Error fetching existing answers:", error);
+        }
+      }
+    };
+
+    fetchExistingAnswers();
+  }, [evaluation]);
+
+  useEffect(() => {
+    if (currentQuestion === 6 && !isPeer) {
       setQuestion7Answered(!!comments[currentQuestion].trim());
-    } else if (currentQuestion === 7 && type === "self") {
+    } else if (currentQuestion === 7 && !isPeer) {
       setQuestion8Answered(!!comments[currentQuestion].trim());
     }
-  }, [currentQuestion, comments, type]);
+  }, [currentQuestion, comments, isPeer]);
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
@@ -60,11 +86,37 @@ const Questionnaire = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("Submitted Answers: ", answers);
-    console.log("Submitted Comments: ", comments);
-    // API call or further processing
-    navigate("/");
+  const handleSubmit = async () => {
+    const evaluationData = {
+      group: group,
+      evaluator: user.id,
+      evaluated: id,
+    };
+
+    const answerKeysToUse = isPeer ? answerKeys : answerKeys.slice(0, 6);
+    const commentKeysToUse = isPeer
+      ? commentKeys.slice(0, 6)
+      : commentKeys.filter((key) => key !== "impressionComment");
+
+    // Map through answerKeysToUse and commentKeysToUse to add answers and comments to evaluationData
+    answerKeysToUse.forEach((key, index) => {
+      evaluationData[key] = answers[index]; // Assuming answers is an array with corresponding scores
+    });
+
+    commentKeysToUse.forEach((key, index) => {
+      evaluationData[key] = comments[index]; // Assuming comments is an array with corresponding comments
+    });
+
+    try {
+      if (evaluation) {
+        await updateById("evaluations", evaluation, evaluationData);
+      } else {
+        await create("evaluations", evaluationData);
+      }
+      navigate("/");
+    } catch (err) {
+      console.error("Error submitting evaluation:", error);
+    }
   };
 
   const isSkippable = (index) => {
@@ -98,7 +150,7 @@ const Questionnaire = () => {
             currentQuestion={currentQuestion}
             questions={questions}
             titles={titles}
-            type={type}
+            isPeer={isPeer}
             comments={comments}
             setComments={setComments}
             answers={answers}

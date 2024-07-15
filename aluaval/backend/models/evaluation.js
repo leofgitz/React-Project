@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Student from "./student.js";
-import Assignment from "./assignment.js";
+import User from "./user.js";
+import Group from "./assignment.js";
 
 const Evaluation = sequelize.define(
   "Evaluation",
@@ -12,11 +12,11 @@ const Evaluation = sequelize.define(
       allowNull: false,
       autoIncrement: true,
     },
-    assignment: {
+    group: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Assignment,
+        model: Group,
         key: "id",
       },
     },
@@ -24,7 +24,7 @@ const Evaluation = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Student,
+        model: User,
         key: "id",
       },
     },
@@ -32,7 +32,7 @@ const Evaluation = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Student,
+        model: User,
         key: "id",
       },
     },
@@ -87,13 +87,13 @@ const Evaluation = sequelize.define(
     //impressionScore e impressionComment não aparecem em autoavaliações
     impressionScore: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     impressionComment: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    //goalsComment só aparece em autoavaliações
+    //goalsComment e additionalComment só aparece em autoavaliações
     goalsComment: {
       type: DataTypes.TEXT,
       allowNull: true,

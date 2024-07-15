@@ -1,9 +1,9 @@
-import { GroupBadge } from "../models/index.js";
+import { Badge, GroupBadge } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupBadgeController = {
   createGroupBadge: async (req, res) => {
-    const { student, badge, group } = req.body;
+    const { student, badge, group, recipient } = req.body;
 
     try {
       const existingGroupBadge = await GroupBadge.findOne({
@@ -11,6 +11,7 @@ const GroupBadgeController = {
           student,
           badge,
           group,
+          recipient,
         },
       });
 
@@ -85,6 +86,37 @@ const GroupBadgeController = {
         return res.status(404).json({ error: "Entry not found" });
       }
       res.status(200).json({ message: "Entry deleted" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getBadgesByStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const badges = await GroupBadge.findAll({
+        where: { student },
+        include: [
+          {
+            model: Badge,
+          },
+        ],
+      });
+      res.status(200).json(badges);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getBadgesByGroup: async (req, res) => {
+    const { groupId } = req.params;
+
+    try {
+      const badges = await GroupBadge.findAll({ where: { group } });
+      res.status(200).json(badges);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

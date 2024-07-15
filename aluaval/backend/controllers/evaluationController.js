@@ -130,6 +130,81 @@ const EvaluationController = {
       res.status(500).json({ error: err500 });
     }
   },
+  getEvaluationsByGroup: async (req, res) => {
+    const { groupId } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({ where: { groupId } });
+      res.status(200).json(evaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getEvaluationsByEvaluator: async (req, res) => {
+    const { evaluator } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({ where: { evaluator } });
+      res.status(200).json(evaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getEvaluationsByEvaluated: async (req, res) => {
+    const { evaluated } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({ where: { evaluated } });
+      res.status(200).json(evaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  calculateAverageScores: async (req, res) => {
+    const { group } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({ where: { group } });
+
+      const averageScores = evaluations.reduce(
+        (acc, evaluation) => {
+          acc.attendanceScore += evaluation.attendanceScore;
+          acc.participationScore += evaluation.participationScore;
+          acc.teamworkScore += evaluation.teamworkScore;
+          acc.qualityScore += evaluation.qualityScore;
+          acc.attitudeScore += evaluation.attitudeScore;
+          acc.feedbackScore += evaluation.feedbackScore;
+          acc.impressionScore += evaluation.impressionScore;
+          return acc;
+        },
+        {
+          attendanceScore: 0,
+          participationScore: 0,
+          teamworkScore: 0,
+          qualityScore: 0,
+          attitudeScore: 0,
+          feedbackScore: 0,
+          impressionScore: 0,
+        }
+      );
+
+      const count = evaluations.length;
+      Object.keys(averageScores).forEach((key) => {
+        averageScores[key] = averageScores[key] / count;
+      });
+
+      res.status(200).json(averageScores);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default EvaluationController;

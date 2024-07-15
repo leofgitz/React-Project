@@ -8,4 +8,7 @@ subjectRouter.get("/:id", SubjectController.getSubjectByID);
 subjectRouter.put("/:id", SubjectController.updateSubjectByID);
 subjectRouter.delete("/:id", SubjectController.deleteSubject);
 
+router.get("/course/:course", SubjectController.getSubjectsByCourse);
+router.get("/year/:year", SubjectController.getSubjectsByYear);
+
 export default subjectRouter;

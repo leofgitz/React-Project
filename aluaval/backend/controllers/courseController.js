@@ -1,4 +1,4 @@
-import { Course } from "../models/index.js";
+import { Course, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const CourseController = {
@@ -83,6 +83,35 @@ const CourseController = {
       }
 
       res.status(200).json({ message: "Course removed successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getResponsibleTeacher: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const course = await Course.findByPk(id, { include: User });
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+
+      const responsibleTeacher = course.responsibleTeacher;
+      res.status(200).json(responsibleTeacher);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getCoursesByTeacher: async (req, res) => {
+    const teacher = req.params;
+
+    try {
+      const courses = await Course.findAll({
+        where: { responsibleTeacher: teacher },
+      });
+      res.status(200).json(courses);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

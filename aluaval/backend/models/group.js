@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Class from "./class.js";
+import Subject from "./subject.js";
+import Assignment from "./assignment.js";
 
 const Group = sequelize.define(
   "Group",
@@ -11,14 +12,23 @@ const Group = sequelize.define(
       allowNull: false,
       autoIncrement: true,
     },
-    classe: {
+    subject: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Class,
+        model: Subject,
         key: "id",
       },
     },
+    assignment: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Assignment,
+        key: "id",
+      },
+    },
+    
   },
   {
     timestamps: true,

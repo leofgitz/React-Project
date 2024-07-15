@@ -92,6 +92,27 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  getSubjectsByCourse: async (req, res) => {
+    const { course } = req.params;
+    try {
+      const subjects = await Subject.findAll({ where: { course } });
+      res.status(200).json(subjects);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getSubjectsByYear: async (req, res) => {
+    const { year } = req.params;
+    try {
+      const subjects = await Subject.findAll({ where: { year } });
+      res.status(200).json(subjects);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default SubjectController;

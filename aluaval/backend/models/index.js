@@ -1,6 +1,4 @@
 import sequelize from "../config/database.js";
-import Student from "./student.js";
-import Teacher from "./teacher.js";
 import Course from "./course.js";
 import Subject from "./subject.js";
 import Class from "./class.js";
@@ -11,36 +9,37 @@ import GroupBadge from "./groupBadge.js";
 import Evaluation from "./evaluation.js";
 import StudentGroup from "./studentgroup.js";
 import Assignment from "./assignment.js";
+import User from "./user.js";
 
-Student.hasMany(Enrollment, { foreignKey: "student" });
-Student.hasMany(GroupBadge, { foreignKey: "student", as: "Giver" });
-Student.hasMany(GroupBadge, { foreignKey: "recipient", as: "Recipient" });
-Student.hasMany(Evaluation, { foreignKey: "evaluator" });
-Student.hasMany(Evaluation, { foreignKey: "evaluated" });
-Student.belongsToMany(Group, {
+User.hasMany(Enrollment, { foreignKey: "student" });
+User.hasMany(GroupBadge, { foreignKey: "student", as: "Giver" });
+User.hasMany(GroupBadge, { foreignKey: "recipient", as: "Recipient" });
+User.hasMany(Evaluation, { foreignKey: "evaluator" });
+User.hasMany(Evaluation, { foreignKey: "evaluated" });
+User.belongsToMany(Group, {
   through: StudentGroup,
   foreignKey: "student",
 });
 
-Teacher.hasMany(Class, { foreignKey: "teacher" });
-Teacher.hasOne(Course, { foreignKey: "responsibleTeacher" });
+User.hasMany(Class, { foreignKey: "teacher" });
+User.hasOne(Course, { foreignKey: "responsibleTeacher" });
 
 Course.hasMany(Subject, { foreignKey: "course" });
-Course.belongsTo(Teacher, { foreignKey: "responsibleTeacher" });
+Course.belongsTo(User, { foreignKey: "responsibleTeacher" });
 
 Subject.belongsTo(Course, { foreignKey: "course" });
 Subject.hasMany(Class, { foreignKey: "subject" });
 
 Class.belongsTo(Subject, { foreignKey: "subject" });
-Class.belongsTo(Teacher, { foreignKey: "teacher" });
+Class.belongsTo(User, { foreignKey: "teacher" });
 Class.hasMany(Enrollment, { foreignKey: "classe" });
 Class.hasMany(Group, { foreignKey: "classe" });
 
 Enrollment.belongsTo(Class, { foreignKey: "class" });
-Enrollment.belongsTo(Student, { foreignKey: "student" });
+Enrollment.belongsTo(User, { foreignKey: "student" });
 
 Group.belongsTo(Class, { foreignKey: "classe" });
-Group.belongsToMany(Student, {
+Group.belongsToMany(User, {
   through: StudentGroup,
   foreignKey: "group",
 });
@@ -49,16 +48,17 @@ Group.belongsToMany(Badge, { through: GroupBadge, foreignKey: "group" });
 
 Badge.belongsToMany(Group, { through: GroupBadge, foreignKey: "badge" });
 
-GroupBadge.belongsTo(Student, { foreignKey: "student", as: "Giver" });
-GroupBadge.belongsTo(Student, { foreignKey: "recipient", as: "Recipient" });
+GroupBadge.belongsTo(User, { foreignKey: "student", as: "Giver" });
+GroupBadge.belongsTo(User, { foreignKey: "recipient", as: "Recipient" });
+GroupBadge.belongsTo(Group, { foreignKey: "group" });
+GroupBadge.belongsTo(Badge, { foreignKey: "badge" });
 
-Evaluation.belongsTo(Student, { foreignKey: "evaluator" });
-Evaluation.belongsTo(Student, { foreignKey: "evaluated" });
-Evaluation.belongsTo(Assignment, { foreignKey: "assignment" });
+Evaluation.belongsTo(User, { foreignKey: "evaluator" });
+Evaluation.belongsTo(User, { foreignKey: "evaluated" });
+Evaluation.belongsTo(Group, { foreignKey: "group" });
 
-StudentGroup.belongsTo(Student, { foreignKey: "student" });
+StudentGroup.belongsTo(User, { foreignKey: "student" });
 StudentGroup.belongsTo(Group, { foreignKey: "group" });
-StudentGroup.belongsTo(Subject, { foreignKey: "subject" });
 
 Assignment.belongsTo(Group, { foreignKey: "group" });
 
@@ -76,8 +76,7 @@ async function syncModels() {
 syncModels();
 
 export {
-  Student,
-  Teacher,
+  User,
   Course,
   Subject,
   Class,

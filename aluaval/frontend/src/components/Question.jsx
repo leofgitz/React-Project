@@ -5,7 +5,7 @@ const Question = ({
   currentQuestion,
   questions,
   titles,
-  type,
+  isPeer,
   comments,
   answers,
   setComments,
@@ -17,7 +17,7 @@ const Question = ({
   setAnsweredQuestions
 }) => {
   const getTitle = (index) => {
-    if (type === "peer") {
+    if (isPeer) {
       return titles[index];
     } else {
       return titles[index >= 6 ? index + 1 : index];
@@ -56,7 +56,7 @@ const Question = ({
         <h3>{getTitle(currentQuestion)}</h3>
         <p>{questions[currentQuestion]}</p>
 
-        {currentQuestion >= 6 && type === "self" ? (
+        {currentQuestion >= 6 && !isPeer ? (
           <>
             <textarea
               className="w3-input w3-border w3-margin-top"
@@ -81,7 +81,7 @@ const Question = ({
           ))
         )}
 
-        {type === "self" && currentQuestion >= 6 ? null : (
+        {!isPeer && currentQuestion >= 6 ? null : (
           <div>
             <h4>{commentTitles[currentQuestion]}</h4>
             <textarea

@@ -27,6 +27,10 @@ const Subject = sequelize.define(
         key: "id",
       },
     },
+    year: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     timestamps: true,

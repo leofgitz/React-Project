@@ -8,4 +8,7 @@ groupBadgeRouter.get("/:id", GroupBadgeController.getGroupBadgeByID);
 groupBadgeRouter.put("/:id", GroupBadgeController.updateGroupBadgeByID);
 groupBadgeRouter.delete("/:id", GroupBadgeController.deleteGroupBadge);
 
+router.get("/student/:student", GroupBadgeController.getBadgesByStudent);
+router.get("/group/:group", GroupBadgeController.getBadgesByGroup);
+
 export default groupBadgeRouter;

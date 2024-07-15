@@ -3,9 +3,9 @@ const err500 = "Internal Server Error";
 
 const ClassController = {
   createClass: async (req, res) => {
-    const { name, subject, teacher } = req.body;
+    const { subject, teacher } = req.body;
 
-    if (!name || !subject || !teacher) {
+    if (!subject || !teacher) {
       return res.status(400).json({ error: "All fields required" });
     }
     try {
@@ -44,7 +44,7 @@ const ClassController = {
 
   updateClassByID: async (req, res) => {
     const { id } = req.params;
-    const { name, subjectId, teacherId, schedule } = req.body;
+    const { subject, teacher } = req.body;
 
     try {
       const classe = await Class.findByPk(id);
@@ -52,10 +52,8 @@ const ClassController = {
         return res.status(404).json({ error: "Class not found" });
       }
 
-      classe.name = name || classe.name;
-      classe.subjectId = subjectId || classe.subjectId;
-      classe.teacherId = teacherId || classe.teacherId;
-      classe.schedule = schedule || classe.schedule;
+      classe.subject = subject || classe.subject;
+      classe.teacher = teacher || classe.teacher;
 
       await classe.save();
       res.status(200).json(classe);
@@ -74,6 +72,29 @@ const ClassController = {
         return res.status(404).json({ error: "Class not found" });
       }
       res.status(200).json({ message: "Class removed successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getClassesBySubject: async (req, res) => {
+    const { subject } = req.params;
+
+    try {
+      const classes = await Class.findAll({ where: { subject } });
+
+      res.status(200).json(classes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getClassesByTeacher: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const classes = await Class.findAll({ where: { teacher } });
+      res.status(200).json(classes);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

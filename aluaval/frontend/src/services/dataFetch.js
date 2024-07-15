@@ -71,3 +71,27 @@ export const login = async (credentials) => {
   localStorage.setItem("token", response.token);
   return response;
 };
+
+export const fetchDynamicRoute = async (
+  baseRoute,
+  params,
+  method = "GET",
+  data = null
+) => {
+  let url = buildUrl(`${API_BASE_URL}/${baseRoute}`, params);
+
+  const options = {
+    method: method.toUpperCase(),
+    headers: getAuthHeaders(),
+  };
+
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
+
+  return fetchData(url, options);
+};
+
+const buildUrl = (base, params) => {
+  return `${base}/${params.join("/")}`;
+};

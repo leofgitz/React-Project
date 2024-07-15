@@ -8,4 +8,7 @@ courseRouter.get("/:id", CourseController.getCourseByID);
 courseRouter.put("/:id", CourseController.updateCourseByID);
 courseRouter.delete("/:id", CourseController.deleteCourse);
 
+router.get("/:id/responsible-teacher", CourseController.getResponsibleTeacher);
+router.get("/teacher/:teacher", CourseController.getCoursesByTeacher);
+
 export default courseRouter;

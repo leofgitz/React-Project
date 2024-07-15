@@ -5,21 +5,29 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Questionnaire from "./pages/Questionnaire.jsx";
 import GroupCreation from "./pages/GroupCreation.jsx";
+import { AuthProvider, useAuth } from "./context/authProvider.js";
 
 function App() {
+  const { user } = useAuth();
   return (
-    <Router>
-      <Navbar />
-      <div>
-        <Routes>
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/" element={<Homepage />} />
-          <Route path="/evaluation/:type" element={<Questionnaire />} />
-          <Route path="/group-creation" element={<GroupCreation />} />
-        </Routes>
-      </div>
-      <Footer />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <div>
+          <Routes>
+            {user ? (
+              <Navigate to="/" /> // Redirect to homepage if already logged in
+            ) : (
+              <Route path="/login" element={<LoginForm />} /> // Show login form if not logged in
+            )}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/evaluation/:id/:group/:evaluation" element={<Questionnaire />} />
+            <Route path="/group-creation" element={<GroupCreation />} />
+          </Routes>
+        </div>
+        <Footer />
+      </Router>
+    </AuthProvider>
   );
 }
 
