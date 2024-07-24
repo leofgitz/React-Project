@@ -45,7 +45,48 @@ const EvaluationController = {
       if (!evaluation) {
         return res.status(404).json({ error: "Evaluation not found" });
       }
-      res.status(200).json(evaluation);
+
+      const scores = [
+        evaluation.attendanceScore,
+        evaluation.participationScore,
+        evaluation.teamworkScore,
+        evaluation.qualityScore,
+        evaluation.attitudeScore,
+        evaluation.feedbackScore,
+        evaluation.impressionScore,
+      ];
+
+      const nonZeroScores = scores.filter((score) => score !== 0);
+
+      const averageScore =
+        nonZeroScores.length > 0
+          ? nonZeroScores.reduce((sum, score) => sum + score, 0) /
+            nonZeroScores.length
+          : 0;
+
+      const evaluationData = {
+        id: evaluation.id,
+        group: evaluation.group,
+        evaluator: evaluation.evaluator,
+        evaluated: evaluation.evaluated,
+        answers: scores,
+        comments: [
+          evaluation.attendanceComment,
+          evaluation.participationComment,
+          evaluation.teamworkComment,
+          evaluation.qualityComment,
+          evaluation.attitudeComment,
+          evaluation.feedbackComment,
+          evaluation.impressionComment,
+          evaluation.goalsComment,
+          evaluation.additionalComment,
+        ],
+        isFinal: evaluation.isFinal,
+        averageScore: averageScore,
+        createdAt: evaluation.createdAt,
+        updatedAt: evaluation.updatedAt,
+      };
+      res.status(200).json(evaluationData);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

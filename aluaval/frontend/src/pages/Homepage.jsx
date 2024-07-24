@@ -38,24 +38,36 @@ const Homepage = () => {
 
   const { user } = useAuth();
   const role = user.role;
-  const [classes, getClasses] = useState([]);
-  const [subjects, getSubjects] = useState([]);
-  const [assignments, getAssignments] = useState([]);
-  const [groups, getGroups] = useState([]);
-  const [enrollments, getEnrollments] = useState([]);
-  const [evaluations, getEvaluations] = useState([]);
-  const [courses, getCourses] = useState([]);
-  const [users, getUsers] = useState([]);
+  const name = user.name;
+  const [classes, setClasses] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
+  const [evaluations, setEvaluations] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [users, setUsers] = useState([]);
+  let params, data;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const placeholder = "placeholder";
+  });
 
   switch (role) {
     case "Teacher":
-      //TBA
+      //Fetch Classes by teacher
+      params = ["teacher", user.id];
+      data = fetchDynamicRoute("classes", params);
+      setClasses(data);
       break;
     case "Admin":
       //TBA
       break;
-    //case "Student"
+    case "Student":
+      //TBA
+      break;
+    //case "Guest"
     default:
       //TBA
       break;
@@ -73,7 +85,7 @@ const Homepage = () => {
         <h2>Dashboard</h2>
         <div className="w3-card w3-light-grey w3-padding w3-margin-bottom">
           <div className="w3-container">
-            <h3>Welcome!</h3>
+            <h3>Welcome, {name}!</h3>
             <p>
               Welcome to your dashboard. Here you can manage evaluations, view
               history, and check assignments.

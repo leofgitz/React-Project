@@ -35,10 +35,6 @@ const StudentsSection = ({
                 type="checkbox"
                 checked={selectedStudents.includes(student.id)}
                 onChange={() => onSelectStudent(student.id)}
-                disabled={
-                  !selectedStudents.includes(student.id) &&
-                  selectedStudents.length >= 5
-                }
               />
             )}
             <label className="w3-margin-left">{student.name}</label>

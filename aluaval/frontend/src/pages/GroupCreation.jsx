@@ -48,16 +48,16 @@ const GroupCreation = () => {
     fetchStudents();
   }, []);
 
-  const handleSubjectSelect = (subjectId) => {
-    setSelectedSubject(subjectId);
+  const handleSubjectSelect = (subjectID) => {
+    setSelectedSubject(subjectID);
     setCurrentStep("assignments");
     setSelectedAssignment(null);
     setSelectedStudents([]);
     setGroupedStudents({});
   };
 
-  const handleAssignmentSelect = (assignmentId) => {
-    setSelectedAssignment(assignmentId);
+  const handleAssignmentSelect = (assignmentID) => {
+    setSelectedAssignment(assignmentID);
     setCurrentStep("students");
     const groupedData = {
       1: {
@@ -71,13 +71,11 @@ const GroupCreation = () => {
     setGroupedStudents(groupedData[assignmentId] || {});
   };
 
-  const handleStudentSelect = (studentId) => {
+  const handleStudentSelect = (studentID) => {
     setSelectedStudents((prev) =>
-      prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
-        : prev.length < 5
-        ? [...prev, studentId]
-        : prev
+      prev.includes(studentID)
+        ? prev.filter((id) => id !== studentID)
+        : [...prev, studentID]
     );
   };
 

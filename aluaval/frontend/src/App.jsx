@@ -5,7 +5,7 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Questionnaire from "./pages/Questionnaire.jsx";
 import GroupCreation from "./pages/GroupCreation.jsx";
-import { AuthProvider, useAuth } from "./context/authProvider.js";
+import { AuthProvider, useAuth } from "./context/authProvider.jsx";
 
 function App() {
   const { user } = useAuth();
