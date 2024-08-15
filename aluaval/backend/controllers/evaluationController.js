@@ -1,4 +1,4 @@
-import { Evaluation } from "../models/index.js";
+import { Evaluation, Group } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EvaluationController = {
@@ -241,6 +241,33 @@ const EvaluationController = {
       });
 
       res.status(200).json(averageScores);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getEvaluationsByGroupsForTeacher: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: Class,
+                where: { teacher },
+                attributes: [],
+              },
+            ],
+            attributes: [],
+          },
+        ],
+        group: ["Evaluation.id"],
+      });
+
+      res.status(200).json(evaluations);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

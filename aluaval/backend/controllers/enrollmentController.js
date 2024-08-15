@@ -60,7 +60,7 @@ const EnrollmentController = {
 
   updateEnrollmentByID: async (req, res) => {
     const { id } = req.params;
-    const { classId, studentId } = req.body;
+    const { classe, student } = req.body;
 
     try {
       const enrollment = await Enrollment.findByPk(id);
@@ -68,8 +68,8 @@ const EnrollmentController = {
         return res.status(404).json({ error: "Enrollment not found" });
       }
 
-      enrollment.classId = classId || enrollment.classId;
-      enrollment.studentId = studentId || enrollment.studentId;
+      enrollment.classe = classe || enrollment.class;
+      enrollment.student = student || enrollment.student;
 
       await enrollment.save();
       res.status(200).json(enrollment);
@@ -97,9 +97,9 @@ const EnrollmentController = {
     const { classe, students } = req.body;
 
     try {
-      const enrollments = studentIds.map((studentId) => ({
+      const enrollments = students.map((student) => ({
         classe,
-        studentId,
+        student,
       }));
       await Enrollment.bulkCreate(enrollments);
       res.status(201).json({ message: "Students enrolled successfully" });
@@ -109,10 +109,10 @@ const EnrollmentController = {
     }
   },
   getEnrollmentsByClass: async (req, res) => {
-    const { classId } = req.params;
+    const { classe } = req.params;
 
     try {
-      const enrollments = await Enrollment.findAll({ where: { classId } });
+      const enrollments = await Enrollment.findAll({ where: { classe } });
       res.status(200).json(enrollments);
     } catch (err) {
       console.error(err);
@@ -121,10 +121,10 @@ const EnrollmentController = {
   },
 
   getEnrollmentsByStudent: async (req, res) => {
-    const { studentId } = req.params;
+    const { student } = req.params;
 
     try {
-      const enrollments = await Enrollment.findAll({ where: { studentId } });
+      const enrollments = await Enrollment.findAll({ where: { student } });
       res.status(200).json(enrollments);
     } catch (err) {
       console.error(err);

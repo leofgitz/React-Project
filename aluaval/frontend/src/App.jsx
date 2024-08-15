@@ -21,7 +21,10 @@ function App() {
               <Route path="/login" element={<LoginForm />} /> // Show login form if not logged in
             )}
             <Route path="/" element={<Homepage />} />
-            <Route path="/evaluation/:id/:group/:evaluation" element={<Questionnaire />} />
+            <Route
+              path="/evaluation/:id/:group/:evaluation"
+              element={<Questionnaire />}
+            />
             <Route path="/group-creation" element={<GroupCreation />} />
           </Routes>
         </div>

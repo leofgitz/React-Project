@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import EmailInput from "../components/EmailInput.jsx";
 import PasswordInput from "../components/PasswordInput.jsx";
 import SubmitButton from "../components/SubmitButton.jsx";
-import { useAuth } from "../context/authProvider.js";
+import { useAuth } from "../context/authProvider.jsx";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");

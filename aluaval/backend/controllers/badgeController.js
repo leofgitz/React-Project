@@ -1,4 +1,4 @@
-import { Badge } from "../models/index.js";
+import { Badge, Class, Group, GroupBadge, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const BadgeController = {
@@ -73,6 +73,39 @@ const BadgeController = {
         return res.status(404).json({ error: "Badge not found" });
       }
       res.status(200).json({ message: "Badge removed " });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getGroupBadgesForTeacher: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const groupBadges = await Group.findAll({
+        include: [
+          {
+            model: Class,
+            where: { teacher },
+            attributes: [],
+          },
+          {
+            model: GroupBadge,
+            attributes: [],
+            include: [
+              {
+                model: Badge,
+              },
+              { model: User, as: "student" },
+              { model: User, as: "recipient" },
+            ],
+          },
+        ],
+        group: ["Group.id"],
+      });
+
+      res.status(200).json(groupBadges);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

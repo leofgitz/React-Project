@@ -1,4 +1,4 @@
-import { Assignment } from "../models/index.js";
+import { Assignment, Class, Group } from "../models/index.js";
 
 const err500 = "Internal Server Error";
 
@@ -79,6 +79,32 @@ const AssignmentController = {
         return res.status(404).json({ error: "Assignment not found" });
       }
       res.status(200).json({ message: "Assignment removed successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getGroupAssignmentsForTeacher: async (req, res) => {
+    const { teacher } = req.params;
+    try {
+      const assignments = await Assignment.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: Class,
+                where: { teacher },
+                attributes: [],
+              },
+            ],
+            attributes: [],
+          },
+        ],
+        group: ["Assignment.id"],
+      });
+
+      res.status(200).json(assignments);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

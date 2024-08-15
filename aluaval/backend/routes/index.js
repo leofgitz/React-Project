@@ -11,6 +11,7 @@ import assignmentRouter from "./assignmentRoutes.js";
 import studentGroupRouter from "./studentGroupRoutes.js";
 import authRouter from "./authRoutes.js";
 import authentication from "../middleware/authentication.js";
+import teacherRouter from "./teacherRoutes.js";
 
 const routes = (app) => {
   app.use("/api/courses", authentication, courseRouter);
@@ -25,6 +26,7 @@ const routes = (app) => {
   app.use("/api/assignments", authentication, assignmentRouter);
   app.use("/api/student-groups", authentication, studentGroupRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/teacher", authentication, teacherRouter);
 };
 
 export default routes;

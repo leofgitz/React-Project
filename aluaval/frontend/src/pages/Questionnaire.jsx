@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Question from "../components/Question.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import Navigation from "../components/NavigationButtons.jsx";
-import { useAuth } from "../context/authProvider.js";
+import { useAuth } from "../context/authProvider.jsx";
 import { getById, updateById, create } from "../services/dataFetch.js";
 
 const Questionnaire = () => {

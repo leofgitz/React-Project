@@ -1,4 +1,4 @@
-import { Subject } from "../models/index.js";
+import { Class, Subject } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -113,6 +113,26 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
-};
+  getSubjectsForTeacher: async (req, res) => {
+    const { teacher } = req.params;
 
+    try {
+      const subjects = await Subject.findAll({
+        include: [
+          {
+            model: Class,
+            where: { teacher },
+            attributes: [],
+          },
+        ],
+        group: ["Subject.id"],
+      });
+
+      res.status(200).json(subjects);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+};
 export default SubjectController;
