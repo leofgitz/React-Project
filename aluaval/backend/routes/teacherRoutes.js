@@ -7,7 +7,7 @@ import BadgeController from "../controllers/badgeController";
 const teacherRouter = express.Router();
 
 teacherRouter.get(
-  "/:teacher/assignments",F
+  "/:teacher/assignments",
   AssignmentController.getAssignmentsForTeacher
 );
 teacherRouter.get("/:teacher/groups", GroupController.getGroupsForTeacher);
