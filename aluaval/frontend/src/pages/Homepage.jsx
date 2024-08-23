@@ -4,7 +4,7 @@ import { useAuth } from "../context/authProvider.jsx";
 import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  
 
   /* const colleagues = [
     { name: "You", evaluationType: "Self-Evaluation" },
@@ -47,6 +47,7 @@ const Homepage = () => {
   const [evaluations, setEvaluations] = useState([]);
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
   let params, data;
   const navigate = useNavigate();
 

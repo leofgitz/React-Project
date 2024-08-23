@@ -261,13 +261,31 @@ const EvaluationController = {
                 attributes: [],
               },
             ],
-            attributes: [],
+            attributes: ["id"],
           },
         ],
-        group: ["Evaluation.id"],
+        group: ["Group.id"],
       });
 
       res.status(200).json(evaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getEvaluationsForStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({
+        where: {
+          [Op.or]: [{ evaluator: student }, { evaluated: student }],
+        },
+        group: ["Group.id"],
+      });
+
+      res.status(200).json({ evaluations });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

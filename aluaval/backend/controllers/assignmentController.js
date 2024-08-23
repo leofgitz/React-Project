@@ -1,4 +1,4 @@
-import { Assignment, Class, Group } from "../models/index.js";
+import { Assignment, Class, Group, StudentGroup } from "../models/index.js";
 
 const err500 = "Internal Server Error";
 
@@ -84,8 +84,10 @@ const AssignmentController = {
       res.status(500).json({ error: err500 });
     }
   },
-  getGroupAssignmentsForTeacher: async (req, res) => {
+
+  getAssignmentsForTeacher: async (req, res) => {
     const { teacher } = req.params;
+
     try {
       const assignments = await Assignment.findAll({
         include: [
@@ -97,8 +99,40 @@ const AssignmentController = {
                 where: { teacher },
                 attributes: [],
               },
+              {
+                model: StudentGroup,
+                attributes: ["submissionDate"],
+              },
             ],
-            attributes: [],
+            attributes: ["id"],
+          },
+        ],
+        group: ["Assignment.id"],
+      });
+
+      res.status(200).json(assignments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getAssignmentsForStudents: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const assignments = await Assignment.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: StudentGroup,
+                where: { student },
+                attributes: ["submissionDate"],
+              },
+            ],
+            attributes: ["id"],
           },
         ],
         group: ["Assignment.id"],

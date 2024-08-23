@@ -12,6 +12,7 @@ import studentGroupRouter from "./studentGroupRoutes.js";
 import authRouter from "./authRoutes.js";
 import authentication from "../middleware/authentication.js";
 import teacherRouter from "./teacherRoutes.js";
+import studentRouter from "./studentRoutes.js";
 
 const routes = (app) => {
   app.use("/api/courses", authentication, courseRouter);
@@ -27,6 +28,7 @@ const routes = (app) => {
   app.use("/api/student-groups", authentication, studentGroupRouter);
   app.use("/api/auth", authRouter);
   app.use("/api/teacher", authentication, teacherRouter);
+  app.use("/api/student", authentication, studentRouter);
 };
 
 export default routes;

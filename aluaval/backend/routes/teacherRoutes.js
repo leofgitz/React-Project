@@ -7,15 +7,18 @@ import BadgeController from "../controllers/badgeController";
 const teacherRouter = express.Router();
 
 teacherRouter.get(
-  "/:id/assignments",
-  AssignmentController.getGroupAssignmentsForTeacher
+  "/:teacher/assignments",F
+  AssignmentController.getAssignmentsForTeacher
 );
-teacherRouter.get("/:id/groups", GroupController.getGroupsForTeacher);
-teacherRouter.get("/:id/subjects", SubjectController.getSubjectsForTeacher);
+teacherRouter.get("/:teacher/groups", GroupController.getGroupsForTeacher);
 teacherRouter.get(
-  "/:id/evaluations",
+  "/:teacher/subjects",
+  SubjectController.getSubjectsForTeacher
+);
+teacherRouter.get(
+  "/:teacher/evaluations",
   EvaluationController.getEvaluationsByGroupsForTeacher
 );
-teacherRouter.get("/:id/badges", BadgeController.getGroupBadgesForTeacher);
+teacherRouter.get("/:teacher/badges", BadgeController.getGroupBadgesForTeacher);
 
 export default teacherRouter;

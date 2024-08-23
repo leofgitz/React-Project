@@ -94,9 +94,7 @@ const BadgeController = {
             model: GroupBadge,
             attributes: [],
             include: [
-              {
-                model: Badge,
-              },
+              { model: Badge },
               { model: User, as: "student" },
               { model: User, as: "recipient" },
             ],
@@ -106,6 +104,29 @@ const BadgeController = {
       });
 
       res.status(200).json(groupBadges);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getGroupBadgesForStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const badges = await Badge.findAll({
+        include: [
+          {
+            model: GroupBadge,
+            where: {
+              [Op.or]: [{ student: student }, { recipient: student }],
+            },
+          },
+        ],
+        group: ["Badge.id"],
+      });
+
+      res.status(200).json(badges);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

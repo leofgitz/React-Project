@@ -1,4 +1,4 @@
-import { Course, User } from "../models/index.js";
+import { Class, Course, Enrollment, Subject, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const CourseController = {
@@ -105,13 +105,45 @@ const CourseController = {
     }
   },
   getCoursesByTeacher: async (req, res) => {
-    const teacher = req.params;
+    const { teacher } = req.params;
 
     try {
       const courses = await Course.findAll({
         where: { responsibleTeacher: teacher },
       });
       res.status(200).json(courses);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentCourseForStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const course = await Course.findAll({
+        include: [
+          {
+            model: Subject,
+            include: [
+              {
+                model: Class,
+                include: [
+                  {
+                    model: Enrollment,
+                    where: { student },
+                    attributes: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        group: ["Subject.id"],
+      });
+
+      res.status(200).json(course);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

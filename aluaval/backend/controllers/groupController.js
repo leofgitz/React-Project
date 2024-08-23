@@ -1,4 +1,4 @@
-import { Class, Group } from "../models/index.js";
+import { Class, Group, StudentGroup } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupController = {
@@ -107,6 +107,28 @@ const GroupController = {
           {
             model: Class,
             where: { teacher },
+            attributes: [],
+          },
+        ],
+        group: ["Group.id"],
+      });
+
+      res.status(200).json(groups);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getGroupsForStudent: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const groups = await Group.findAll({
+        include: [
+          {
+            model: StudentGroup,
+            where: { student },
             attributes: [],
           },
         ],
