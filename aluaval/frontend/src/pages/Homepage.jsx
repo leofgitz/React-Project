@@ -4,8 +4,6 @@ import { useAuth } from "../context/authProvider.jsx";
 import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
-  
-
   /* const colleagues = [
     { name: "You", evaluationType: "Self-Evaluation" },
     { name: "John Doe", evaluationType: "Weekly Evaluation" },
@@ -47,6 +45,7 @@ const Homepage = () => {
   const [evaluations, setEvaluations] = useState([]);
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
+  const [badges, setBadges] = useState([]);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   let params, data;
   const navigate = useNavigate();
@@ -57,15 +56,52 @@ const Homepage = () => {
 
   switch (role) {
     case "Teacher":
-      //Fetch Classes by teacher
       params = ["teacher", user.id];
       data = fetchDynamicRoute("classes", params);
       setClasses(data);
-      break;
-    case "Admin":
-      //TBA
+
+      params = [user.id, "assignments"];
+      data = fetchDynamicRoute("teacher", params);
+      setAssignments(data);
+
+      params = [user.id, "groups"];
+      data = fetchDynamicRoute("teacher", params);
+      setGroups(data);
+
+      params = [user.id, "subjects"];
+      data = fetchDynamicRoute("teacher", params);
+      setSubjects(data);
+
+      params = [user.id, "evaluations"];
+      data = fetchDynamicRoute("teacher", params);
+      setEvaluations(data);
+
+      params = [user.id, "badges"];
+      data = fetchDynamicRoute("teacher", params);
+      setBadges(data);
       break;
     case "Student":
+      params = [user.id, "assignments"];
+      data = fetchDynamicRoute("student", params);
+      setAssignments(data);
+
+      params = [user.id, "groups"];
+      data = fetchDynamicRoute("student", params);
+      setGroups(data);
+
+      params = [user.id, "courses"];
+      data = fetchDynamicRoute("student", params);
+      setCourses(data);
+
+      params = [user.id, "evaluations"];
+      data = fetchDynamicRoute("student", params);
+      setEvaluations(data);
+
+      params = [user.id, "badges"];
+      data = fetchDynamicRoute("student", params);
+      setBadges(data);
+      break;
+    case "Admin":
       //TBA
       break;
     //case "Guest"
