@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getById, fetchDynamicRoute } from "../services/dataFetch.js";
+import { fetchDynamicRoute } from "../services/dataFetch.js";
 import { useAuth } from "../context/authProvider.jsx";
 import { useNavigate } from "react-router-dom";
+import DataCard from "../components/DataCard.jsx";
 
 const Homepage = () => {
   const { user } = useAuth();
@@ -16,7 +17,7 @@ const Homepage = () => {
   const [courses, setCourses] = useState([]);
   const [users, setUsers] = useState([]);
   const [badges, setBadges] = useState([]);
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedAssignment, selectAssignment] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,8 +83,28 @@ const Homepage = () => {
     fetchData();
   }, [role, user.id]);
 
+  const UserRoleMessage = () => {
+    const roleMessages = {
+      Admin:
+        "Here you can check the most recent developments regarding the platform.",
+      Teacher:
+        "Here you can check the most recent developments regarding your classes and created assignments.",
+      Student:
+        "Here you can check the most recent developments regarding evaluations, assignments and badges!",
+      Guest:
+        "Here you can see what the platform is all about through demos and more!",
+    };
+
+    return (
+      <p>
+        {roleMessages[role] ||
+          "Please sign in to enjoy the most of the platform!"}
+      </p>
+    );
+  };
+
   const handleAssignmentClick = (assignment) => {
-    setSelectedAssignment(assignment);
+    selectAssignment(assignment);
   };
 
   return (
@@ -92,8 +113,16 @@ const Homepage = () => {
         <h2>Control Panel</h2>
         <div className="w3-card w3-light-grey w3-padding w3-margin-bottom">
           <div className="w3-container">
-            <h3>Welcome, {name}</h3>
+            <h3>Welcome, {name}.</h3>
+            <UserRoleMessage />
           </div>
+        </div>
+
+        <div className="grid-container">
+          <DataCard></DataCard>
+          <DataCard></DataCard>
+          <DataCard></DataCard>
+          <div></div>
         </div>
       </div>
     </div>

@@ -144,6 +144,70 @@ const AssignmentController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  getTeacherAssignmentsForHomepage: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const assignments = await Assignment.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: Class,
+                where: { teacher },
+                attributes: [],
+              },
+              {
+                model: StudentGroup,
+                attributes: ["submissionDate"],
+              },
+            ],
+            attributes: ["id"],
+          },
+        ],
+        group: ["Assignment.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(assignments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentAssignmentsForHomepage: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const assignments = await Assignment.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: StudentGroup,
+                where: { student },
+                attributes: ["submissionDate"],
+              },
+            ],
+            attributes: ["id"],
+          },
+        ],
+        group: ["Assignment.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(assignments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default AssignmentController;

@@ -10,15 +10,35 @@ studentRouter.get(
   "/:student/assignments",
   AssignmentController.getAssignmentsForStudents
 );
+studentRouter.get(
+  "/:student/assignments/homepage",
+  AssignmentController.getStudentAssignmentsForHomepage
+);
+
 studentRouter.get("/:student/groups", GroupController.getGroupsForStudent);
+studentRouter.get(
+  "/:student/groups/homepage",
+  GroupController.getStudentGroupsForHomepage
+);
+
 studentRouter.get(
   "/:student/courses",
   CourseController.getStudentCourseForStudent
 );
+
 studentRouter.get(
   "/:student/evaluations",
   EvaluationController.getEvaluationsForStudent
 );
+studentRouter.get(
+  "/:student/evaluations/history",
+  EvaluationController.studentEvaluationHistory
+);
+
 studentRouter.get("/:student/badges", BadgeController.getGroupBadgesForStudent);
+studentRouter.get(
+  ":student/badges/homepage",
+  BadgeController.getBadgesStudentForHomepage
+);
 
 export default studentRouter;

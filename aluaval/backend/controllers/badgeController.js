@@ -132,6 +132,63 @@ const BadgeController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  getBadgesStudentForHomepage: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const badges = await Badge.findAll({
+        include: [
+          {
+            model: GroupBadge,
+            where: {
+              [Op.or]: [{ student: student }, { recipient: student }],
+            },
+          },
+        ],
+        group: ["Badge.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(badges);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getBadgesTeacherForHomepage: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const groupBadges = await Group.findAll({
+        include: [
+          {
+            model: Class,
+            where: { teacher },
+            attributes: [],
+          },
+          {
+            model: GroupBadge,
+            attributes: [],
+            include: [
+              { model: Badge },
+              { model: User, as: "student" },
+              { model: User, as: "recipient" },
+            ],
+          },
+        ],
+        group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(groupBadges);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default BadgeController;

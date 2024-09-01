@@ -141,6 +141,51 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+  getTeacherGroupsForHomepage: async (req, res) => {
+    const { teacher } = req.params;
+    try {
+      const groups = await Group.findAll({
+        include: [
+          {
+            model: Class,
+            where: { teacher },
+            attributes: [],
+          },
+        ],
+        group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(groups);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+  getStudentGroupsForHomepage: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const groups = await Group.findAll({
+        include: [
+          {
+            model: StudentGroup,
+            where: { student },
+            attributes: [],
+          },
+        ],
+        group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(groups);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default GroupController;

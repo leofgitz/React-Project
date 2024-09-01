@@ -10,15 +10,39 @@ teacherRouter.get(
   "/:teacher/assignments",
   AssignmentController.getAssignmentsForTeacher
 );
+teacherRouter.get(
+  "/:teacher/assignments/homepage",
+  AssignmentController.getTeacherAssignmentsForHomepage
+);
+
 teacherRouter.get("/:teacher/groups", GroupController.getGroupsForTeacher);
+teacherRouter.get(
+  "/:teacher/groups/homepage",
+  GroupController.getTeacherGroupsForHomepage
+);
+
 teacherRouter.get(
   "/:teacher/subjects",
   SubjectController.getSubjectsForTeacher
 );
 teacherRouter.get(
+  "/:teacher/subjects/homepage",
+  SubjectController.getTeacherSubjectsForHomepage
+);
+
+teacherRouter.get(
   "/:teacher/evaluations",
   EvaluationController.getEvaluationsByGroupsForTeacher
 );
+teacherRouter.get(
+  "/:teacher/evaluations/history",
+  EvaluationController.teacherEvaluationHistory
+);
+
 teacherRouter.get("/:teacher/badges", BadgeController.getGroupBadgesForTeacher);
+teacherRouter.get(
+  "/:teacher/badges/homepage",
+  BadgeController.getBadgesTeacherForHomepage
+);
 
 export default teacherRouter;

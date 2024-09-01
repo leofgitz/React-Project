@@ -1,4 +1,4 @@
-import { User } from "../models/index.js";
+import { Class, Enrollment, Group, User } from "../models/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
@@ -139,6 +139,39 @@ const UserController = {
       user.password = hashedPassword;
       await user.save();
       res.status(200).json({ message: "Password updated successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentsInGroup: async (req, res) => {
+    const { assignment } = req.params;
+
+    try {
+      const colleagues = await User.findAll({
+        include: [
+          {
+            model: Enrollment,
+            attributes: [],
+            include: [
+              {
+                model: Class,
+                attributes: [],
+                include: [
+                  {
+                    model: Group,
+                    where: { assignment },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        group: ["User.id"],
+      });
+
+      res.status(200).json(colleagues);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

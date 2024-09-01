@@ -246,6 +246,7 @@ const EvaluationController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getEvaluationsByGroupsForTeacher: async (req, res) => {
     const { teacher } = req.params;
 
@@ -265,6 +266,7 @@ const EvaluationController = {
           },
         ],
         group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
       });
 
       res.status(200).json(evaluations);
@@ -283,6 +285,57 @@ const EvaluationController = {
           [Op.or]: [{ evaluator: student }, { evaluated: student }],
         },
         group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+      });
+
+      res.status(200).json({ evaluations });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  teacherEvaluationHistory: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({
+        include: [
+          {
+            model: Group,
+            include: [
+              {
+                model: Class,
+                where: { teacher },
+                attributes: [],
+              },
+            ],
+            attributes: ["id"],
+          },
+        ],
+        group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 5,
+      });
+
+      res.status(200).json(evaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  studentEvaluationHistory: async (req, res) => {
+    const { student } = req.params;
+
+    try {
+      const evaluations = await Evaluation.findAll({
+        where: {
+          [Op.or]: [{ evaluator: student }, { evaluated: student }],
+        },
+        group: ["Group.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 5,
       });
 
       res.status(200).json({ evaluations });

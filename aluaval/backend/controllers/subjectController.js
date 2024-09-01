@@ -134,5 +134,28 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
+  getTeacherSubjectsForHomepage: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const subjects = await Subject.findAll({
+        include: [
+          {
+            model: Class,
+            where: { teacher },
+            attributes: [],
+          },
+        ],
+        group: ["Subject.id"],
+        order: [["createdAt", "DESC"]],
+        limit: 3,
+      });
+
+      res.status(200).json(subjects);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 export default SubjectController;
