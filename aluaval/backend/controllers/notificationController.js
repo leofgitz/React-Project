@@ -11,7 +11,7 @@ const NotificationController = {
 
     try {
       const notifications = await Notification.findAll({
-        where: {  
+        where: {
           user,
           ...(type && { type }), // Only include type if it's provided
         },
@@ -28,8 +28,10 @@ const NotificationController = {
   },
 
   getFirstThreeNotifications: async (req, res) => {
+    const { user } = req.user;
     try {
       const notifications = await Notification.findAll({
+        where: { user },
         limit: 3,
         order: [["createdAt", "DESC"]],
       });
@@ -73,7 +75,7 @@ const NotificationController = {
   },
 
   markAllAsRead: async (req, res) => {
-    const { user } = req.params;
+    const { user } = req.user;
     try {
       await Notification.update({ isRead: true }, { where: { user } });
       res

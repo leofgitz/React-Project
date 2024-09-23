@@ -10,9 +10,10 @@ import evaluationRouter from "./evaluationRoutes.js";
 import assignmentRouter from "./assignmentRoutes.js";
 import membershipRouter from "./membershipRoutes.js";
 import authRouter from "./authRoutes.js";
-import authentication from "../middleware/authentication.js";
 import teacherRouter from "./teacherRoutes.js";
 import studentRouter from "./studentRoutes.js";
+import notificationRouter from "./notificationRoutes.js";
+import authentication from "../middleware/authentication.js";
 import isStudent from "../middleware/isStudent.js";
 import isTeacher from "../middleware/isTeacher.js";
 
@@ -31,6 +32,7 @@ const routes = (app) => {
   app.use("/api/auth", authRouter);
   app.use("/api/teacher", authentication, isTeacher, teacherRouter);
   app.use("/api/student", authentication, isStudent, studentRouter);
+  app.use("/api/notifications", authentication, notificationRouter);
 };
 
 export default routes;

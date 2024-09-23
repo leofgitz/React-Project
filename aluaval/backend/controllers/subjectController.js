@@ -144,7 +144,6 @@ const SubjectController = {
             model: Class,
             where: { teacher },
             attributes: [],
-            notas,
           },
         ],
         group: ["Subject.id"],
