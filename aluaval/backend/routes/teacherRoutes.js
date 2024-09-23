@@ -39,7 +39,7 @@ teacherRouter.get(
   EvaluationController.teacherEvaluationHistory
 );
 
-teacherRouter.get("/:teacher/badges", BadgeController.getGroupBadgesForTeacher);
+teacherRouter.get("/:teacher/badges", BadgeController.getAwardsForTeacher);
 teacherRouter.get(
   "/:teacher/badges/homepage",
   BadgeController.getBadgesTeacherForHomepage

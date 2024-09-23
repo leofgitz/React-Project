@@ -14,7 +14,7 @@ const Badge = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    img_url: {
+    icon: {
       type: DataTypes.STRING,
       allowNull: true,
     },

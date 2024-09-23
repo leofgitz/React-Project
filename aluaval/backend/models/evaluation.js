@@ -87,7 +87,7 @@ const Evaluation = sequelize.define(
     //impressionScore e impressionComment não aparecem em autoavaliações
     impressionScore: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     impressionComment: {
       type: DataTypes.TEXT,

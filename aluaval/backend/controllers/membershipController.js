@@ -1,8 +1,8 @@
-import { Assignment, Group, StudentGroup, User } from "../models/index.js";
+import { Assignment, Group, Membership, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
-const StudentGroupController = {
-  createStudentGroup: async (req, res) => {
+const MembershipController = {
+  createMembership: async (req, res) => {
     const { student, group, subject } = req.body;
 
     if (!student || !group || !subject) {
@@ -10,79 +10,79 @@ const StudentGroupController = {
     }
 
     try {
-      let studentGroup = await StudentGroup.findOne({
+      let membership = await Membership.findOne({
         where: {
           student,
           subject,
         },
       });
 
-      if (studentGroup) {
+      if (membership) {
         return res.status(400).json({
           error: "This student is already in a group for this subject",
         });
       }
 
-      studentGroup = await StudentGroup.create(req.body);
-      res.status(201).json(studentGroup);
+      membership = await Membership.create(req.body);
+      res.status(201).json(membership);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  getAllStudentGroups: async (req, res) => {
+  getAllMemberships: async (req, res) => {
     try {
-      const studentGroups = await StudentGroup.findAll();
-      res.status(200).json(studentGroups);
+      const memberships = await Membership.findAll();
+      res.status(200).json(memberships);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  getStudentGroupByID: async (req, res) => {
+  getMembershipByID: async (req, res) => {
     const id = req.params.id;
 
     try {
-      const studentGroup = await StudentGroup.findByPk(id);
-      if (!studentGroup) {
+      const membership = await Membership.findByPk(id);
+      if (!membership) {
         return res.status(404).json({ error: "Entry not found" });
       }
-      res.status(200).json(studentGroup);
+      res.status(200).json(membership);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  updateStudentGroupByID: async (req, res) => {
+  updateMembershipByID: async (req, res) => {
     const { id } = req.params;
     const { student, group, subject } = req.body;
 
     try {
-      const studentGroup = await StudentGroup.findByPk(id);
-      if (!studentGroup) {
-        return res.status(404).json({ error: "StudentGroup not found" });
+      const membership = await Membership.findByPk(id);
+      if (!membership) {
+        return res.status(404).json({ error: "Membership not found" });
       }
 
-      studentGroup.student = student || studentGroup.student;
-      studentGroup.group = group || studentGroup.group;
-      studentGroup.subject = subject || studentGroup.subject;
+      membership.student = student || membership.student;
+      membership.group = group || membership.group;
+      membership.subject = subject || membership.subject;
 
-      await studentGroup.save();
-      res.status(200).json(studentGroup);
+      await membership.save();
+      res.status(200).json(membership);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  deleteStudentGroup: async (req, res) => {
+  deleteMembership: async (req, res) => {
     const id = req.params.id;
 
     try {
-      const deletedRows = await StudentGroup.destroy({ where: { id } });
+      const deletedRows = await Membership.destroy({ where: { id } });
 
       if (deletedRows === 0) {
         return res.status(404).json({ error: "Entry not found" });
@@ -95,17 +95,15 @@ const StudentGroupController = {
     }
   },
 
-  getStudentGroupsByGroup: async (req, res) => {
+  getMembershipsByGroup: async (req, res) => {
     const { group } = req.params;
 
     try {
-      const studentGroups = await StudentGroup.findAll({
+      const memberships = await Membership.findAll({
         where: { group },
         include: [{ model: User, as: "student" }],
       });
-      const students = studentGroups.map(
-        (studentGroup) => studentGroup.student
-      );
+      const students = memberships.map((membership) => membership.student);
 
       res.status(200).json(students);
     } catch (err) {
@@ -114,12 +112,12 @@ const StudentGroupController = {
     }
   },
 
-  getStudentGroupsByStudent: async (req, res) => {
+  getMembershipsByStudent: async (req, res) => {
     const { student } = req.params;
 
     try {
-      const studentGroups = await StudentGroup.findAll({ where: { student } });
-      res.status(200).json(studentGroups);
+      const memberships = await Membership.findAll({ where: { student } });
+      res.status(200).json(memberships);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
@@ -130,7 +128,7 @@ const StudentGroupController = {
     const { id } = req.params;
 
     try {
-      const studentGroups = await StudentGroup.findAll({
+      const memberships = await Membership.findAll({
         where: { student: id },
         include: [
           {
@@ -144,8 +142,8 @@ const StudentGroupController = {
         ],
       });
 
-      const assignments = studentGroups.flatMap((studentGroup) => {
-        const group = studentGroup.group;
+      const assignments = memberships.flatMap((membership) => {
+        const group = membership.group;
         return group && group.assignment ? group.assignment : [];
       });
 
@@ -155,8 +153,8 @@ const StudentGroupController = {
       res.status(500).json({ error: err500 });
     }
   },
-  
-  getGroupMembers
+
+  getGroupMembers,
 };
 
-export default StudentGroupController;
+export default MembershipController;

@@ -1,87 +1,87 @@
-import { Badge, GroupBadge } from "../models/index.js";
+import { Badge, Award } from "../models/index.js";
 const err500 = "Internal Server Error";
 
-const GroupBadgeController = {
-  createGroupBadge: async (req, res) => {
-    const { student, badge, group, recipient } = req.body;
+const AwardController = {
+  createAward: async (req, res) => {
+    const { giver, badge, group, recipient } = req.body;
 
     try {
-      const existingGroupBadge = await GroupBadge.findOne({
+      const existingAward = await Award.findOne({
         where: {
-          student,
+          giver,
           badge,
           group,
           recipient,
         },
       });
 
-      if (existingGroupBadge) {
+      if (existingAward) {
         return res.status(400).json({
           error: "Student has already awarded this badge in this group",
         });
       }
 
-      const groupBadge = await GroupBadge.create(req.body);
-      res.status(201).json(groupBadge);
+      const award = await Award.create(req.body);
+      res.status(201).json(award);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  getAllGroupBadges: async (req, res) => {
+  getAllAwards: async (req, res) => {
     try {
-      const groupBadges = await GroupBadge.findAll();
-      res.status(200).json(groupBadges);
+      const awards = await Award.findAll();
+      res.status(200).json(awards);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  getGroupBadgeByID: async (req, res) => {
+  getAwardByID: async (req, res) => {
     const id = req.params.id;
 
     try {
-      const groupBadge = await GroupBadge.findByPk(id);
-      if (!groupBadge) {
+      const award = await Award.findByPk(id);
+      if (!award) {
         return res.status(404).json({ error: "Entry not found" });
       }
-      res.status(200).json(groupBadge);
+      res.status(200).json(award);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  updateGroupBadgeByID: async (req, res) => {
+  updateAwardByID: async (req, res) => {
     const { id } = req.params;
-    const { student, badge, group, recipient } = req.body;
+    const { giver, badge, group, recipient } = req.body;
 
     try {
-      const groupBadge = await GroupBadge.findByPk(id);
-      if (!groupBadge) {
-        return res.status(404).json({ error: "GroupBadge not found" });
+      const award = await Award.findByPk(id);
+      if (!award) {
+        return res.status(404).json({ error: "Award not found" });
       }
 
-      groupBadge.student = student || groupBadge.student;
-      groupBadge.badge = badge || groupBadge.badge;
-      groupBadge.group = group || groupBadge.group;
-      groupBadge.recipient = recipient || groupBadge.recipient;
+      award.giver = giver || award.giver;
+      award.badge = badge || award.badge;
+      award.group = group || award.group;
+      award.recipient = recipient || award.recipient;
 
-      await groupBadge.save();
-      res.status(200).json(groupBadge);
+      await award.save();
+      res.status(200).json(award);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
 
-  deleteGroupBadge: async (req, res) => {
+  deleteAward: async (req, res) => {
     const id = req.params.id;
 
     try {
-      const deletedRows = await GroupBadge.destroy({ where: { id } });
+      const deletedRows = await Award.destroy({ where: { id } });
       if (deletedRows === 0) {
         return res.status(404).json({ error: "Entry not found" });
       }
@@ -93,11 +93,11 @@ const GroupBadgeController = {
   },
 
   getBadgesByStudent: async (req, res) => {
-    const { student } = req.params;
+    const { giver } = req.params;
 
     try {
-      const badges = await GroupBadge.findAll({
-        where: { student },
+      const badges = await Award.findAll({
+        where: { giver },
         include: [
           {
             model: Badge,
@@ -112,10 +112,10 @@ const GroupBadgeController = {
   },
 
   getBadgesByGroup: async (req, res) => {
-    const { groupId } = req.params;
+    const { group } = req.params;
 
     try {
-      const badges = await GroupBadge.findAll({ where: { group } });
+      const badges = await Award.findAll({ where: { group } });
       res.status(200).json(badges);
     } catch (err) {
       console.error(err);
@@ -124,4 +124,4 @@ const GroupBadgeController = {
   },
 };
 
-export default GroupBadgeController;
+export default AwardController;

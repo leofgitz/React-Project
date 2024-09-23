@@ -8,16 +8,16 @@ evaluationRouter.get("/:id", EvaluationController.getEvaluationByID);
 evaluationRouter.put("/:id", EvaluationController.updateEvaluationByID);
 evaluationRouter.delete("/:id", EvaluationController.deleteEvaluation);
 
-router.get("/group/:group", EvaluationController.getEvaluationsByGroup);
-router.get(
+evaluationRouter.get("/group/:group", EvaluationController.getEvaluationsByGroup);
+evaluationRouter.get(
   "/evaluator/:evaluator",
   EvaluationController.getEvaluationsByEvaluator
 );
-router.get(
+evaluationRouter.get(
   "/evaluated/:evaluated",
   EvaluationController.getEvaluationsByEvaluated
 );
-router.get(
+evaluationRouter.get(
   "/group/:group/average-scores",
   EvaluationController.calculateAverageScores
 );

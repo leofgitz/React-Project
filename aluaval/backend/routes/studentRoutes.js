@@ -18,7 +18,7 @@ studentRouter.get(
 studentRouter.get("/:student/groups", GroupController.getGroupsForStudent);
 studentRouter.get(
   "/:student/groups/homepage",
-  GroupController.getStudentGroupsForHomepage
+  GroupController.getMembershipsForHomepage
 );
 
 studentRouter.get(
@@ -35,7 +35,7 @@ studentRouter.get(
   EvaluationController.studentEvaluationHistory
 );
 
-studentRouter.get("/:student/badges", BadgeController.getGroupBadgesForStudent);
+studentRouter.get("/:student/badges", BadgeController.getAwardsForStudent);
 studentRouter.get(
   ":student/badges/homepage",
   BadgeController.getBadgesStudentForHomepage

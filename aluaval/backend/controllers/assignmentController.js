@@ -1,12 +1,18 @@
-import { Assignment, Class, Group, StudentGroup } from "../models/index.js";
+import {
+  Assignment,
+  Class,
+  Group,
+  Membership,
+  Subject,
+} from "../models/index.js";
 
 const err500 = "Internal Server Error";
 
 const AssignmentController = {
   createAssignment: async (req, res) => {
-    const { title, dueDate, submissionDate } = req.body;
+    const { title, dueDate } = req.body;
 
-    if (!title || !dueDate || !submissionDate) {
+    if (!title || !dueDate) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -14,7 +20,6 @@ const AssignmentController = {
       const assignment = await Assignment.create({
         title,
         dueDate,
-        submissionDate,
       });
       res.status(201).json(assignment);
     } catch (err) {
@@ -50,7 +55,7 @@ const AssignmentController = {
 
   updateAssignmentByID: async (req, res) => {
     const id = req.params.id;
-    const { title, dueDate, submissionDate } = req.body;
+    const { title, dueDate } = req.body;
 
     try {
       const assignment = await Assignment.findByPk(id);
@@ -60,7 +65,6 @@ const AssignmentController = {
 
       assignment.title = title || assignment.title;
       assignment.dueDate = dueDate || assignment.dueDate;
-      assignment.submissionDate = submissionDate || assignment.submissionDate;
 
       await assignment.save();
       res.status(200).json(assignment);
@@ -100,7 +104,7 @@ const AssignmentController = {
                 attributes: [],
               },
               {
-                model: StudentGroup,
+                model: Membership,
                 attributes: ["submissionDate"],
               },
             ],
@@ -127,7 +131,7 @@ const AssignmentController = {
             model: Group,
             include: [
               {
-                model: StudentGroup,
+                model: Membership,
                 where: { student },
                 attributes: ["submissionDate"],
               },
@@ -153,18 +157,24 @@ const AssignmentController = {
         include: [
           {
             model: Group,
+            attributes: ["id"],
             include: [
               {
                 model: Class,
                 where: { teacher },
                 attributes: [],
+                include: [
+                  {
+                    model: Subject,
+                    attributes: ["name"],
+                  },
+                ],
               },
               {
-                model: StudentGroup,
+                model: Membership,
                 attributes: ["submissionDate"],
               },
             ],
-            attributes: ["id"],
           },
         ],
         group: ["Assignment.id"],
@@ -189,9 +199,19 @@ const AssignmentController = {
             model: Group,
             include: [
               {
-                model: StudentGroup,
+                model: Membership,
                 where: { student },
                 attributes: ["submissionDate"],
+              },
+              {
+                model: Class,
+                attributes: [],
+                include: [
+                  {
+                    model: Subject,
+                    attributes: ["name"],
+                  },
+                ],
               },
             ],
             attributes: ["id"],

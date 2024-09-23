@@ -1,11 +1,11 @@
 import { Class, Enrollment, Group, User } from "../models/index.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import "dotenv/config";
 const err500 = "Internal Server Error";
 const domain = "@ispgaya.pt";
 
-const generateEmail = async () => {
+//Incomplete function
+const generateEmail = async (role, prefix) => {
   const prefix = "ispg";
 
   const currentYear = new Date().getFullYear();
@@ -23,7 +23,7 @@ const generateEmail = async () => {
     }
   }
 
-  return uniqueEmail;
+  return email;
 };
 
 const UserController = {
@@ -31,7 +31,7 @@ const UserController = {
     const { name, surname, email, password, role } = req.body;
     try {
       if (!email) {
-        email = generateEmail();
+        email = generateEmail(role, prefix);
       } else email += domain;
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -170,7 +170,6 @@ const UserController = {
         ],
         group: ["User.id"],
       });
-
       res.status(200).json(colleagues);
     } catch (err) {
       console.error(err);
@@ -178,7 +177,7 @@ const UserController = {
     }
   },
 
-  resetPassword: async (req, res) => {},
+  /* resetPassword: async (req, res) => {}, */
 };
 
 export default UserController;

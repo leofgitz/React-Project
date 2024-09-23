@@ -33,7 +33,7 @@ const AuthController = {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
-  },
+  }
 };
 
 export default AuthController;

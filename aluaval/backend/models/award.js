@@ -4,15 +4,15 @@ import Student from "./student.js";
 import Badge from "./badge.js";
 import Group from "./group.js";
 
-const GroupBadge = sequelize.define(
-  "GroupBadge",
+const Award = sequelize.define(
+  "Award",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    student: {
+    giver: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -58,4 +58,4 @@ const GroupBadge = sequelize.define(
   }
 );
 
-export default GroupBadge;
+export default Award;

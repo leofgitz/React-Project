@@ -3,8 +3,8 @@ import sequelize from "../config/database.js";
 import Group from "./group.js";
 import User from "./user.js";
 
-const StudentGroup = sequelize.define(
-  "StudentGroup",
+const Membership = sequelize.define(
+  "Membership",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -42,4 +42,4 @@ const StudentGroup = sequelize.define(
   }
 );
 
-export default StudentGroup;
+export default Membership;

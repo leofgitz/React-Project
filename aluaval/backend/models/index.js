@@ -5,24 +5,25 @@ import Class from "./class.js";
 import Enrollment from "./enrollment.js";
 import Group from "./group.js";
 import Badge from "./badge.js";
-import GroupBadge from "./groupBadge.js";
+import Award from "./award.js";
 import Evaluation from "./evaluation.js";
-import StudentGroup from "./studentgroup.js";
+import Membership from "./membership.js";
 import Assignment from "./assignment.js";
 import User from "./user.js";
+import Notification from "./notification.js";
 
 User.hasMany(Enrollment, { foreignKey: "student" });
-User.hasMany(GroupBadge, { foreignKey: "student", as: "Giver" });
-User.hasMany(GroupBadge, { foreignKey: "recipient", as: "Recipient" });
+User.hasMany(Award, { foreignKey: "student", as: "Giver" });
+User.hasMany(Award, { foreignKey: "recipient", as: "Recipient" });
 User.hasMany(Evaluation, { foreignKey: "evaluator" });
 User.hasMany(Evaluation, { foreignKey: "evaluated" });
 User.belongsToMany(Group, {
-  through: StudentGroup,
+  through: Membership,
   foreignKey: "student",
 });
-
 User.hasMany(Class, { foreignKey: "teacher" });
 User.hasOne(Course, { foreignKey: "responsibleTeacher" });
+User.hasMany(Notification, { foreignKey: "user" });
 
 Course.hasMany(Subject, { foreignKey: "course" });
 Course.belongsTo(User, { foreignKey: "responsibleTeacher" });
@@ -40,27 +41,29 @@ Enrollment.belongsTo(User, { foreignKey: "student" });
 
 Group.belongsTo(Class, { foreignKey: "classe" });
 Group.belongsToMany(User, {
-  through: StudentGroup,
+  through: Membership,
   foreignKey: "group",
 });
 Group.hasMany(Assignment, { foreignKey: "group" });
-Group.belongsToMany(Badge, { through: GroupBadge, foreignKey: "group" });
+Group.belongsToMany(Badge, { through: Award, foreignKey: "group" });
 
-Badge.belongsToMany(Group, { through: GroupBadge, foreignKey: "badge" });
+Badge.belongsToMany(Group, { through: Award, foreignKey: "badge" });
 
-GroupBadge.belongsTo(User, { foreignKey: "student", as: "Giver" });
-GroupBadge.belongsTo(User, { foreignKey: "recipient", as: "Recipient" });
-GroupBadge.belongsTo(Group, { foreignKey: "group" });
-GroupBadge.belongsTo(Badge, { foreignKey: "badge" });
+Award.belongsTo(User, { foreignKey: "student", as: "Giver" });
+Award.belongsTo(User, { foreignKey: "recipient", as: "Recipient" });
+Award.belongsTo(Group, { foreignKey: "group" });
+Award.belongsTo(Badge, { foreignKey: "badge" });
 
 Evaluation.belongsTo(User, { foreignKey: "evaluator" });
 Evaluation.belongsTo(User, { foreignKey: "evaluated" });
 Evaluation.belongsTo(Group, { foreignKey: "group" });
 
-StudentGroup.belongsTo(User, { foreignKey: "student" });
-StudentGroup.belongsTo(Group, { foreignKey: "group" });
+Membership.belongsTo(User, { foreignKey: "student" });
+Membership.belongsTo(Group, { foreignKey: "group" });
 
 Assignment.belongsTo(Group, { foreignKey: "group" });
+
+Notification.belongsTo(User, { foreignKey: "user" });
 
 async function syncModels() {
   try {
@@ -83,8 +86,9 @@ export {
   Enrollment,
   Group,
   Badge,
-  GroupBadge,
+  Award,
   Evaluation,
-  StudentGroup,
+  Membership,
   Assignment,
+  Notification,
 };

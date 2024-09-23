@@ -1,9 +1,15 @@
-import { Evaluation, Group } from "../models/index.js";
+import {
+  Assignment,
+  Class,
+  Evaluation,
+  Group,
+  Subject,
+} from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EvaluationController = {
   createEvaluation: async (req, res) => {
-    const { evaluator, evaluated } = req.body;
+    const { group, evaluator, evaluated, answers, comments } = req.body;
 
     try {
       const existingEvaluation = await Evaluation.findOne({
@@ -19,7 +25,36 @@ const EvaluationController = {
           .json({ error: "Student has already evaluated this other student" });
       }
 
-      const evaluation = await Evaluation.create(req.body);
+      let evaluationData = {
+        group: group,
+        evaluator: evaluator,
+        evaluated: evaluated,
+        attendanceScore: answers[0],
+        participationScore: answers[1],
+        teamworkScore: answers[2],
+        qualityScore: answers[3],
+        attitudeScore: answers[4],
+        feedbackScore: answers[5],
+
+        attendanceComment: comments[0],
+        participationComment: comments[1],
+        teamworkComment: comments[2],
+        qualityComment: comments[3],
+        attitudeComment: comments[4],
+        feedbackComment: comments[5],
+
+        isFinal: isFinal,
+      };
+
+      if (evaluated === evaluator) {
+        evaluationData.goalsComment = comments[6];
+        evaluationData.additionalComment = comments[7];
+      } else {
+        evaluationData.impressionScore = answers[6];
+        evaluationData.impressionComment = comments[6];
+      }
+
+      const evaluation = await Evaluation.create(evaluationData);
       res.status(201).json(evaluation);
     } catch (err) {
       console.error(err);
@@ -38,13 +73,15 @@ const EvaluationController = {
   },
 
   getEvaluationByID: async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const evaluation = await Evaluation.findByPk(id);
       if (!evaluation) {
         return res.status(404).json({ error: "Evaluation not found" });
       }
+
+      const { evaluated, evaluator } = evaluation;
 
       const scores = [
         evaluation.attendanceScore,
@@ -53,34 +90,36 @@ const EvaluationController = {
         evaluation.qualityScore,
         evaluation.attitudeScore,
         evaluation.feedbackScore,
-        evaluation.impressionScore,
       ];
 
-      const nonZeroScores = scores.filter((score) => score !== 0);
+      const comments = [
+        evaluation.attendanceComment,
+        evaluation.participationComment,
+        evaluation.teamworkComment,
+        evaluation.qualityComment,
+        evaluation.attitudeComment,
+        evaluation.feedbackComment,
+      ];
+
+      if (evaluated === evaluator) {
+        comments.push(evaluation.goalsComment, evaluation.additionalComment);
+      } else {
+        scores.push(evaluation.impressionScore);
+        comments.push(evaluation.impressionComment);
+      }
 
       const averageScore =
-        nonZeroScores.length > 0
-          ? nonZeroScores.reduce((sum, score) => sum + score, 0) /
-            nonZeroScores.length
+        scores.length > 0
+          ? scores.reduce((sum, score) => sum + score, 0) / scores.length
           : 0;
 
       const evaluationData = {
         id: evaluation.id,
         group: evaluation.group,
-        evaluator: evaluation.evaluator,
-        evaluated: evaluation.evaluated,
+        evaluator: evaluator,
+        evaluated: evaluated,
         answers: scores,
-        comments: [
-          evaluation.attendanceComment,
-          evaluation.participationComment,
-          evaluation.teamworkComment,
-          evaluation.qualityComment,
-          evaluation.attitudeComment,
-          evaluation.feedbackComment,
-          evaluation.impressionComment,
-          evaluation.goalsComment,
-          evaluation.additionalComment,
-        ],
+        comments: comments,
         isFinal: evaluation.isFinal,
         averageScore: averageScore,
         createdAt: evaluation.createdAt,
@@ -94,26 +133,8 @@ const EvaluationController = {
   },
 
   updateEvaluationByID: async (req, res) => {
-    const id = req.params.id;
-    const {
-      attendanceScore,
-      attendanceComment,
-      participationScore,
-      participationComment,
-      teamworkScore,
-      teamworkComment,
-      qualityScore,
-      qualityComment,
-      attitudeScore,
-      attitudeComment,
-      feedbackScore,
-      feedbackComment,
-      impressionScore,
-      impressionComment,
-      goalsComment,
-      additionalComment,
-      isFinal,
-    } = req.body;
+    const { id } = req.params;
+    const { group, answers, comments, evaluated, evaluator } = req.body;
 
     try {
       const evaluation = await Evaluation.findByPk(id);
@@ -121,33 +142,32 @@ const EvaluationController = {
         return res.status(404).json({ error: "Evaluation not found" });
       }
 
-      evaluation.attendanceScore =
-        attendanceScore || evaluation.attendanceScore;
-      evaluation.attendanceComment =
-        attendanceComment || evaluation.attendanceComment;
-      evaluation.participationScore =
-        participationScore || evaluation.participationScore;
-      evaluation.participationComment =
-        participationComment || evaluation.participationComment;
-      evaluation.teamworkScore = teamworkScore || evaluation.teamworkScore;
-      evaluation.teamworkComment =
-        teamworkComment || evaluation.teamworkComment;
-      evaluation.qualityScore = qualityScore || evaluation.qualityScore;
-      evaluation.qualityComment = qualityComment || evaluation.qualityComment;
-      evaluation.attitudeScore = attitudeScore || evaluation.attitudeScore;
-      evaluation.attitudeComment =
-        attitudeComment || evaluation.attitudeComment;
-      evaluation.feedbackScore = feedbackScore || evaluation.feedbackScore;
-      evaluation.feedbackComment =
-        feedbackComment || evaluation.feedbackComment;
-      evaluation.impressionScore =
-        impressionScore || evaluation.impressionScore;
-      evaluation.impressionComment =
-        impressionComment || evaluation.impressionComment;
-      evaluation.goalsComment = goalsComment || evaluation.goalsComment;
-      evaluation.additionalComment =
-        additionalComment || evaluation.additionalComment;
-      evaluation.isFinal = isFinal !== undefined ? isFinal : evaluation.isFinal;
+      evaluation.group = group;
+      evaluation.evaluator = evaluator;
+      evaluation.evaluated = evaluated;
+      evaluation.attendanceScore = answers[0];
+      evaluation.participationScore = answers[1];
+      evaluation.teamworkScore = answers[2];
+      evaluation.qualityScore = answers[3];
+      evaluation.attitudeScore = answers[4];
+      evaluation.feedbackScore = answers[5];
+      
+      evaluation.attendanceComment = comments[0];
+      evaluation.participationComment = comments[1];
+      evaluation.teamworkComment = comments[2];
+      evaluation.qualityComment = comments[3];
+      evaluation.attitudeComment = comments[4];
+      evaluation.feedbackComment = comments[5];
+
+      evaluation.isFinal = isFinal;
+
+      if (evaluated === evaluator) {
+        evaluation.goalsComment = comments[6];
+        evaluation.additionalComment = comments[7];
+      } else {
+        evaluation.impressionScore = answers[6];
+        evaluation.impressionComment = comments[6];
+      }
 
       await evaluation.save();
       res.status(200).json(evaluation);
@@ -165,17 +185,17 @@ const EvaluationController = {
       if (deletedRows === 0) {
         return res.status(404).json({ error: "Evaluation not found" });
       }
-      res.status(200).json({ message: "Evaluation removed successfully " });
+      res.status(200).json({ message: "Evaluation removed successfully" });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
   getEvaluationsByGroup: async (req, res) => {
-    const { groupId } = req.params;
+    const { group } = req.params;
 
     try {
-      const evaluations = await Evaluation.findAll({ where: { groupId } });
+      const evaluations = await Evaluation.findAll({ where: { group } });
       res.status(200).json(evaluations);
     } catch (err) {
       console.error(err);
@@ -308,12 +328,22 @@ const EvaluationController = {
                 model: Class,
                 where: { teacher },
                 attributes: [],
+                include: [
+                  {
+                    model: Subject,
+                    attributes: ["name"],
+                  },
+                ],
+              },
+              {
+                model: Assignment,
+                attributes: ["id", "title"],
               },
             ],
             attributes: ["id"],
           },
         ],
-        group: ["Group.id"],
+        group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
         limit: 5,
       });
@@ -333,7 +363,29 @@ const EvaluationController = {
         where: {
           [Op.or]: [{ evaluator: student }, { evaluated: student }],
         },
-        group: ["Group.id"],
+        include: [
+          {
+            model: Group,
+            attributes: [],
+            include: [
+              {
+                model: Assignment,
+                attributes: ["id", "title"],
+              },
+              {
+                model: Class,
+                attributes: [],
+                include: [
+                  {
+                    model: Subject,
+                    attributes: ["name"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
         limit: 5,
       });

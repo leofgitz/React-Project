@@ -77,6 +77,7 @@ const ClassController = {
       res.status(500).json({ error: err500 });
     }
   },
+  
   getClassesBySubject: async (req, res) => {
     const { subject } = req.params;
 
@@ -89,6 +90,7 @@ const ClassController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getClassesByTeacher: async (req, res) => {
     const { teacher } = req.params;
 
