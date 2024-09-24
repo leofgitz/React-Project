@@ -4,43 +4,40 @@ import "dotenv/config";
 const err500 = "Internal Server Error";
 const domain = "@ispgaya.pt";
 
-//Incomplete function
-const generateEmail = async (role, prefix) => {
-  const prefix = "ispg";
-
+const generateEmail = async (role, name) => {
   const currentYear = new Date().getFullYear();
-  let email;
-  let emailExists = true;
-
-  while (emailExists) {
-    const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    email = `${prefix}${currentYear}${randomDigits}${domain}`;
-
-    // Check if the email already exists in the database
-    const existingUser = await User.findOne({ where: { email: uniqueEmail } });
-    if (!existingUser) {
-      emailExists = false;
-    }
+  const randomDigits = Math.floor(100000 + Math.random() * 900000);
+  let prefix, email;
+  if (role != "Student") {
+    prefix = name
+      .split(" ")
+      .map((word) => word[0].toLowerCase())
+      .join("");
+  } else {
+    prefix = "ispg" + currentYear + randomDigits;
   }
+  email = `${prefix}${domain}`;
 
   return email;
 };
 
 const UserController = {
   createUser: async (req, res) => {
-    const { name, surname, email, password, role } = req.body;
+    const { name, password, role } = req.body;
+    const email = generateEmail(role, name);
     try {
-      if (!email) {
-        email = generateEmail(role, prefix);
-      } else email += domain;
+      const existingUser = await User.findOne({ where: { email } });
+
+      if (existingUser) {
+        return res.status(400).json({ error: "User already in database" });
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({
         name,
-        surname,
         email: email,
         password: hashedPassword,
-        role: role || "Student",
+        role: role,
       });
       res.status(201).json({ user: newUser });
     } catch (err) {
@@ -79,7 +76,7 @@ const UserController = {
 
   updateUserByID: async (req, res) => {
     const { id } = req.params;
-    const { name, surname, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
       const user = await User.findByPk(id);
@@ -88,7 +85,6 @@ const UserController = {
       }
 
       user.name = name || user.name;
-      user.surname = surname || user.surname;
       user.email = email || user.email;
       user.password = password
         ? await bcrypt.hash(password, 10)
