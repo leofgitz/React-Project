@@ -3,9 +3,9 @@ const err500 = "Internal Server Error";
 
 const GroupController = {
   createGroup: async (req, res) => {
-    const { classe } = req.body;
+    const { classe, assignment } = req.body;
 
-    if (!classe) {
+    if (!classe || !assignment) {
       return res.status(400).json({ error: "All fields required" });
     }
 
@@ -29,7 +29,7 @@ const GroupController = {
   },
 
   getGroupByID: async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const group = await Group.findByPk(id);
@@ -45,7 +45,7 @@ const GroupController = {
 
   updateGroupByID: async (req, res) => {
     const { id } = req.params;
-    const { classe } = req.body;
+    const { classe, assignment, submissionDate } = req.body;
 
     try {
       const group = await Group.findByPk(id);
@@ -53,10 +53,43 @@ const GroupController = {
         return res.status(404).json({ error: "Group not found" });
       }
 
-      group.classe = classe || group.classe;
+      if (classe !== undefined && classe !== group.classe) {
+        group.classe = classe;
+      }
+
+      if (assignment !== undefined && assignment !== group.assignment) {
+        group.assignment = assignment;
+      }
+
+      if (
+        submissionDate !== undefined &&
+        submissionDate !== group.submissionDate
+      ) {
+        group.submissionDate = submissionDate;
+      }
 
       await group.save();
       res.status(200).json(group);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  updateSubmissionDate: async (req, res) => {
+    const { id } = req.params;
+    const { submissionDate } = req.body;
+
+    try {
+      const group = await Group.findByPk(id);
+
+      if (!group) {
+        return res.status(404).json({ error: "Group not found" });
+      }
+
+      group.submissionDate = submissionDate;
+      await group.save();
+      res.status(200).json({ message: "Submission date updated!" });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

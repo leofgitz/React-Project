@@ -5,7 +5,7 @@ import EvaluationController from "../controllers/evaluationController.js";
 evaluationRouter.post("/", EvaluationController.createEvaluation);
 evaluationRouter.get("/", EvaluationController.getAllEvaluations);
 evaluationRouter.get("/:id", EvaluationController.getEvaluationByID);
-evaluationRouter.put("/:id", EvaluationController.updateEvaluationByID);
+evaluationRouter.patch("/:id", EvaluationController.updateEvaluationByID);
 evaluationRouter.delete("/:id", EvaluationController.deleteEvaluation);
 
 evaluationRouter.get("/group/:group", EvaluationController.getEvaluationsByGroup);

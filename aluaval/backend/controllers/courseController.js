@@ -50,7 +50,7 @@ const CourseController = {
 
   updateCourseByID: async (req, res) => {
     const { id } = req.params;
-    const { name, description, teacherId } = req.body;
+    const { name, description, teacher } = req.body;
 
     try {
       const course = await Course.findByPk(id);
@@ -58,9 +58,15 @@ const CourseController = {
         return res.status(404).json({ error: "Course not found" });
       }
 
-      course.name = name || course.name;
-      course.description = description || course.description;
-      course.teacherId = teacherId || course.teacherId;
+      if (name !== undefined && name !== course.name) {
+        course.name = name;
+      }
+      if (description !== undefined && description !== course.description) {
+        course.description = description;
+      }
+      if (teacher !== undefined && teacher !== course.teacher) {
+        course.teacher = teacher;
+      }
 
       await course.save();
       res.status(200).json(course);
@@ -71,7 +77,7 @@ const CourseController = {
   },
 
   deleteCourse: async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const deletedRows = await Course.destroy({

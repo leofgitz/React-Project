@@ -58,7 +58,7 @@ const MembershipController = {
 
   updateMembershipByID: async (req, res) => {
     const { id } = req.params;
-    const { student, group, subject } = req.body;
+    const { student, group } = req.body;
 
     try {
       const membership = await Membership.findByPk(id);
@@ -66,9 +66,13 @@ const MembershipController = {
         return res.status(404).json({ error: "Membership not found" });
       }
 
-      membership.student = student || membership.student;
-      membership.group = group || membership.group;
-      membership.subject = subject || membership.subject;
+      if (student !== undefined && student !== membership.student) {
+        membership.student = student;
+      }
+      
+      if (group !== undefined && group !== membership.group) {
+        membership.group = group;
+      }
 
       await membership.save();
       res.status(200).json(membership);
@@ -118,36 +122,6 @@ const MembershipController = {
     try {
       const memberships = await Membership.findAll({ where: { student } });
       res.status(200).json(memberships);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err500 });
-    }
-  },
-
-  getAssignmentsForUser: async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      const memberships = await Membership.findAll({
-        where: { student: id },
-        include: [
-          {
-            model: Group,
-            include: [
-              {
-                model: Assignment,
-              },
-            ],
-          },
-        ],
-      });
-
-      const assignments = memberships.flatMap((membership) => {
-        const group = membership.group;
-        return group && group.assignment ? group.assignment : [];
-      });
-
-      res.stataus(200).json(assignments);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

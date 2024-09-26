@@ -5,7 +5,7 @@ import SubjectController from "../controllers/subjectController.js";
 subjectRouter.post("/", SubjectController.createSubject);
 subjectRouter.get("/", SubjectController.getAllSubjects);
 subjectRouter.get("/:id", SubjectController.getSubjectByID);
-subjectRouter.put("/:id", SubjectController.updateSubjectByID);
+subjectRouter.patch("/:id", SubjectController.updateSubjectByID);
 subjectRouter.delete("/:id", SubjectController.deleteSubject);
 
 subjectRouter.get("/course/:course", SubjectController.getSubjectsByCourse);

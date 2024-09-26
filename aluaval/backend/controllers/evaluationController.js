@@ -142,31 +142,118 @@ const EvaluationController = {
         return res.status(404).json({ error: "Evaluation not found" });
       }
 
-      evaluation.group = group;
-      evaluation.evaluator = evaluator;
-      evaluation.evaluated = evaluated;
-      evaluation.attendanceScore = answers[0];
-      evaluation.participationScore = answers[1];
-      evaluation.teamworkScore = answers[2];
-      evaluation.qualityScore = answers[3];
-      evaluation.attitudeScore = answers[4];
-      evaluation.feedbackScore = answers[5];
+      if (group !== undefined && group !== evaluation.group) {
+        evaluation.group = group;
+      }
+
+      if (evaluator !== undefined && evaluator !== evaluation.evaluator) {
+        evaluation.evaluator = evaluator;
+      }
+
+      if (evaluated !== undefined && evaluated !== evaluation.evaluated) {
+        evaluation.evaluated = evaluated;
+      }
+
+      if (answers) {
+        if (
+          answers[0] !== undefined &&
+          answers[0] !== evaluation.attendanceScore
+        ) {
+          evaluation.attendanceScore = answers[0];
+        }
+        if (
+          answers[1] !== undefined &&
+          answers[1] !== evaluation.participationScore
+        ) {
+          evaluation.participationScore = answers[1];
+        }
+        if (
+          answers[2] !== undefined &&
+          answers[2] !== evaluation.teamworkScore
+        ) {
+          evaluation.teamworkScore = answers[2];
+        }
+        if (
+          answers[3] !== undefined &&
+          answers[3] !== evaluation.qualityScore
+        ) {
+          evaluation.qualityScore = answers[3];
+        }
+        if (
+          answers[4] !== undefined &&
+          answers[4] !== evaluation.attitudeScore
+        ) {
+          evaluation.attitudeScore = answers[4];
+        }
+        if (
+          answers[5] !== undefined &&
+          answers[5] !== evaluation.feedbackScore
+        ) {
+          evaluation.feedbackScore = answers[5];
+        }
+        if (
+          answers[6] !== undefined &&
+          answers[6] !== evaluation.impressionScore
+        ) {
+          evaluation.impressionScore = answers[6];
+        }
+      }
+
+      if (comments) {
+        if (
+          comments[0] !== undefined &&
+          comments[0] !== evaluation.attendanceComment
+        ) {
+          evaluation.attendanceComment = comments[0];
+        }
+        if (
+          comments[1] !== undefined &&
+          comments[1] !== evaluation.participationComment
+        ) {
+          evaluation.participationComment = comments[1];
+        }
+        if (
+          comments[2] !== undefined &&
+          comments[2] !== evaluation.teamworkComment
+        ) {
+          evaluation.teamworkComment = comments[2];
+        }
+        if (
+          comments[3] !== undefined &&
+          comments[3] !== evaluation.qualityComment
+        ) {
+          evaluation.qualityComment = comments[3];
+        }
+        if (
+          comments[4] !== undefined &&
+          comments[4] !== evaluation.attitudeComment
+        ) {
+          evaluation.attitudeComment = comments[4];
+        }
+        if (
+          comments[5] !== undefined &&
+          comments[5] !== evaluation.feedbackComment
+        ) {
+          evaluation.feedbackComment = comments[5];
+        }
+        if (comments[6] !== undefined) {
+          if (evaluated === evaluator) {
+            if (comments[6] !== evaluation.goalsComment) {
+              evaluation.goalsComment = comments[6];
+            }
+            if (comments[7] !== evaluation.additionalComment) {
+              evaluation.additionalComment = comments[7];
+            }
+          } else {
+            if (comments[6] !== evaluation.impressionComment) {
+              evaluation.impressionComment = comments[6];
+            }
+          }
+        }
+      }
       
-      evaluation.attendanceComment = comments[0];
-      evaluation.participationComment = comments[1];
-      evaluation.teamworkComment = comments[2];
-      evaluation.qualityComment = comments[3];
-      evaluation.attitudeComment = comments[4];
-      evaluation.feedbackComment = comments[5];
-
-      evaluation.isFinal = isFinal;
-
-      if (evaluated === evaluator) {
-        evaluation.goalsComment = comments[6];
-        evaluation.additionalComment = comments[7];
-      } else {
-        evaluation.impressionScore = answers[6];
-        evaluation.impressionComment = comments[6];
+      if (isFinal !== undefined && isFinal !== evaluation.isFinal) {
+        evaluation.isFinal = isFinal;
       }
 
       await evaluation.save();

@@ -17,10 +17,7 @@ const AssignmentController = {
     }
 
     try {
-      const assignment = await Assignment.create({
-        title,
-        dueDate,
-      });
+      const assignment = await Assignment.create(req.body);
       res.status(201).json(assignment);
     } catch (err) {
       console.error(err);
@@ -63,8 +60,12 @@ const AssignmentController = {
         return res.status(404).json({ error: "Assignment not found" });
       }
 
-      assignment.title = title || assignment.title;
-      assignment.dueDate = dueDate || assignment.dueDate;
+      if (title != undefined && title !== assignment.title) {
+        assignment.title = title;
+      }
+      if (dueDate != undefined && dueDate !== assignment.dueDate) {
+        assignment.dueDate = dueDate;
+      }
 
       await assignment.save();
       res.status(200).json(assignment);
@@ -103,12 +104,8 @@ const AssignmentController = {
                 where: { teacher },
                 attributes: [],
               },
-              {
-                model: Membership,
-                attributes: ["submissionDate"],
-              },
             ],
-            attributes: ["id"],
+            attributes: ["id", "submissionDate"],
           },
         ],
         group: ["Assignment.id"],
@@ -133,10 +130,10 @@ const AssignmentController = {
               {
                 model: Membership,
                 where: { student },
-                attributes: ["submissionDate"],
+                attributes: [],
               },
             ],
-            attributes: ["id"],
+            attributes: ["id", "submissionDate"],
           },
         ],
         group: ["Assignment.id"],
@@ -157,7 +154,7 @@ const AssignmentController = {
         include: [
           {
             model: Group,
-            attributes: ["id"],
+            attributes: ["id", "submissionDate"],
             include: [
               {
                 model: Class,
@@ -169,10 +166,6 @@ const AssignmentController = {
                     attributes: ["name"],
                   },
                 ],
-              },
-              {
-                model: Membership,
-                attributes: ["submissionDate"],
               },
             ],
           },
@@ -199,11 +192,6 @@ const AssignmentController = {
             model: Group,
             include: [
               {
-                model: Membership,
-                where: { student },
-                attributes: ["submissionDate"],
-              },
-              {
                 model: Class,
                 attributes: [],
                 include: [
@@ -213,8 +201,14 @@ const AssignmentController = {
                   },
                 ],
               },
+              ,
+              {
+                model: Membership,
+                where: { student },
+                attributes: [],
+              },
             ],
-            attributes: ["id"],
+            attributes: ["id", "submissionDate"],
           },
         ],
         group: ["Assignment.id"],

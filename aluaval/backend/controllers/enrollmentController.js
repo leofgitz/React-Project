@@ -68,8 +68,12 @@ const EnrollmentController = {
         return res.status(404).json({ error: "Enrollment not found" });
       }
 
-      enrollment.classe = classe || enrollment.class;
-      enrollment.student = student || enrollment.student;
+      if (classe !== undefined && classe !== enrollment.classe) {
+        enrollment.classe = classe;
+      }
+      if (student !== undefined && student !== enrollment.student) {
+        enrollment.student = student;
+      }
 
       await enrollment.save();
       res.status(200).json(enrollment);

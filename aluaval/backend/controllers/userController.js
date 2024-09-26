@@ -35,9 +35,9 @@ const UserController = {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({
         name,
-        email: email,
+        email,
         password: hashedPassword,
-        role: role,
+        role,
       });
       res.status(201).json({ user: newUser });
     } catch (err) {
@@ -84,11 +84,18 @@ const UserController = {
         return res.status(404).json({ error: "User not found" });
       }
 
-      user.name = name || user.name;
-      user.email = email || user.email;
-      user.password = password
-        ? await bcrypt.hash(password, 10)
-        : user.password;
+      if (name !== undefined && name !== user.name) {
+        user.name = name;
+      }
+      if (email !== undefined && email !== user.email) {
+        user.email = email;
+      }
+      if (password !== undefined) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        if (hashedPassword !== user.password) {
+          user.password = hashedPassword;
+        }
+      }
 
       await user.save();
       res.status(200).json(user);

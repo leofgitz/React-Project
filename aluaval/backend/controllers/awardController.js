@@ -64,10 +64,18 @@ const AwardController = {
         return res.status(404).json({ error: "Award not found" });
       }
 
-      award.giver = giver || award.giver;
-      award.badge = badge || award.badge;
-      award.group = group || award.group;
-      award.recipient = recipient || award.recipient;
+      if (giver !== undefined && giver !== award.giver) {
+        award.giver = giver;
+      }
+      if (badge !== undefined && badge !== award.badge) {
+        award.badge = badge;
+      }
+      if (group !== undefined && group !== award.group) {
+        award.group = group;
+      }
+      if (recipient !== undefined && recipient !== award.recipient) {
+        award.recipient = recipient;
+      }
 
       await award.save();
       res.status(200).json(award);
@@ -101,6 +109,7 @@ const AwardController = {
         include: [
           {
             model: Badge,
+            attributes: ["name", "icon"],
           },
         ],
       });
@@ -115,7 +124,15 @@ const AwardController = {
     const { group } = req.params;
 
     try {
-      const badges = await Award.findAll({ where: { group } });
+      const badges = await Award.findAll({
+        where: { group },
+        include: [
+          {
+            model: Badge,
+            attributes: ["name", "icon"],
+          },
+        ],
+      });
       res.status(200).json(badges);
     } catch (err) {
       console.error(err);

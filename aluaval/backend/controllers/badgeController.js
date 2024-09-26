@@ -1,23 +1,16 @@
-import {
-  Badge,
-  Class,
-  Group,
-  Award,
-  Subject,
-  User,
-} from "../models/index.js";
+import { Badge, Class, Group, Award, Subject, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const BadgeController = {
   createBadge: async (req, res) => {
-    const { name, img } = req.body;
+    const { name, icon } = req.body;
 
-    if (!name) {
+    if (!name && !icon) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
-      const badge = await Badge.create({ name, img });
+      const badge = await Badge.create(req.body);
       res.status(201).json(badge);
     } catch (err) {
       console.error(err);
@@ -52,7 +45,7 @@ const BadgeController = {
 
   updateBadgeByID: async (req, res) => {
     const { id } = req.params;
-    const { name, img } = req.body;
+    const { name, icon } = req.body;
 
     try {
       const badge = await Badge.findByPk(id);
@@ -60,8 +53,12 @@ const BadgeController = {
         return res.status(404).json({ error: "Badge not found" });
       }
 
-      badge.name = name || badge.name;
-      badge.img = img || badge.img;
+      if (name !== undefined && name !== badge.name) {
+        badge.name = name;
+      }
+      if (icon !== undefined && icon !== badge.icon) {
+        badge.icon = icon;
+      }
 
       await badge.save();
       res.status(200).json(badge);
@@ -72,7 +69,7 @@ const BadgeController = {
   },
 
   deleteBadge: async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const deletedRows = await Badge.destroy({ where: { id } });

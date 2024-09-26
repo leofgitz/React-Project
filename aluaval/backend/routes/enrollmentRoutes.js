@@ -5,7 +5,7 @@ import EnrollmentController from "../controllers/enrollmentController.js";
 enrollmentRouter.post("/", EnrollmentController.createEnrollment);
 enrollmentRouter.get("/", EnrollmentController.getAllEnrollments);
 enrollmentRouter.get("/:id", EnrollmentController.getEnrollmentByID);
-enrollmentRouter.put("/:id", EnrollmentController.updateEnrollmentByID);
+enrollmentRouter.patch("/:id", EnrollmentController.updateEnrollmentByID);
 enrollmentRouter.delete("/:id", EnrollmentController.deleteEnrollment);
 
 enrollmentRouter.post("/bulk-enroll", EnrollmentController.bulkEnrollStudents);

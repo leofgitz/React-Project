@@ -57,7 +57,7 @@ const SubjectController = {
 
   updateSubjectByID: async (req, res) => {
     const { id } = req.params;
-    const { name, description, courseId } = req.body;
+    const { name, description, course } = req.body;
 
     try {
       const subject = await Subject.findByPk(id);
@@ -65,9 +65,15 @@ const SubjectController = {
         return res.status(404).json({ error: "Subject not found" });
       }
 
-      subject.name = name || subject.name;
-      subject.description = description || subject.description;
-      subject.courseId = courseId || subject.courseId;
+      if (name !== undefined && name !== subject.name) {
+        subject.name = name;
+      }
+      if (description !== undefined && description !== subject.description) {
+        subject.description = description;
+      }
+      if (course !== undefined && course !== subject.course) {
+        subject.course = course;
+      }
 
       await subject.save();
       res.status(200).json(subject);
@@ -78,7 +84,7 @@ const SubjectController = {
   },
 
   deleteSubject: async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     try {
       const deletedRows = await Subject.destroy({ where: { id } });

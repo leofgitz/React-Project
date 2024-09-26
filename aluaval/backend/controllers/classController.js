@@ -52,8 +52,12 @@ const ClassController = {
         return res.status(404).json({ error: "Class not found" });
       }
 
-      classe.subject = subject || classe.subject;
-      classe.teacher = teacher || classe.teacher;
+      if (subject !== undefined && subject !== classe.subject) {
+        classe.subject = subject;
+      }
+      if (teacher !== undefined && teacher !== classe.teacher) {
+        classe.teacher = teacher;
+      }
 
       await classe.save();
       res.status(200).json(classe);
@@ -77,7 +81,7 @@ const ClassController = {
       res.status(500).json({ error: err500 });
     }
   },
-  
+
   getClassesBySubject: async (req, res) => {
     const { subject } = req.params;
 
