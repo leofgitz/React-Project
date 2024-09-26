@@ -13,8 +13,8 @@ import User from "./user.js";
 import Notification from "./notification.js";
 
 User.hasMany(Enrollment, { foreignKey: "student" });
-User.hasMany(Award, { foreignKey: "student", as: "Giver" });
-User.hasMany(Award, { foreignKey: "recipient", as: "Recipient" });
+User.hasMany(Award, { foreignKey: "giver" });
+User.hasMany(Award, { foreignKey: "recipient" });
 User.hasMany(Evaluation, { foreignKey: "evaluator" });
 User.hasMany(Evaluation, { foreignKey: "evaluated" });
 User.belongsToMany(Group, {
@@ -36,7 +36,7 @@ Class.belongsTo(User, { foreignKey: "teacher" });
 Class.hasMany(Enrollment, { foreignKey: "classe" });
 Class.hasMany(Group, { foreignKey: "classe" });
 
-Enrollment.belongsTo(Class, { foreignKey: "class" });
+Enrollment.belongsTo(Class, { foreignKey: "classe" });
 Enrollment.belongsTo(User, { foreignKey: "student" });
 
 Group.belongsTo(Class, { foreignKey: "classe" });
@@ -49,8 +49,8 @@ Group.belongsToMany(Badge, { through: Award, foreignKey: "group" });
 
 Badge.belongsToMany(Group, { through: Award, foreignKey: "badge" });
 
-Award.belongsTo(User, { foreignKey: "student", as: "Giver" });
-Award.belongsTo(User, { foreignKey: "recipient", as: "Recipient" });
+Award.belongsTo(User, { foreignKey: "giver"});
+Award.belongsTo(User, { foreignKey: "recipient"});
 Award.belongsTo(Group, { foreignKey: "group" });
 Award.belongsTo(Badge, { foreignKey: "badge" });
 
