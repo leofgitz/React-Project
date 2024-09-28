@@ -1,6 +1,6 @@
 import {
   Assignment,
-  Class,
+  Classe,
   Group,
   Membership,
   Subject,
@@ -100,7 +100,7 @@ const AssignmentController = {
             model: Group,
             include: [
               {
-                model: Class,
+                model: Classe,
                 where: { teacher },
                 attributes: [],
               },
@@ -157,7 +157,7 @@ const AssignmentController = {
             attributes: ["id", "submissionDate"],
             include: [
               {
-                model: Class,
+                model: Classe,
                 where: { teacher },
                 attributes: [],
                 include: [
@@ -192,7 +192,7 @@ const AssignmentController = {
             model: Group,
             include: [
               {
-                model: Class,
+                model: Classe,
                 attributes: [],
                 include: [
                   {

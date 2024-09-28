@@ -1,6 +1,6 @@
 import {
   Assignment,
-  Class,
+  Classe,
   Evaluation,
   Group,
   Subject,
@@ -364,7 +364,7 @@ const EvaluationController = {
             model: Group,
             include: [
               {
-                model: Class,
+                model: Classe,
                 where: { teacher },
                 attributes: [],
               },
@@ -412,7 +412,7 @@ const EvaluationController = {
             model: Group,
             include: [
               {
-                model: Class,
+                model: Classe,
                 where: { teacher },
                 attributes: [],
                 include: [
@@ -460,7 +460,7 @@ const EvaluationController = {
                 attributes: ["id", "title"],
               },
               {
-                model: Class,
+                model: Classe,
                 attributes: [],
                 include: [
                   {

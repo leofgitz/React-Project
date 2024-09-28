@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Class from "./class.js";
+import Classe from "./classe.js";
 import User from "./user.js";
 
 const Enrollment = sequelize.define(
@@ -16,7 +16,7 @@ const Enrollment = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Class,
+        model: Classe,
         key: "id",
       },
     },

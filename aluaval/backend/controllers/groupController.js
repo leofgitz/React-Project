@@ -1,4 +1,4 @@
-import { Class, Group, Membership } from "../models/index.js";
+import { Classe, Group, Membership } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const GroupController = {
@@ -138,7 +138,7 @@ const GroupController = {
       const groups = await Group.findAll({
         include: [
           {
-            model: Class,
+            model: Classe,
             where: { teacher },
             attributes: [],
           },
@@ -180,7 +180,7 @@ const GroupController = {
       const groups = await Group.findAll({
         include: [
           {
-            model: Class,
+            model: Classe,
             where: { teacher },
             attributes: [],
           },

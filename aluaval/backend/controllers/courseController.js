@@ -1,4 +1,4 @@
-import { Class, Course, Enrollment, Subject, User } from "../models/index.js";
+import { Classe, Course, Enrollment, Subject, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const CourseController = {
@@ -134,7 +134,7 @@ const CourseController = {
             model: Subject,
             include: [
               {
-                model: Class,
+                model: Classe,
                 include: [
                   {
                     model: Enrollment,

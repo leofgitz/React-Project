@@ -1,4 +1,4 @@
-import { Class, Enrollment, Group, User } from "../models/index.js";
+import { Classe, Enrollment, Group, User } from "../models/index.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 const err500 = "Internal Server Error";
@@ -159,7 +159,7 @@ const UserController = {
             attributes: [],
             include: [
               {
-                model: Class,
+                model: Classe,
                 attributes: [],
                 include: [
                   {

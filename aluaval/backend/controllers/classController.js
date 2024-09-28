@@ -1,7 +1,7 @@
-import { Class } from "../models/index.js";
+import { Classe } from "../models/index.js";
 const err500 = "Internal Server Error";
 
-const ClassController = {
+const ClasseController = {
   createClass: async (req, res) => {
     const { subject, teacher } = req.body;
 
@@ -9,7 +9,7 @@ const ClassController = {
       return res.status(400).json({ error: "All fields required" });
     }
     try {
-      const classe = await Class.create(req.body);
+      const classe = await Classe.create(req.body);
 
       res.status(201).json(classe);
     } catch (err) {
@@ -20,7 +20,7 @@ const ClassController = {
 
   getAllClasses: async (req, res) => {
     try {
-      const classes = await Class.findAll();
+      const classes = await Classe.findAll();
       res.status(200).json(classes);
     } catch (err) {
       console.error(err);
@@ -31,9 +31,9 @@ const ClassController = {
   getClassByID: async (req, res) => {
     const id = req.params.id;
     try {
-      const classe = await Class.findByPk(id);
+      const classe = await Classe.findByPk(id);
       if (!classe) {
-        return res.status(404).json({ error: "Class not found" });
+        return res.status(404).json({ error: "Classe not found" });
       }
       res.status(200).json(classe);
     } catch (err) {
@@ -47,9 +47,9 @@ const ClassController = {
     const { subject, teacher } = req.body;
 
     try {
-      const classe = await Class.findByPk(id);
+      const classe = await Classe.findByPk(id);
       if (!classe) {
-        return res.status(404).json({ error: "Class not found" });
+        return res.status(404).json({ error: "Classe not found" });
       }
 
       if (subject !== undefined && subject !== classe.subject) {
@@ -71,11 +71,11 @@ const ClassController = {
     const id = req.params.id;
 
     try {
-      const deletedRows = Class.destroy({ where: { id } });
+      const deletedRows = Classe.destroy({ where: { id } });
       if (deletedRows === 0) {
-        return res.status(404).json({ error: "Class not found" });
+        return res.status(404).json({ error: "Classe not found" });
       }
-      res.status(200).json({ message: "Class removed successfully" });
+      res.status(200).json({ message: "Classe removed successfully" });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
@@ -86,7 +86,7 @@ const ClassController = {
     const { subject } = req.params;
 
     try {
-      const classes = await Class.findAll({ where: { subject } });
+      const classes = await Classe.findAll({ where: { subject } });
 
       res.status(200).json(classes);
     } catch (err) {
@@ -99,7 +99,7 @@ const ClassController = {
     const { teacher } = req.params;
 
     try {
-      const classes = await Class.findAll({ where: { teacher } });
+      const classes = await Classe.findAll({ where: { teacher } });
       res.status(200).json(classes);
     } catch (err) {
       console.error(err);
@@ -108,4 +108,4 @@ const ClassController = {
   },
 };
 
-export default ClassController;
+export default ClasseController;

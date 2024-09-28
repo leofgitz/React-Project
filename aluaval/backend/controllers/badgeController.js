@@ -1,4 +1,4 @@
-import { Badge, Class, Group, Award, Subject, User } from "../models/index.js";
+import { Badge, Classe, Group, Award, Subject, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const BadgeController = {
@@ -90,7 +90,7 @@ const BadgeController = {
       const awards = await Group.findAll({
         include: [
           {
-            model: Class,
+            model: Classe,
             where: { teacher },
             attributes: [],
           },
@@ -178,7 +178,7 @@ const BadgeController = {
                 attributes: [],
                 include: [
                   {
-                    model: Class,
+                    model: Classe,
                     attributes: [],
                     where: { teacher },
                     include: [

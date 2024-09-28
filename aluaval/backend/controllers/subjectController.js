@@ -1,4 +1,4 @@
-import { Class, Subject } from "../models/index.js";
+import { Classe, Subject } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -126,7 +126,7 @@ const SubjectController = {
       const subjects = await Subject.findAll({
         include: [
           {
-            model: Class,
+            model: Classe,
             where: { teacher },
             attributes: [],
           },
@@ -147,7 +147,7 @@ const SubjectController = {
       const subjects = await Subject.findAll({
         include: [
           {
-            model: Class,
+            model: Classe,
             where: { teacher },
             attributes: [],
           },

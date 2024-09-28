@@ -1,7 +1,7 @@
 import sequelize from "../config/database.js";
 import Course from "./course.js";
 import Subject from "./subject.js";
-import Class from "./class.js";
+import Classe from "./classe.js";
 import Enrollment from "./enrollment.js";
 import Group from "./group.js";
 import Badge from "./badge.js";
@@ -21,7 +21,7 @@ User.belongsToMany(Group, {
   through: Membership,
   foreignKey: "student",
 });
-User.hasMany(Class, { foreignKey: "teacher" });
+User.hasMany(Classe, { foreignKey: "teacher" });
 User.hasOne(Course, { foreignKey: "responsibleTeacher" });
 User.hasMany(Notification, { foreignKey: "user" });
 
@@ -29,17 +29,17 @@ Course.hasMany(Subject, { foreignKey: "course" });
 Course.belongsTo(User, { foreignKey: "responsibleTeacher" });
 
 Subject.belongsTo(Course, { foreignKey: "course" });
-Subject.hasMany(Class, { foreignKey: "subject" });
+Subject.hasMany(Classe, { foreignKey: "subject" });
 
-Class.belongsTo(Subject, { foreignKey: "subject" });
-Class.belongsTo(User, { foreignKey: "teacher" });
-Class.hasMany(Enrollment, { foreignKey: "classe" });
-Class.hasMany(Group, { foreignKey: "classe" });
+Classe.belongsTo(Subject, { foreignKey: "subject" });
+Classe.belongsTo(User, { foreignKey: "teacher" });
+Classe.hasMany(Enrollment, { foreignKey: "classe" });
+Classe.hasMany(Group, { foreignKey: "classe" });
 
-Enrollment.belongsTo(Class, { foreignKey: "classe" });
+Enrollment.belongsTo(Classe, { foreignKey: "classe" });
 Enrollment.belongsTo(User, { foreignKey: "student" });
 
-Group.belongsTo(Class, { foreignKey: "classe" });
+Group.belongsTo(Classe, { foreignKey: "classe" });
 Group.belongsToMany(User, {
   through: Membership,
   foreignKey: "group",
@@ -82,7 +82,7 @@ export {
   User,
   Course,
   Subject,
-  Class,
+  Classe,
   Enrollment,
   Group,
   Badge,

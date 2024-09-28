@@ -3,8 +3,8 @@ import sequelize from "../config/database.js";
 import Subject from "./subject.js";
 import User from "./user.js";
 
-const Class = sequelize.define(
-  "Class",
+const Classe = sequelize.define(
+  "Classe",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -34,4 +34,4 @@ const Class = sequelize.define(
   }
 );
 
-export default Class;
+export default Classe;

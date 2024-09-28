@@ -112,7 +112,7 @@ const EnrollmentController = {
       res.status(500).json({ error: err500 });
     }
   },
-  getEnrollmentsByClass: async (req, res) => {
+  getEnrollmentsByClasse: async (req, res) => {
     const { classe } = req.params;
 
     try {
