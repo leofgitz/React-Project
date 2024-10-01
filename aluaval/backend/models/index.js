@@ -11,6 +11,7 @@ import Membership from "./membership.js";
 import Assignment from "./assignment.js";
 import User from "./user.js";
 import Notification from "./notification.js";
+import applyHooks from "./hooks/index.js";
 
 User.hasMany(Enrollment, { foreignKey: "student" });
 User.hasMany(Award, { foreignKey: "giver" });
@@ -49,8 +50,8 @@ Group.belongsToMany(Badge, { through: Award, foreignKey: "group" });
 
 Badge.belongsToMany(Group, { through: Award, foreignKey: "badge" });
 
-Award.belongsTo(User, { foreignKey: "giver"});
-Award.belongsTo(User, { foreignKey: "recipient"});
+Award.belongsTo(User, { foreignKey: "giver" });
+Award.belongsTo(User, { foreignKey: "recipient" });
 Award.belongsTo(Group, { foreignKey: "group" });
 Award.belongsTo(Badge, { foreignKey: "badge" });
 
@@ -76,6 +77,7 @@ async function syncModels() {
   }
 }
 
+applyHooks();
 syncModels();
 
 export {
