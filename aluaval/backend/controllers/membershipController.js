@@ -69,7 +69,7 @@ const MembershipController = {
       if (student !== undefined && student !== membership.student) {
         membership.student = student;
       }
-      
+
       if (group !== undefined && group !== membership.group) {
         membership.group = group;
       }
@@ -93,6 +93,26 @@ const MembershipController = {
       }
 
       res.status(200).json({ message: "Entry deleted" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  addMembersToGroup: async (req, res) => {
+    const { group, students } = req.body;
+
+    try {
+      const memberships = await Membership.bulkCreate(
+        students.map((student) => ({
+          group,
+          student,
+        }))
+      );
+
+      res
+        .status(201)
+        .json({ memberships, message: "Members added to group successfully" });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

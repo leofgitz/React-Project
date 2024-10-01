@@ -1,1 +1,0 @@
-import { Badge } from "../index.js";

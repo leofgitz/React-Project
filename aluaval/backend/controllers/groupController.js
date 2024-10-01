@@ -10,7 +10,18 @@ const GroupController = {
     }
 
     try {
-      const group = await Group.create(req.body);
+      const lastGroup = await Group.findOne({
+        where: { classe },
+        order: [["number", "DESC"]],
+      });
+
+      const number = lastGroup ? lastGroup.number + 1 : 1;
+
+      const group = await Group.create({
+        classe,
+        assignment,
+        number,
+      });
       res.status(201).json(group);
     } catch (err) {
       console.error(err);

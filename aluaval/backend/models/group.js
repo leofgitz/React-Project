@@ -12,6 +12,13 @@ const Group = sequelize.define(
       allowNull: false,
       autoIncrement: true,
     },
+    number: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
+      },
+    },
     classe: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -28,10 +35,15 @@ const Group = sequelize.define(
         key: "id",
       },
     },
-    
   },
   {
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["classe", "groupNumber"],
+      },
+    ],
   }
 );
 export default Group;

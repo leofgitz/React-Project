@@ -20,7 +20,7 @@ const Notification = sequelize.define(
       },
     },
     type: {
-      type: DataTypes.ENUM("Assignment", "Badge", "Evaluation"),
+      type: DataTypes.ENUM("Assignment", "Badge", "Evaluation", "Group"),
       allowNull: false,
     },
     reference: {
