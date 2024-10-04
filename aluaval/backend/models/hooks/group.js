@@ -8,29 +8,33 @@ import {
 } from "../index.js";
 
 const groupHooks = () => {
-
   Group.afterUpdate(async (group, options) => {
-    const updatedGroup = await Group.findByPk(updatedGroup.id, {
-      include: [
-        { model: Membership, include: [User] },
-        { model: Assignment },
-        { model: Classe, include: [User] },
-      ],
-    });
+    try {
+      const updatedGroup = await Group.findByPk(updatedGroup.id, {
+        include: [
+          { model: Membership, include: [User] },
+          { model: Assignment },
+          { model: Classe, include: [User] },
+        ],
+      });
 
-    const previousData = group._previousDataValues;
+      const previousData = group._previousDataValues;
 
-    await notifyAssignmentChange(
-      updatedGroup,
-      previousData.assignment,
-      group.id
-    );
+      await notifyAssignmentChange(
+        updatedGroup,
+        previousData.assignment,
+        group.id
+      );
 
-    await notifyMemberChanges(
-      previousData.Memberships || [],
-      updatedGroup.Memberships || [],
-      group.id
-    );
+      await notifyMemberChanges(
+        previousData.Memberships || [],
+        updatedGroup.Memberships || [],
+        group.id
+      );
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
 };
 

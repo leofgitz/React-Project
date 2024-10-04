@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import routes from "./routes/index.js";
+import weeklyReminder from "./models/jobs/weeklyReminder.js";
 /* import sequelize from "./config/database.js"; */
 
 const app = express();
