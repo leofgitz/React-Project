@@ -11,7 +11,7 @@ const evaluationHooks = () => {
         user: group.Classe.teacher,
         type: "Evaluation",
         reference: evaluation.id,
-        message: `A new evaluation for the group ${group.number} has been posted.`,
+        message: `A new evaluation for group ${group.number} has been posted.`,
       });
 
       if (evaluation.evaluated !== evaluation.evaluator) {
@@ -24,7 +24,7 @@ const evaluationHooks = () => {
           user: evaluation.evaluated,
           type: "Evaluation",
           reference: evaluation.id,
-          message: `You have been evaluated in the group ${group.number} by ${evaluator.name}.`,
+          message: `You have been evaluated in group ${group.number} by ${evaluator.name}.`,
         });
       }
     } catch (err) {
@@ -43,7 +43,7 @@ const evaluationHooks = () => {
         user: group.Classe.teacher,
         type: "Evaluation",
         reference: evaluation.id,
-        message: `An evaluation for the group ${group.number} has been altered.`,
+        message: `An evaluation for group ${group.number} has been altered.`,
       });
 
       if (evaluation.evaluated !== evaluation.evaluator) {
@@ -56,7 +56,7 @@ const evaluationHooks = () => {
           user: evaluation.evaluated,
           type: "Evaluation",
           reference: evaluation.id,
-          message: `${evaluator.name} altered your evaluation in the group ${group.number}.`,
+          message: `${evaluator.name} altered your evaluation in group ${group.number}.`,
         });
       }
     } catch (err) {

@@ -9,7 +9,14 @@ groupRouter.patch("/:id", GroupController.updateGroupByID);
 groupRouter.patch("/:id/submission-date", GroupController.updateSubmissionDate);
 groupRouter.delete("/:id", GroupController.deleteGroup);
 
-router.get("/subject/:subject", GroupController.getGroupsBySubject);
-router.get("/assignment/:assignment", GroupController.getGroupsByAssignment);
+groupRouter.get("/subject/:subject", GroupController.getGroupsBySubject);
+groupRouter.get(
+  "/assignment/:assignment",
+  GroupController.getGroupsByAssignment
+);
+groupRouter.get(
+  "/:teacher/number",
+  GroupController.getLastNumberForGroupMaking
+);
 
 export default groupRouter;

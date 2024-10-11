@@ -1,7 +1,6 @@
 import express from "express";
 const userRouter = express.Router();
 import UserController from "../controllers/userController";
-import { User } from "../models";
 
 userRouter.post("/", UserController.createUser);
 userRouter.get("/students", UserController.getAllStudents);

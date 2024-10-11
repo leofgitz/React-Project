@@ -230,6 +230,24 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+  getLastNumberForGroupMaking: async (req, res) => {
+    const { teacher } = req.params;
+
+    try {
+      const number = await Group.findOne({
+        include: {
+          model: Classe,
+          where: { teacher },
+        },
+        attributes: ["number"],
+        order: [["number", "DESC"]],
+      });
+      res.status(200).json({ number });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default GroupController;
