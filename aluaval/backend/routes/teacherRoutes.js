@@ -1,9 +1,9 @@
 import express from "express";
-import AssignmentController from "../controllers/assignmentController";
-import GroupController from "../controllers/groupController";
-import SubjectController from "../controllers/subjectController";
-import EvaluationController from "../controllers/evaluationController";
-import BadgeController from "../controllers/badgeController";
+import AssignmentController from "../controllers/assignmentController.js";
+import GroupController from "../controllers/groupController.js";
+import SubjectController from "../controllers/subjectController.js";
+import EvaluationController from "../controllers/evaluationController.js";
+import BadgeController from "../controllers/badgeController.js";
 const teacherRouter = express.Router();
 
 teacherRouter.get(

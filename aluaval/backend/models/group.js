@@ -35,13 +35,17 @@ const Group = sequelize.define(
         key: "id",
       },
     },
+    submissionDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,
     indexes: [
       {
         unique: true,
-        fields: ["classe", "groupNumber"],
+        fields: ["classe", "number"],
       },
     ],
   }

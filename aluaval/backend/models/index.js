@@ -45,10 +45,6 @@ Group.belongsToMany(User, {
   through: Membership,
   foreignKey: "group",
 });
-Group.hasMany(Assignment, { foreignKey: "group" });
-Group.belongsToMany(Badge, { through: Award, foreignKey: "group" });
-
-Badge.belongsToMany(Group, { through: Award, foreignKey: "badge" });
 
 Award.belongsTo(User, { foreignKey: "giver" });
 Award.belongsTo(User, { foreignKey: "recipient" });
@@ -62,11 +58,9 @@ Evaluation.belongsTo(Group, { foreignKey: "group" });
 Membership.belongsTo(User, { foreignKey: "student" });
 Membership.belongsTo(Group, { foreignKey: "group" });
 
-Assignment.belongsTo(Group, { foreignKey: "group" });
-
 Notification.belongsTo(User, { foreignKey: "user" });
 
-async function syncModels() {
+export async function syncModels() {
   try {
     await sequelize.authenticate();
     console.log("Connection to database has been established successfully.");
@@ -78,7 +72,6 @@ async function syncModels() {
 }
 
 applyHooks();
-syncModels();
 
 export {
   User,

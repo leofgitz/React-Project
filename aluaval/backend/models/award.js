@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Student from "./student.js";
+import User from "./user.js";
 import Badge from "./badge.js";
 import Group from "./group.js";
 
@@ -16,7 +16,7 @@ const Award = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Student,
+        model: User,
         key: "id",
       },
     },
@@ -40,7 +40,7 @@ const Award = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Student,
+        model: User,
         key: "id",
       },
     },
@@ -49,7 +49,7 @@ const Award = sequelize.define(
     timestamps: true,
     uniqueKeys: {
       unique_student_badge_per_group: {
-        fields: ["student", "badge", "group"],
+        fields: ["giver", "badge", "group"],
       },
     },
   },

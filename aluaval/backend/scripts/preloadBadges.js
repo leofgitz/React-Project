@@ -33,4 +33,4 @@ async function preloadBadges() {
   console.log("Badges preloaded successfully!");
 }
 
-preloadBadges().catch(console.error);
+export default preloadBadges;

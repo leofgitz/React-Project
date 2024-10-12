@@ -1,6 +1,6 @@
 import express from "express";
 const userRouter = express.Router();
-import UserController from "../controllers/userController";
+import UserController from "../controllers/userController.js";
 
 userRouter.post("/", UserController.createUser);
 userRouter.get("/students", UserController.getAllStudents);
@@ -10,6 +10,6 @@ userRouter.delete("/:id", UserController.deleteUser);
 
 userRouter.patch("/:id/password", UserController.updatePassword);
 userRouter.get("/:assignment", UserController.getStudentsInGroup);
-userRouter.post("/reset-password", UserController.resetPassword);
+/* userRouter.post("/reset-password", UserController.resetPassword); */
 
 export default userRouter;

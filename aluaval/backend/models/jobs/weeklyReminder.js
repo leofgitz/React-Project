@@ -7,7 +7,7 @@ import {
   Evaluation,
 } from "../index.js";
 
-const seconds = 30; // for demo purposes
+const seconds = 300; // for demo purposes
 const mili = 1000;
 
 const weeklyReminder = async () => {
@@ -35,7 +35,7 @@ const weeklyReminder = async () => {
         const evaluations = await Evaluation.findAll({
           where: {
             group: group.id,
-            evaluated: member.user,
+            evaluator: member.student,
             createdAt: {
               [Op.gte]: startOfWeek, // From the start of the week
               [Op.lt]: endOfWeek, // To the end of the week
@@ -46,7 +46,7 @@ const weeklyReminder = async () => {
         // Send reminders if no evaluations were created this week
         if (evaluations.length === 0) {
           await Notification.create({
-            user: member.user,
+            user: member.student,
             type: "Evaluation",
             reference: assignment.id,
             message: `Reminder: Please fill out your evaluations for the current week for assignment "${
@@ -57,11 +57,11 @@ const weeklyReminder = async () => {
 
         // Check for self-evaluation
         const selfEvaluation = evaluations.find(
-          (e) => e.evaluated === member.user
+          (e) => e.evaluated === member.student
         );
         if (!selfEvaluation) {
           await Notification.create({
-            user: member.user,
+            user: member.student,
             type: "Evaluation",
             reference: assignment.id,
             message: `Reminder: Please complete your self-evaluation for assignment "${
@@ -86,7 +86,7 @@ const weeklyReminder = async () => {
           const evaluations = await Evaluation.findAll({
             where: {
               group: group.id,
-              evaluated: member.user,
+              evaluated: member.student,
             },
           });
 
@@ -98,13 +98,13 @@ const weeklyReminder = async () => {
 
               // Check for self-evaluation for the current member
               const selfEvaluation = evaluations.find(
-                (e) => e.evaluated === member.user // Check if the current member has evaluated themselves
+                (e) => e.evaluated === member.student // Check if the current member has evaluated themselves
               );
 
               // Send reminder if the member hasn't evaluated the memberToEvaluate
               if (!existingFinalEvaluation) {
                 await Notification.create({
-                  user: member.user,
+                  user: member.student,
                   type: "Evaluation",
                   reference: assignment.id,
                   message: `Final Reminder: Your evaluation for "${
@@ -118,7 +118,7 @@ const weeklyReminder = async () => {
               // Send reminder for self-evaluation if it hasn't been done
               if (!selfEvaluation) {
                 await Notification.create({
-                  user: member.user,
+                  user: member.student,
                   type: "Evaluation",
                   reference: assignment.id,
                   message: `Final Reminder: Please complete your self-evaluation for assignment "${

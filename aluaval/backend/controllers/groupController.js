@@ -242,7 +242,10 @@ const GroupController = {
         attributes: ["number"],
         order: [["number", "DESC"]],
       });
-      res.status(200).json({ number });
+
+      const groupNumber = number ? number.number : 0;
+
+      res.status(200).json({ groupNumber });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

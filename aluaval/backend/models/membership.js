@@ -26,11 +26,7 @@ const Membership = sequelize.define(
         model: Group,
         key: "id",
       },
-    },
-    submissionDate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
+    }
   },
   {
     timestamps: true,

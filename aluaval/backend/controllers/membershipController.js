@@ -147,8 +147,6 @@ const MembershipController = {
       res.status(500).json({ error: err500 });
     }
   },
-
-  getGroupMembers,
 };
 
 export default MembershipController;
