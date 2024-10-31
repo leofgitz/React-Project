@@ -3,7 +3,7 @@ import React from "react";
 const EmailInput = ({ value, onChange }) => {
   return (
     <div className="w3-section">
-      <label className="w3-text-blue">
+      <label htmlFor="email" className="w3-text-blue">
         <i className="fa fa-envelope"></i> Email
       </label>
       <input

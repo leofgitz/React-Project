@@ -17,9 +17,5 @@ evaluationRouter.get(
   "/evaluated/:evaluated",
   EvaluationController.getEvaluationsByEvaluated
 );
-evaluationRouter.get(
-  "/group/:group/average-scores",
-  EvaluationController.calculateAverageScores
-);
 
 export default evaluationRouter;

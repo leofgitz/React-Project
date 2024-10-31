@@ -1,4 +1,4 @@
-import { Enrollment } from "../models/index.js";
+import { Enrollment, Classe, Subject, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EnrollmentController = {
@@ -133,6 +133,48 @@ const EnrollmentController = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentsForTeacherClass: async (req, res) => {
+    const teacher = req.user;
+
+    try {
+      // Find all students enrolled in classes taught by the teacher
+      const enrollments = await Enrollment.findAll({
+        include: [
+          {
+            model: Classe,
+            where: { teacher },
+            attributes: [], // We only need the students related to this teacher's class
+            include: [
+              {
+                model: Subject,
+                attributes: ["id", "name"], // Get subject info if needed
+              },
+            ],
+          },
+          {
+            model: User,
+            as: "student",
+            attributes: ["id", "name"], // Get only the student's id and name
+          },
+        ],
+        attributes: [], // We only want the student info
+      });
+
+      // Map through the enrollments to extract the student details
+      const students = enrollments.map((enrollment) => ({
+        id: enrollment.student.id,
+        name: enrollment.student.name,
+      }));
+
+      res.status(200).json(students);
+    } catch (err) {
+      console.error(err);
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching students." });
     }
   },
 };

@@ -106,6 +106,29 @@ const ClasseController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  getClassForGroupMaking: async (req, res) => {
+    const { teacher } = req.user;
+    const { subject } = req.params;
+
+    try {
+      const classe = await Classe.findOne({
+        where: { subject, teacher },
+        attributes: ["id"],
+      });
+
+      if (!classe) {
+        return res
+          .status(404)
+          .json({ error: "No class found for this subject and teacher." });
+      }
+
+      res.status(200).json(classe);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
 };
 
 export default ClasseController;

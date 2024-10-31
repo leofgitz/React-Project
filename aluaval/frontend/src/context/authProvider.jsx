@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await loginAPI(credentials);
-      localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
       setUser(response.user);
     } catch (err) {

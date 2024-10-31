@@ -14,9 +14,5 @@ groupRouter.get(
   "/assignment/:assignment",
   GroupController.getGroupsByAssignment
 );
-groupRouter.get(
-  "/:teacher/number",
-  GroupController.getLastNumberForGroupMaking
-);
 
 export default groupRouter;

@@ -10,5 +10,6 @@ awardRouter.delete("/:id", AwardController.deleteAward);
 
 awardRouter.get("/student/:giver", AwardController.getBadgesByStudent);
 awardRouter.get("/group/:group", AwardController.getBadgesByGroup);
+awardRouter.get("/unawarded/:group", AwardController.getUnawardedBadges);
 
 export default awardRouter;

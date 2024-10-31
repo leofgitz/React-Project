@@ -2,12 +2,9 @@ import { Notification } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const NotificationController = {
-  getNotifications: async (req, res) => {
-    const { user } = req.user;
+  getAllNotifications: async (req, res) => {
+    const user = req.user;
     const { type } = req.params;
-    const page = parseInt(req.query.p, 10) || 1;
-    const limit = 10;
-    const offset = (page - 1) * limit;
 
     try {
       const notifications = await Notification.findAll({
@@ -16,8 +13,6 @@ const NotificationController = {
           ...(type && { type }), // Only include type if it's provided
         },
         order: [["createdAt", "DESC"]],
-        limit,
-        offset,
       });
 
       res.status(200).json(notifications);
@@ -28,7 +23,7 @@ const NotificationController = {
   },
 
   getFirstThreeNotifications: async (req, res) => {
-    const { user } = req.user;
+    const user = req.user;
     try {
       const notifications = await Notification.findAll({
         where: { user },
@@ -75,7 +70,7 @@ const NotificationController = {
   },
 
   markAllAsRead: async (req, res) => {
-    const { user } = req.user;
+    const user = req.user;
     try {
       await Notification.update({ isRead: true }, { where: { user } });
       res

@@ -28,12 +28,12 @@ const AuthController = {
         { expiresIn: "1h" }
       );
 
-      res.status(200).json({ user, token });
+      res.status(200).json({ token, user });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
-  }
+  },
 };
 
 export default AuthController;

@@ -4,12 +4,14 @@ import {
   Evaluation,
   Group,
   Subject,
+  User,
 } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const EvaluationController = {
   createEvaluation: async (req, res) => {
-    const { group, evaluator, evaluated, answers, comments } = req.body;
+    const { group, evaluator, evaluated, answers, comments, isFinal } =
+      req.body;
 
     try {
       const existingEvaluation = await Evaluation.findOne({
@@ -251,7 +253,7 @@ const EvaluationController = {
           }
         }
       }
-      
+
       if (isFinal !== undefined && isFinal !== evaluation.isFinal) {
         evaluation.isFinal = isFinal;
       }
@@ -278,15 +280,83 @@ const EvaluationController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getEvaluationsByGroup: async (req, res) => {
     const { group } = req.params;
 
     try {
-      const evaluations = await Evaluation.findAll({ where: { group } });
-      res.status(200).json(evaluations);
+      const evaluations = await Evaluation.findAll({
+        where: { group },
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: User, // Include evaluator
+            as: "evaluator",
+            attributes: ["name"],
+          },
+          {
+            model: User, // Include evaluated
+            as: "evaluated",
+            attributes: ["name"],
+          },
+        ],
+      });
+
+      // Format each evaluation with the desired structure
+      const evaluationData = evaluations.map((evaluation) => {
+        const { evaluated, evaluator } = evaluation;
+
+        const scores = [
+          evaluation.attendanceScore,
+          evaluation.participationScore,
+          evaluation.teamworkScore,
+          evaluation.qualityScore,
+          evaluation.attitudeScore,
+          evaluation.feedbackScore,
+        ];
+
+        const comments = [
+          evaluation.attendanceComment,
+          evaluation.participationComment,
+          evaluation.teamworkComment,
+          evaluation.qualityComment,
+          evaluation.attitudeComment,
+          evaluation.feedbackComment,
+        ];
+
+        if (evaluated === evaluator) {
+          comments.push(evaluation.goalsComment, evaluation.additionalComment);
+        } else {
+          scores.push(evaluation.impressionScore);
+          comments.push(evaluation.impressionComment);
+        }
+
+        const averageScore =
+          scores.length > 0
+            ? scores.reduce((sum, score) => sum + score, 0) / scores.length
+            : 0;
+
+        return {
+          id: evaluation.id,
+          evaluator: evaluator,
+          evaluated: evaluated,
+          evaluatorName: evaluation.evaluator.name, // Add evaluator's name
+          evaluatedName: evaluation.evaluated.name, // Add evaluated's name
+          answers: scores,
+          comments: comments,
+          isFinal: evaluation.isFinal,
+          averageScore: averageScore,
+          createdAt: evaluation.createdAt,
+          updatedAt: evaluation.updatedAt,
+        };
+      });
+
+      res.status(200).json(evaluationData);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err500 });
+      res.status(500).json({
+        error: "An error occurred while fetching evaluations by group.",
+      });
     }
   },
 
@@ -294,7 +364,10 @@ const EvaluationController = {
     const { evaluator } = req.params;
 
     try {
-      const evaluations = await Evaluation.findAll({ where: { evaluator } });
+      const evaluations = await Evaluation.findAll({
+        where: { evaluator },
+        order: [["createdAt", "DESC"]],
+      });
       res.status(200).json(evaluations);
     } catch (err) {
       console.error(err);
@@ -306,7 +379,10 @@ const EvaluationController = {
     const { evaluated } = req.params;
 
     try {
-      const evaluations = await Evaluation.findAll({ where: { evaluated } });
+      const evaluations = await Evaluation.findAll({
+        where: { evaluated },
+        order: [["createdAt", "DESC"]],
+      });
       res.status(200).json(evaluations);
     } catch (err) {
       console.error(err);
@@ -314,7 +390,7 @@ const EvaluationController = {
     }
   },
 
-  calculateAverageScores: async (req, res) => {
+  /* calculateAverageScores: async (req, res) => {
     const { group } = req.params;
 
     try {
@@ -352,10 +428,10 @@ const EvaluationController = {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
-  },
+  }, */
 
   getEvaluationsByGroupsForTeacher: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
 
     try {
       const evaluations = await Evaluation.findAll({
@@ -384,7 +460,7 @@ const EvaluationController = {
   },
 
   getEvaluationsForStudent: async (req, res) => {
-    const { student } = req.params;
+    const student = req.user;
 
     try {
       const evaluations = await Evaluation.findAll({
@@ -403,7 +479,7 @@ const EvaluationController = {
   },
 
   teacherEvaluationHistory: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
 
     try {
       const evaluations = await Evaluation.findAll({
@@ -427,15 +503,44 @@ const EvaluationController = {
                 attributes: ["id", "title"],
               },
             ],
-            attributes: ["id"],
+            attributes: ["number"], // Get only the group number
           },
+          {
+            model: User,
+            as: "evaluator", // Assuming you have an alias for evaluator
+            attributes: ["name"], // Get the evaluator's name
+          },
+          {
+            model: User,
+            as: "evaluated", // Assuming you have an alias for evaluated
+            attributes: ["name"], // Get the evaluated user's name
+          },
+        ],
+        attributes: [
+          "createdAt",
+          "updatedAt",
+          "isFinal", // Assuming you have a field indicating if the evaluation is final
         ],
         group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
         limit: 5,
       });
 
-      res.status(200).json(evaluations);
+      // Format the output
+      const formattedEvaluations = evaluations.map((evaluation) => ({
+        evaluator: evaluation.evaluator.name,
+        evaluated: evaluation.evaluated.name,
+        groupNumber: evaluation.Group.number,
+        assignment: evaluation.Group.Assignment.title,
+        createdAt: evaluation.createdAt,
+        updatedAt:
+          evaluation.updatedAt !== evaluation.createdAt
+            ? evaluation.updatedAt
+            : null,
+        isFinal: evaluation.isFinal,
+      }));
+
+      res.status(200).json(formattedEvaluations);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
@@ -443,7 +548,7 @@ const EvaluationController = {
   },
 
   studentEvaluationHistory: async (req, res) => {
-    const { student } = req.params;
+    const student = req.user;
 
     try {
       const evaluations = await Evaluation.findAll({
@@ -453,7 +558,7 @@ const EvaluationController = {
         include: [
           {
             model: Group,
-            attributes: [],
+            attributes: ["number"], // Get only the group number
             include: [
               {
                 model: Assignment,
@@ -471,13 +576,74 @@ const EvaluationController = {
               },
             ],
           },
+          {
+            model: User,
+            as: "evaluator", // Assuming you have an alias for evaluator
+            attributes: ["name"], // Get the evaluator's name
+          },
+          {
+            model: User,
+            as: "evaluated", // Assuming you have an alias for evaluated
+            attributes: ["name"], // Get the evaluated user's name
+          },
+        ],
+        attributes: [
+          "createdAt",
+          "updatedAt",
+          "isFinal", // Assuming you have a field indicating if the evaluation is final
         ],
         group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
         limit: 5,
       });
 
-      res.status(200).json({ evaluations });
+      // Format the output
+      const formattedEvaluations = evaluations.map((evaluation) => ({
+        evaluator: evaluation.evaluator.name,
+        evaluated: evaluation.evaluated.name,
+        groupNumber: evaluation.Group.number,
+        assignment: evaluation.Group.Assignment.title,
+        createdAt: evaluation.createdAt,
+        updatedAt:
+          evaluation.updatedAt !== evaluation.createdAt
+            ? evaluation.updatedAt
+            : null,
+        isFinal: evaluation.isFinal,
+      }));
+
+      res.status(200).json(formattedEvaluations);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  checkEvalExists: async (req, res) => {
+    const { user, assignment } = req.params;
+
+    const startWeek = new Date();
+    startWeek.setDate(startWeek.getDate() - startWeek.getDay);
+    const endWeek = new Date(startWeek);
+    endWeek.setDate(endWeek.getDate + 6);
+
+    try {
+      // Query to find if the user has completed the evaluation this week
+      const evaluation = await Evaluation.findOne({
+        where: {
+          user,
+          assignment,
+          createdAt: {
+            [Op.between]: [startWeek, endWeek],
+          },
+        },
+      });
+
+      // If an evaluation exists, the user has already completed it for the week
+      if (evaluation) {
+        return res.status(200).json({ evaluated: true });
+      } else {
+        return res.status(200).json({ evaluated: false });
+      }
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

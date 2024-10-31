@@ -2,7 +2,7 @@ import express from "express";
 const notificationRouter = express.Router();
 import NotificationController from "../controllers/notificationController.js";
 
-notificationRouter.get("/:type?", NotificationController.getNotifications);
+notificationRouter.get("/:type?", NotificationController.getAllNotifications);
 notificationRouter.get(
   "/three",
   NotificationController.getFirstThreeNotifications

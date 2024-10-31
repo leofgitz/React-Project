@@ -1,11 +1,11 @@
-import { Assignment, Group, Membership, User } from "../models/index.js";
+import { Membership, User } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const MembershipController = {
   createMembership: async (req, res) => {
-    const { student, group, subject } = req.body;
+    const { student, group } = req.body;
 
-    if (!student || !group || !subject) {
+    if (!student || !group) {
       return res.status(400).json({ error: "All fields required" });
     }
 
@@ -13,13 +13,13 @@ const MembershipController = {
       let membership = await Membership.findOne({
         where: {
           student,
-          subject,
+          group,
         },
       });
 
       if (membership) {
         return res.status(400).json({
-          error: "This student is already in a group for this subject",
+          error: "This student is already in a group for subject",
         });
       }
 

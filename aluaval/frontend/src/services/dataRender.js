@@ -4,43 +4,67 @@ export const AssignmentItem = (assignments) => {
   return (
     <>
       {assignments.map((assignment) => (
-        <button
-          key={assignment.id}
-          className="w3-button w3-block w3-white w3-border w3-margin-bottom w3-center"
-        >
-          {assignment.title} - 
-        </button>
+        <div key={assignment.id} className="w3-card w3-padding">
+          <h4>
+            {assignment.title} - Subject: {assignment.subject.name}
+          </h4>
+          <div key={assignment.Groups.id} className="w3-padding">
+            <p>
+              Group Number: {assignment.Groups[0].number} <br />
+              Due Date: {assignment.duedate} <br />
+              {assignment.Groups[0].submissionDate && (
+                <>Submission Date: {assignment.Groups[0].submissionDate} </>
+              )}
+            </p>
+          </div>
+        </div>
       ))}
     </>
   );
 };
 
-export const BadgeItem = (badges, role) => {
-  return <></>;
-};
-
-export const ColleagueItem = (colleagues, role) => {
-  let id;
-  if (role == "Student") {
-    const { user } = useAuth();
-    id = user.id;
-  }
-
+export const AwardItem = ({ awards }) => {
   return (
     <>
-      {colleagues.map((colleague) => (
-        <>
-          {colleague.name}
-          {role === "Student" &&
-            (id === colleague.id ? (
-              <button>Self Evaluation</button>
-            ) : (
-              <button>Peer Evaluation</button>
-            ))}
-          {role === "Teacher" ? <p></p> : <p></p>}
-        </>
+      {awards.map((award) => (
+        <div key={award.id} className="w3-card w3-padding">
+          <h4>Awarded Badge: {award.badge}</h4>
+          <div className="w3-padding">
+            <p>
+              Giver: {award.giver} <br />
+              Recipient: {award.recipient} <br />
+              Group Number: {award.groupNumber} <br />
+              Assignment Title: {award.assignmentTitle} <br />
+            </p>
+          </div>
+        </div>
       ))}
-      <p></p>
+    </>
+  );
+};
+
+export const EvaluationItem = (evaluations) => {
+  return (
+    <>
+      {evaluations.map((evaluation) => (
+        <div key={evaluation.id} className="w3-card w3-padding">
+          <h4>Assignment: {evaluation.assignment}</h4>
+          <div className="w3-padding">
+            <p>
+              Evaluator: {evaluation.evaluator} <br />
+              Evaluated: {evaluation.evaluated} <br />
+              Group Number: {evaluation.groupNumber} <br />
+              Created At: {evaluation.createdAt} <br />
+              {evaluation.updatedAt && (
+                <>
+                  Updated At: {evaluation.updatedAt} <br />
+                </>
+              )}
+              Is Final: {evaluation.isFinal ? "Yes" : "No"} <br />
+            </p>
+          </div>
+        </div>
+      ))}
     </>
   );
 };

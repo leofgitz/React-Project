@@ -3,42 +3,52 @@ import AssignmentController from "../controllers/assignmentController.js";
 import GroupController from "../controllers/groupController.js";
 import CourseController from "../controllers/courseController.js";
 import EvaluationController from "../controllers/evaluationController.js";
-import BadgeController from "../controllers/badgeController.js";
+import AwardController from "../controllers/awardController.js";
+import SubjectController from "../controllers/subjectController.js";
+import UserController from "../controllers/userController.js";
 const studentRouter = express.Router();
 
 studentRouter.get(
-  "/:student/assignments",
+  "/assignments",
   AssignmentController.getAssignmentsForStudents
 );
 studentRouter.get(
-  "/:student/assignments/homepage",
+  "/assignments/homepage",
   AssignmentController.getStudentAssignmentsForHomepage
 );
-
-studentRouter.get("/:student/groups", GroupController.getGroupsForStudent);
 studentRouter.get(
-  "/:student/groups/homepage",
+  "/subjects/:subject/assignments",
+  AssignmentController.getAssignmentsForStudentBasedOnSubject
+);
+
+studentRouter.get("/groups", GroupController.getGroupsForStudent);
+studentRouter.get(
+  "/groups/homepage",
   GroupController.getMembershipsForHomepage
 );
-
 studentRouter.get(
-  "/:student/courses",
-  CourseController.getStudentCourseForStudent
+  "/:subject/:assignment",
+  UserController.getUsersInGroupForAssignment
 );
 
+studentRouter.get("/subjects", SubjectController.getSubjectsForStudent);
+
+studentRouter.get("/courses", CourseController.getStudentCourseForStudent);
+
 studentRouter.get(
-  "/:student/evaluations",
+  "/evaluations",
   EvaluationController.getEvaluationsForStudent
 );
 studentRouter.get(
-  "/:student/evaluations/history",
+  "/evaluations/history",
   EvaluationController.studentEvaluationHistory
 );
+studentRouter.get("/:user/:assignment", EvaluationController.checkEvalExists);
 
-studentRouter.get("/:student/badges", BadgeController.getAwardsForStudent);
+/* studentRouter.get("/badges", AwardController.getAwardsForStudent); */
 studentRouter.get(
-  ":student/badges/homepage",
-  BadgeController.getBadgesStudentForHomepage
+  "/awards/homepage",
+  AwardController.getBadgesStudentForHomepage
 );
 
 export default studentRouter;

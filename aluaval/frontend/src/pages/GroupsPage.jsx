@@ -1,176 +1,160 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAll,
-  updateById,
-  fetchDynamicRoute,
-} from "../services/dataFetch.js";
+import { create, fetchDynamicRoute } from "../services/dataFetch.js";
 import { useAuth } from "../context/authProvider.js";
 import { useNavigate } from "react-router-dom";
+import SubjectsSection from "../components/SubjectsSection.jsx";
+import BadgeModal from "../components/BadgeModal.jsx";
+import BadgeAwardingModal from "../components/BadgeAwardingModal.jsx";
 
 const GroupsPage = () => {
   const { user } = useAuth();
-  const [groups, setGroups] = useState([]);
+  const uid = user.id;
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState(null);
   const [assignments, setAssignments] = useState([]);
-  const [badges, setBadges] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [groupMembers, setGroupMembers] = useState([]);
-  const [selectedMember, setSelectedMember] = useState(null);
-  const [memberBadges, setMemberBadges] = useState([]);
-  const [showBadgesModal, setShowBadgesModal] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState(-1);
+  const [group, setGroup] = useState([]); //like students, setStudent
+  const [currentStep, setCurrentStep] = useState("subjects");
+  const [badgeViewingModal, setBadgeViewingModal] = useState(false);
+  const [badgeAwardingModal, setBadgeAwardingModal] = useState(false);
   const navigate = useNavigate();
 
+  const fetchSubjects = async () => {
+    try {
+      let data = await fetchDynamicRoute("student", "subjects");
+      setSubjects(data);
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchGroups();
-    fetchAssigments();
-    fetchBadges();
+    fetchSubjects();
   }, []);
 
-  const fetchGroups = async () => {
-    try {
-      const params = ["student", user.id];
-      const data = await fetchDynamicRoute("student-groups", params);
-      setGroups(data);
-    } catch (err) {
-      console.error("Error fetching data: ", err);
-    }
-  };
+  const handleSubjectSelect = async (subjectID) => {
+    setSelectedSubject(subjectID);
+    setCurrentStep("assignments");
+    setSelectedAssignment(null);
 
-  const fetchAssigments = async () => {
     try {
-      const params = ["assignments", user.id];
-      const data = await fetchDynamicRoute("student-groups", params);
+      let params = ["subjects", subjectID, "assignments"];
+      let data = await fetchDynamicRoute("student ", params);
       setAssignments(data);
-    } catch (err) {
-      console.error("Error fetching data: ", err);
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
     }
   };
 
-  const fetchBadges = async () => {
+  const handleAssignmentSelect = async (assignmentID) => {
+    setSelectedAssignment(assignmentID);
+    setCurrentStep("group");
+
     try {
-      const data = await getAll("badges");
-      setBadges(data);
-    } catch (err) {
-      console.error("Error fetching data: ", err);
+      const params = [selectedSubject, assignmentID];
+      let data = await fetchDynamicRoute("student", params);
+      setStudents(data);
+      setGroup(students[0].groupId);
+    } catch (error) {
+      console.error("Error fetching group:", error);
     }
   };
 
-  const handleSelectGroup = async (group) => {
-    setSelectedGroup(group);
+  const handleEvaluateMember = (student) => {
+    navigate(`/questionnaire/${student}/${group}`);
+  };
+
+  const handleCheckBadges = async () => {
+    setBadgeViewingModal(true);
+  };
+  
+  const handleCheckEvalHistory = async (group) => {
+    history.push(`/evaluation-history/${group}`);
+  };
+
+  const handleAwardStudent = async (student) => {
+    setSelectedStudent(student);
+    setBadgeAwardingModal(true);
+  };
+
+  const handleCreateAward = async (badge, student) => {
     try {
-      const params = ["group", group];
-      const data = await fetchDynamicRoute("student-groups", params);
-      setGroupMembers(data);
-    } catch (err) {
-      console.error("Error fetching group members:", err);
-    }
+      let giver = uid;
+      const body = {
+        giver,
+        badge,
+        group,
+        recipient: student,
+      };
+      const newAward = await create("awards", body);
+      console.log("Created new award:" + newAward);
+    } catch (error) {}
   };
 
-  const handleEvaluateMember = (member) => {
-    if (member == selectedMember) {
-      if (user && selectedGroup) {
-        /* const path = evaluation
-         /* ? `/questionnaire/${member.id}/${selectedGroup.id}/${evaluation.id}`
-          : `/questionnaire/${member.id}/${selectedGroup.id}`; */
-        navigate(`/questionnaire/${member.id}/${selectedGroup.id}`);
-      }
-    } else {
-      console.error("Unable to start evaluation:", err);
-    }
-  };
-
-  const handleShowBadges = async () => {
-    try {
-      const params = ["student", selectedMember.id];
-      const data = await fetchDynamicRoute("group-badges", params);
-      setMemberBadges(data);
-      setShowBadgesModal(true);
-    } catch (err) {
-      console.error("Error fetching member badges:", err);
+  const handleBack = () => {
+    if (currentStep === "assignments") {
+      setSelectedSubject(null);
+      setCurrentStep("subjects");
+    } else if (currentStep === "group") {
+      setSelectedAssignment(null);
+      setCurrentStep("assignments");
     }
   };
 
   return (
-    <div className="w3-container">
-      <h1>Select Group</h1>
-      <div className="w3-row-padding w3-margin-bottom">
-        {groups.map((group) => (
-          <div key={group.id} className="w3-col l3 m6 w3-margin-bottom">
-            <h2>{group.assignment.title}</h2>
-            <button
-              className="w3-button w3-rteal w3-margin-top"
-              onClick={() => handleSelectGroup(group)}
-            >
-              Select Group
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {selectedGroup && (
-        <div className="w3-container">
-          <h2>{selectedGroup.assignment.title}</h2>
-          <h3>Group Members</h3>
-          <div className="w3-row-padding">
-            {groupMembers.map((member) => (
-              <div key={member.id} className="w3-col l3 m6 w3-margin-bottom">
-                <div
-                  className="w3-card w3-hover-shadow w3-padding"
-                  /* onClick={() => handleMemberClick(member) }*/
-                >
-                  <h3>{member.name}</h3>
-                  <p>{member.email}</p>
-                  <button
-                    className="w3-button w3-teal w3-margin-top"
-                    onClick={() => handleEvaluateMember(member)}
-                  >
-                    Evaluate Member
-                  </button>
-                  {/* <button
-                    className="w3-button w3-teal w3-margin-top"
-                    onClick={handleShowBadges}
-                  >
-                    Show Badges
-                  </button> */}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="w3-container main-content">
+      {currentStep === "subjects" && (
+        <SubjectsSection
+          subjects={subjects}
+          selectedSubject={selectedSubject}
+          onSelectSubject={handleSubjectSelect}
+        />
       )}
 
-      {/* {showBadgesModal && (
-        <div id="badgesModal" className="w3-modal" style={{ display: "block" }}>
-          <div className="w3-modal-content w3-animate-top w3-card-4">
-            <header className="w3-container w3-teal">
-              <span
-                onClick={() => setShowBadgesModal(false)}
-                className="w3-button w3-display-topright"
-              >
-                &times;
-              </span>
-              <h2>{selectedMember.name}'s Badges</h2>
-            </header>
-            <div className="w3-container">
-              <div className="w3-row-padding">
-                {memberBadges.map((badge) => (
-                  <div key={badge.id} className="w3-col l3 m6 w3-margin-bottom">
-                    <div className="w3-card w3-hover-shadow w3-padding">
-                      <h3>{badge.name}</h3>
-                      <img src={badge.img_url} alt={badge.name} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button
-                className="w3-button w3-teal w3-margin-top"
-                onClick={() => setShowBadgesModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+      {currentStep === "assignments" && selectedSubject && (
+        <AssignmentSection
+          subjects={subjects}
+          selectedSubject={selectedSubject}
+          assignments={assignments}
+          selectedAssignment={selectedAssignment}
+          onSelectAssignment={handleAssignmentSelect}
+          onBack={handleBack}
+        />
+      )}
+
+      {currentStep === "group" && selectedAssignment && (
+        <GroupSection
+          subjects={subjects}
+          assignments={assignments}
+          selectedSubject={selectedSubject}
+          selectedAssignment={selectedAssignment}
+          students={students}
+          onBack={handleBack}
+          currentUser={uid}
+          onCheckBadges={handleCheckBadges}
+          onAwardStudent={handleAwardStudent}
+          onCheckEvalHistory={handleCheckEvalHistory}
+          onEvalMember={handleEvaluateMember}
+        />
+      )}
+
+      {badgeViewingModal && (
+        <BadgeModal group={group} onClose={() => setBadgeViewingModal(false)} />
+      )}
+
+      {badgeAwardingModal && (
+        <BadgeAwardingModal
+          student={selectedStudent}
+          group={group}
+          onCreate={handleCreateAward}
+          onClose={() => {
+            setBadgeAwardingModal(false);
+            setSelectedStudent(-1);
+          }}
+        />
+      )}
     </div>
   );
 };

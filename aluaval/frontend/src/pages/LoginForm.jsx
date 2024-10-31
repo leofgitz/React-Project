@@ -8,9 +8,8 @@ import { useAuth } from "../context/authProvider.jsx";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth;
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -18,7 +17,7 @@ const LoginForm = () => {
       await login({ email, password });
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      console.error(err.message);
     }
   };
 
@@ -29,7 +28,7 @@ const LoginForm = () => {
     >
       <h2 className="w3-center">
         {" "}
-        <i class="fa fa-address-book"></i> Login
+        <i className="fa fa-address-book"></i> Login
       </h2>
       <form onSubmit={handleSubmit} className="w3-container">
         <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />

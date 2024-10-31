@@ -17,7 +17,7 @@ import { getById, updateById, create } from "../services/dataFetch.js";
 
 const Questionnaire = () => {
   const { user } = useAuth();
-  const { id, evaluation, group } = useParams();
+  const { id, group } = useParams();
   const isPeer = id !== user.id;
   const questions = isPeer ? peerQuestions : selfQuestions;
   const commentTitles = isPeer

@@ -125,7 +125,7 @@ const CourseController = {
   },
 
   getStudentCourseForStudent: async (req, res) => {
-    const { student } = req.params;
+    const student = req.user;
 
     try {
       const course = await Course.findAll({

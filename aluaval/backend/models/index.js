@@ -37,6 +37,9 @@ Classe.belongsTo(User, { foreignKey: "teacher" });
 Classe.hasMany(Enrollment, { foreignKey: "classe" });
 Classe.hasMany(Group, { foreignKey: "classe" });
 
+Assignment.belongsTo(User, { foreignKey: "teacher" });
+Assignment.belongsTo(Subject, { foreignKey: "subject" });
+
 Enrollment.belongsTo(Classe, { foreignKey: "classe" });
 Enrollment.belongsTo(User, { foreignKey: "student" });
 

@@ -121,6 +121,7 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getGroupsBySubject: async (req, res) => {
     const { subject } = req.params;
 
@@ -132,6 +133,7 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getGroupsByAssignment: async (req, res) => {
     const { assignment } = req.params;
     try {
@@ -144,7 +146,7 @@ const GroupController = {
   },
 
   getGroupsForTeacher: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
     try {
       const groups = await Group.findAll({
         include: [
@@ -165,7 +167,7 @@ const GroupController = {
   },
 
   getGroupsForStudent: async (req, res) => {
-    const { student } = req.params;
+    const student = req.user;
 
     try {
       const groups = await Group.findAll({
@@ -185,8 +187,9 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getTeacherGroupsForHomepage: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
     try {
       const groups = await Group.findAll({
         include: [
@@ -207,8 +210,9 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
-  getMembershipsForHomepage: async (req, res) => {
-    const { student } = req.params;
+
+  getStudentGroupsForHomepage: async (req, res) => {
+    const student = req.user;
 
     try {
       const groups = await Group.findAll({
@@ -230,15 +234,13 @@ const GroupController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getLastNumberForGroupMaking: async (req, res) => {
-    const { teacher } = req.params;
+    const { classe } = req.params;
 
     try {
       const number = await Group.findOne({
-        include: {
-          model: Classe,
-          where: { teacher },
-        },
+        where: { classe },
         attributes: ["number"],
         order: [["number", "DESC"]],
       });

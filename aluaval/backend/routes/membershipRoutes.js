@@ -7,6 +7,7 @@ membershipRouter.get("/", MembershipController.getAllMemberships);
 membershipRouter.get("/:id", MembershipController.getMembershipByID);
 membershipRouter.patch("/:id", MembershipController.updateMembershipByID);
 membershipRouter.delete("/:id", MembershipController.deleteMembership);
+membershipRouter.post('/addmembers', MembershipController.addMembersToGroup);
 
 membershipRouter.get(
   "/group/:group",

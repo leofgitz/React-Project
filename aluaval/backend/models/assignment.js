@@ -1,5 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
+import Subject from "./subject.js";
+import User from "./user.js";
 
 const Assignment = sequelize.define(
   "Assignment",
@@ -17,6 +19,22 @@ const Assignment = sequelize.define(
     dueDate: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    subject: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Subject,
+        key: "id",
+      },
+    },
+    teacher: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
     },
   },
   {

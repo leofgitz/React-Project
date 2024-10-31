@@ -3,9 +3,9 @@ const err500 = "Internal Server Error";
 
 const SubjectController = {
   createSubject: async (req, res) => {
-    const { name, course } = req.body;
+    const { name, course, year } = req.body;
 
-    if (!name || !course) {
+    if (!name || !course || !year) {
       return res.status(400).json({ error: "All fields required" });
     }
 
@@ -14,6 +14,7 @@ const SubjectController = {
         where: {
           name,
           course,
+          year,
         },
       });
 
@@ -120,10 +121,11 @@ const SubjectController = {
     }
   },
   getSubjectsForTeacher: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
 
     try {
       const subjects = await Subject.findAll({
+        attributes: ["id", "name"],
         include: [
           {
             model: Classe,
@@ -134,14 +136,54 @@ const SubjectController = {
         group: ["Subject.id"],
       });
 
-      res.status(200).json(subjects);
+      const result = subjects.map((subject) => ({
+        id: subject.id,
+        name: subject.name,
+      }));
+
+      res.status(200).json(result);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
     }
   },
+
+  getSubjectsForStudent: async (req, res) => {
+    const student = req.user; // Ensure req.user.id is the student's ID
+
+    try {
+      const subjects = await Subject.findAll({
+        attributes: ["id", "name"],
+        include: [
+          {
+            model: Classe,
+            attributes: [], // Exclude unnecessary Classe attributes
+            include: [
+              {
+                model: Enrollment,
+                where: { student: student }, // Filter by student's ID
+                attributes: [], // Exclude unnecessary Enrollment attributes
+              },
+            ],
+          },
+        ],
+        group: ["Subject.id"],
+      });
+
+      const result = subjects.map((subject) => ({
+        id: subject.id,
+        name: subject.name,
+      }));
+
+      res.status(200).json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
   getTeacherSubjectsForHomepage: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
 
     try {
       const subjects = await Subject.findAll({

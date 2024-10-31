@@ -6,7 +6,7 @@ const Navigation = ({
   getButtonText,
   currentQuestion,
   handleSubmit,
-  questions
+  questions,
 }) => {
   return (
     <div className="w3-bar w3-margin-top">

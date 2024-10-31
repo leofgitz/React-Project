@@ -1,4 +1,10 @@
-import { Classe, Enrollment, Group, User } from "../models/index.js";
+import {
+  Classe,
+  Enrollment,
+  Group,
+  User,
+  Membership,
+} from "../models/index.js";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 const err500 = "Internal Server Error";
@@ -153,6 +159,7 @@ const UserController = {
 
     try {
       const colleagues = await User.findAll({
+        attributes: ["id", "name"],
         include: [
           {
             model: Enrollment,
@@ -165,6 +172,7 @@ const UserController = {
                   {
                     model: Group,
                     where: { assignment },
+                    attributes: ["id", "number"],
                   },
                 ],
               },
@@ -173,10 +181,128 @@ const UserController = {
         ],
         group: ["User.id"],
       });
-      res.status(200).json(colleagues);
+      const result = colleagues.map((student) => ({
+        id: student.id,
+        name: student.name,
+        groupId: student.Enrollments[0]?.Classe?.Groups[0]?.id || null,
+        groupNumber: student.Enrollments[0]?.Classe?.Groups[0]?.number || null,
+      }));
+
+      res.status(200).json(result);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });
+    }
+  },
+
+  getStudentsAndGroupsForAssignment: async (req, res) => {
+    const teacher = req.user; // Get the logged-in teacher
+    const { subject, assignment } = req.params; // Get subject and assignment from route parameters
+
+    try {
+      // Find all students enrolled in the classes taught by this teacher for the given subject and assignment
+      const students = await User.findAll({
+        attributes: ["id", "name"], // Get student details
+        include: [
+          {
+            model: Enrollment,
+            attributes: [],
+            include: [
+              {
+                model: Classe,
+                where: { teacher, subject }, // Filter by teacher and subject
+                attributes: [],
+                include: [
+                  {
+                    model: Group,
+                    attributes: ["id", "number"], // Get group details if they exist
+                    where: { assignment }, // Filter by assignment
+                    required: false, // Include students even if they are not part of a group
+                    include: [
+                      {
+                        model: Membership,
+                        attributes: [],
+                        where: { student: { [Op.col]: "User.id" } }, // Match the student with the group
+                        required: false, // Include even if no membership
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        group: ["User.id", "Group.id"], // Group by user and group
+      });
+
+      // Transform the result to include the group number or indicate if the student has no group
+      const result = students.map((student) => ({
+        id: student.id,
+        name: student.name,
+        groupID: student.Enrollments[0]?.Classe?.Groups[0]?.id || null, // Ensure to access the group correctly
+        groupNumber: student.Enrollments[0]?.Classe?.Groups[0]?.number || null, // Ensure to access the group number correctly
+      }));
+
+      res.status(200).json(result); // Return the result
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: "An error occurred while fetching students and groups.",
+      });
+    }
+  },
+
+  getUsersInGroupForAssignment: async (req, res) => {
+    const { subject, assignment } = req.params; // Get subject and assignment from route parameters
+
+    try {
+      // Find all users in the group for the specified subject and assignment
+      const usersInGroup = await User.findAll({
+        attributes: ["id", "name"], // Get user details
+        include: [
+          {
+            model: Membership, // Include Membership to link users to groups
+            attributes: [],
+            include: [
+              {
+                model: Group,
+                attributes: ["id", "number"], // Get group details
+                where: { assignment }, // Filter by assignment
+                include: [
+                  {
+                    model: Classe,
+                    attributes: [],
+                    include: [
+                      {
+                        model: Subject,
+                        attributes: [],
+                        where: { name: subject }, // Filter by subject name
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        group: ["User.id", "Group.id"], // Group by user and group
+      });
+
+      // Transform the result to include group details
+      const result = usersInGroup.map((user) => ({
+        id: user.id,
+        name: user.name,
+        groupId: user.Memberships[0]?.group?.id || null, // Group ID or null
+        groupNumber: user.Memberships[0]?.group?.number || null, // Group number or null
+      }));
+
+      res.status(200).json(result); // Return the result
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error:
+          "An error occurred while fetching users in the group for the assignment.",
+      });
     }
   },
 
