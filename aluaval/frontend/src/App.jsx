@@ -25,6 +25,17 @@ function ProtectedRoute({ element }) {
   return user ? element : <Navigate to="/login" />;
 }
 
+function RedirectIfLoggedIn({ element }) {
+  const { user } = useAuth();
+
+  // If the user is already logged in, redirect to homepage
+  if (user) {
+    return <Navigate to="/" />;
+  }
+
+  return element;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -32,8 +43,14 @@ function App() {
         <Navbar />
         <div>
           <Routes>
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegisterForm />} />
+            <Route
+              path="/login"
+              element={<RedirectIfLoggedIn element={<LoginForm />} />}
+            />
+            <Route
+              path="/register"
+              element={<RedirectIfLoggedIn element={<RegisterForm />} />}
+            />
             <Route
               path="/"
               element={<ProtectedRoute element={<Homepage />} />}
