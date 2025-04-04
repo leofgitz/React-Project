@@ -6,7 +6,7 @@ import {
   AssignmentItem,
   EvaluationItem,
   AwardItem,
-} from "../services/dataRender.js";
+} from "../services/dataRender.jsx";
 
 const Homepage = () => {
   const { user } = useAuth();
@@ -24,23 +24,35 @@ const Homepage = () => {
       try {
         switch (role) {
           case "Teacher":
-            data = fetchDynamicRoute("teacher", "assignments/homepage");
+            data = await fetchDynamicRoute("teacher", [
+              "assignments",
+              "homepage",
+            ]);
             setAssignments(data);
 
-            data = fetchDynamicRoute("teacher", "evaluations/homepage");
+            data = await fetchDynamicRoute("teacher", [
+              "evaluations",
+              "history",
+            ]);
             setEvaluations(data);
 
-            data = fetchDynamicRoute("teacher", "awards/homepage");
+            data = await fetchDynamicRoute("teacher", ["awards", "homepage"]);
             setAwards(data);
             break;
           case "Student":
-            data = fetchDynamicRoute("student", "assignments/homepage");
+            data = await fetchDynamicRoute("student", [
+              "assignments",
+              "homepage",
+            ]);
             setAssignments(data);
 
-            data = fetchDynamicRoute("student", "evaluations/homepage");
+            data = await fetchDynamicRoute("student", [
+              "evaluations",
+              "history",
+            ]);
             setEvaluations(data);
 
-            data = fetchDynamicRoute("student", "awards/homepage");
+            data = await fetchDynamicRoute("student", ["awards", "homepage"]);
             setAwards(data);
             break;
           default:

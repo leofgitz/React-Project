@@ -1,4 +1,4 @@
-const API_BASE_URL = "/api";
+const API_BASE_URL = "http://localhost:3000/api";
 
 const headers = {
   "Content-Type": "application/json",
@@ -93,5 +93,13 @@ export const fetchDynamicRoute = async (
 };
 
 const buildUrl = (base, params) => {
-  return `${base}/${params.join("/")}`;
+  if (Array.isArray(params)) {
+    // If params is an array, join its elements with "/"
+    return `${base}/${params.join("/")}`;
+  } else if (typeof params === "string") {
+    // If params is a string, append it directly
+    return `${base}/${params}`;
+  }
+  // If params is undefined or null, return the base URL
+  return base;
 };

@@ -23,10 +23,6 @@ studentRouter.get(
 
 studentRouter.get("/groups", GroupController.getGroupsForStudent);
 studentRouter.get(
-  "/groups/homepage",
-  GroupController.getMembershipsForHomepage
-);
-studentRouter.get(
   "/:subject/:assignment",
   UserController.getUsersInGroupForAssignment
 );

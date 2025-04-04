@@ -302,9 +302,19 @@ const AwardController = {
       const awards = await Award.findAll({
         include: [
           {
-            model: Classe,
-            attributes: [],
-            where: { teacher },
+            model: Group,
+            attributes: [], // You can keep this empty since you only want class details later
+            include: [
+              {
+                model: Classe,
+                attributes: ["id"], // Include any relevant attributes from Classe if needed
+                where: { teacher }, // Filter by teacher here
+              },
+              {
+                model: Assignment,
+                attributes: ["title"], // Get the title of the assignment
+              },
+            ],
           },
           {
             model: Badge,
@@ -312,23 +322,13 @@ const AwardController = {
           },
           {
             model: User,
-            as: "giver", // Assuming 'giver' is defined as an alias in your model
+            as: "giverUser", // Alias for the giver
             attributes: ["name"], // Get only the name of the giver
           },
           {
             model: User,
-            as: "recipient", // Assuming 'recipient' is defined as an alias in your model
+            as: "recipientUser", // Alias for the recipient
             attributes: ["name"], // Get only the name of the recipient
-          },
-          {
-            model: Group,
-            attributes: ["number"], // Get only the group number
-            include: [
-              {
-                model: Assignment,
-                attributes: ["title"], // Get only the title of the assignment
-              },
-            ],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -340,14 +340,14 @@ const AwardController = {
         badge: award.Badge.name,
         giver: award.giver.name,
         recipient: award.recipient.name,
-        groupNumber: award.Group.number, // Accessing the first group number
-        assignmentTitle: award.Group.Assignment?.title, // Accessing the title of the first assignment
+        groupNumber: award.Group.number, // Accessing the group number
+        assignmentTitle: award.Group.Assignment?.title, // Accessing the assignment title
       }));
 
       res.status(200).json(result);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err500 });
+      res.status(500).json({ error: "Internal Server Error" }); // Use a generic error message for security
     }
   },
 

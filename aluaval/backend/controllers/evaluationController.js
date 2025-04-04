@@ -507,12 +507,12 @@ const EvaluationController = {
           },
           {
             model: User,
-            as: "evaluator", // Assuming you have an alias for evaluator
+            as: "evaluatorUser", // Assuming you have an alias for evaluator
             attributes: ["name"], // Get the evaluator's name
           },
           {
             model: User,
-            as: "evaluated", // Assuming you have an alias for evaluated
+            as: "evaluatedUser", // Assuming you have an alias for evaluated
             attributes: ["name"], // Get the evaluated user's name
           },
         ],

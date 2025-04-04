@@ -4,6 +4,7 @@ import routes from "./routes/index.js";
 import weeklyReminder from "./models/jobs/weeklyReminder.js";
 import preloadBadges from "./scripts/preloadBadges.js";
 import { syncModels } from "./models/index.js";
+import cors from "cors";
 /* import sequelize from "./config/database.js"; */
 
 const app = express();
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 routes(app);
 

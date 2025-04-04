@@ -108,7 +108,7 @@ const ClasseController = {
   },
 
   getClassForGroupMaking: async (req, res) => {
-    const { teacher } = req.user;
+    const teacher = req.user;
     const { subject } = req.params;
 
     try {
@@ -123,7 +123,7 @@ const ClasseController = {
           .json({ error: "No class found for this subject and teacher." });
       }
 
-      res.status(200).json(classe);
+      res.status(200).json({ id: classe.id });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

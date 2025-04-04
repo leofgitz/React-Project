@@ -30,11 +30,6 @@ const Membership = sequelize.define(
   },
   {
     timestamps: true,
-    uniqueKeys: {
-      unique_student_group_per_subject: {
-        fields: ["student", "group"],
-      },
-    },
   }
 );
 

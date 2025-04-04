@@ -15,16 +15,16 @@ const RegisterForm = () => {
     event.preventDefault();
     try {
       let role = isStudent ? "Student" : "Teacher";
-      await create("users", { name, password, role });
+      await create("auth/", { name, password, role });
       navigate("/login");
     } catch (err) {
-      console.error(err.message);
+      console.error(err);
     }
   };
 
   return (
     <div
-      className=" w3-container w3-display-middle w3-card w3-round-xxlarge"
+      className="w3-container w3-display-middle w3-card w3-round-xxlarge"
       style={{ width: "30%" }}
     >
       <h2 className="w3-center">
@@ -41,7 +41,8 @@ const RegisterForm = () => {
           type="checkbox"
           checked={isStudent}
           onChange={() => setAsStudent((prev) => !prev)}
-        />
+        />{" "}
+        <label htmlFor="role">Is Student?</label>
         <SubmitButton text="Register" />
       </form>
     </div>

@@ -6,24 +6,15 @@ export const AssignmentItem = (assignments) => {
       {assignments.map((assignment) => (
         <div key={assignment.id} className="w3-card w3-padding">
           <h4>
-            {assignment.title} - Subject: {assignment.subject.name}
+            {assignment.title} - Subject: {assignment.Subject?.name}
           </h4>
-          <div key={assignment.Groups.id} className="w3-padding">
-            <p>
-              Group Number: {assignment.Groups[0].number} <br />
-              Due Date: {assignment.duedate} <br />
-              {assignment.Groups[0].submissionDate && (
-                <>Submission Date: {assignment.Groups[0].submissionDate} </>
-              )}
-            </p>
-          </div>
         </div>
       ))}
     </>
   );
 };
 
-export const AwardItem = ({ awards }) => {
+export const AwardItem = (awards) => {
   return (
     <>
       {awards.map((award) => (

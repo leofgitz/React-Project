@@ -5,12 +5,9 @@ import SubjectController from "../controllers/subjectController.js";
 import EvaluationController from "../controllers/evaluationController.js";
 import AwardController from "../controllers/awardController.js";
 import UserController from "../controllers/userController.js";
+import ClasseController from "../controllers/classController.js";
 const teacherRouter = express.Router();
 
-teacherRouter.get(
-  "/assignments",
-  AssignmentController.getAssignmentsForTeacher
-);
 teacherRouter.get(
   "/assignments/homepage",
   AssignmentController.getTeacherAssignmentsForHomepage
@@ -25,7 +22,21 @@ teacherRouter.get(
   "/groups/homepage",
   GroupController.getTeacherGroupsForHomepage
 );
-teacherRouter.get("/lastgroupno/:classe", GroupController.getLastNumberForGroupMaking);
+teacherRouter.get(
+  "/lastgroupno/:classe",
+  GroupController.getLastNumberForGroupMaking
+);
+teacherRouter.get("/:subject/classe", ClasseController.getClassForGroupMaking);
+
+teacherRouter.get(
+  "/evaluations/history",
+  EvaluationController.teacherEvaluationHistory
+);
+teacherRouter.get(
+  "/awards/homepage",
+  AwardController.getBadgesTeacherForHomepage
+);
+
 teacherRouter.get(
   "/:subject/:assignment",
   UserController.getStudentsAndGroupsForAssignment
@@ -41,15 +52,7 @@ teacherRouter.get(
   "/evaluations",
   EvaluationController.getEvaluationsByGroupsForTeacher
 );
-teacherRouter.get(
-  "/evaluations/history",
-  EvaluationController.teacherEvaluationHistory
-);
 
 teacherRouter.get("/awards", AwardController.getAwardsForTeacher);
-teacherRouter.get(
-  "/awards/homepage",
-  AwardController.getBadgesTeacherForHomepage
-);
 
 export default teacherRouter;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { create, fetchDynamicRoute } from "../services/dataFetch.js";
-import { useAuth } from "../context/authProvider.js";
+import { useAuth } from "../context/authProvider.jsx";
 import { useNavigate } from "react-router-dom";
 import SubjectsSection from "../components/SubjectsSection.jsx";
 import BadgeModal from "../components/BadgeModal.jsx";

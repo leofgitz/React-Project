@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import {
   Classe,
   Enrollment,
@@ -10,7 +11,7 @@ import "dotenv/config";
 const err500 = "Internal Server Error";
 const domain = "@ispgaya.pt";
 
-const generateEmail = async (role, name) => {
+const generateEmail = (role, name) => {
   const currentYear = new Date().getFullYear();
   const randomDigits = Math.floor(100000 + Math.random() * 900000);
   let prefix, email;
@@ -32,7 +33,7 @@ const UserController = {
     const { name, password, role } = req.body;
     const email = generateEmail(role, name);
     try {
-      const existingUser = await User.findOne({ where: { email } });
+      const existingUser = await User.findOne({ where: { email: email } });
 
       if (existingUser) {
         return res.status(400).json({ error: "User already in database" });
@@ -196,51 +197,41 @@ const UserController = {
   },
 
   getStudentsAndGroupsForAssignment: async (req, res) => {
-    const teacher = req.user; // Get the logged-in teacher
-    const { subject, assignment } = req.params; // Get subject and assignment from route parameters
+    const teacher = req.user; // Logged-in teacher's ID
+    const { subject, assignment } = req.params; // Route parameters
 
     try {
-      // Find all students enrolled in the classes taught by this teacher for the given subject and assignment
       const students = await User.findAll({
-        attributes: ["id", "name"], // Get student details
+        attributes: ["id", "name"],
+        where: { role: "Student" }, // Select student details
         include: [
           {
             model: Enrollment,
-            attributes: [],
+            attributes: [], // No need to return enrollment details
             include: [
               {
                 model: Classe,
                 where: { teacher, subject }, // Filter by teacher and subject
-                attributes: [],
-                include: [
-                  {
-                    model: Group,
-                    attributes: ["id", "number"], // Get group details if they exist
-                    where: { assignment }, // Filter by assignment
-                    required: false, // Include students even if they are not part of a group
-                    include: [
-                      {
-                        model: Membership,
-                        attributes: [],
-                        where: { student: { [Op.col]: "User.id" } }, // Match the student with the group
-                        required: false, // Include even if no membership
-                      },
-                    ],
-                  },
-                ],
+                attributes: [], // No need to return class details
               },
             ],
           },
+          {
+            model: Group,
+            through: { attributes: [] }, // Exclude Membership join table details
+            attributes: ["id", "number"], // Group details
+            where: { assignment }, // Filter by assignment
+            required: false, // Include students without a group
+          },
         ],
-        group: ["User.id", "Group.id"], // Group by user and group
       });
 
-      // Transform the result to include the group number or indicate if the student has no group
+      // Transform results to include group data or indicate unassigned
       const result = students.map((student) => ({
         id: student.id,
         name: student.name,
-        groupID: student.Enrollments[0]?.Classe?.Groups[0]?.id || null, // Ensure to access the group correctly
-        groupNumber: student.Enrollments[0]?.Classe?.Groups[0]?.number || null, // Ensure to access the group number correctly
+        groupID: student.Groups[0]?.id || null,
+        groupNumber: student.Groups[0]?.number || null,
       }));
 
       res.status(200).json(result); // Return the result
@@ -258,34 +249,34 @@ const UserController = {
     try {
       // Find all users in the group for the specified subject and assignment
       const usersInGroup = await User.findAll({
-        attributes: ["id", "name"], // Get user details
+        attributes: ["id", "name"], // Get student details
         include: [
           {
-            model: Membership, // Include Membership to link users to groups
-            attributes: [],
+            model: Enrollment,
+            attributes: [], // We don’t need attributes from Enrollment
             include: [
               {
-                model: Group,
-                attributes: ["id", "number"], // Get group details
-                where: { assignment }, // Filter by assignment
+                model: Classe,
+                where: { teacher, subject }, // Filter by teacher and subject
+                attributes: [], // We don’t need attributes from Classe
                 include: [
                   {
-                    model: Classe,
-                    attributes: [],
-                    include: [
-                      {
-                        model: Subject,
-                        attributes: [],
-                        where: { name: subject }, // Filter by subject name
-                      },
-                    ],
+                    model: Group,
+                    attributes: ["id", "number"], // Get group details if they exist
+                    where: { assignment }, // Filter by assignment
+                    required: false, // Include students even if they are not part of a group
                   },
                 ],
               },
             ],
           },
+          {
+            model: Group, // Include Group directly
+            attributes: ["id", "number"],
+            through: { attributes: [] }, // Exclude attributes from Membership
+            required: false, // Include students even if not part of any group
+          },
         ],
-        group: ["User.id", "Group.id"], // Group by user and group
       });
 
       // Transform the result to include group details

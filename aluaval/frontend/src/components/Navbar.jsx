@@ -7,8 +7,8 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const role = user.role;
-  const name = user.name;
+  const role = user?.role;
+  const name = user?.name;
 
   const hiddenPaths = ["/login", "/register", "/evaluation/"];
   const showNavbar = !hiddenPaths.some((path) =>
@@ -18,10 +18,10 @@ const Navbar = () => {
 
   const fetchNotifs = async () => {
     try {
-      let data = await fetchDynamicRoute("notifications", "three");
+      let data = await fetchDynamicRoute("notifications", ["three"]);
       setNotifs(data);
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching notifications:" + error);
     }
   };
 

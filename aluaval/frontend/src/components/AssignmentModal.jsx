@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-const AssignmentModal = ({ onClose, onCreate }) => {
+const AssignmentModal = ({ onClose, onCreate, isOpen }) => {
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCreate({ title, dueDate });
+    onCreate(title, dueDate);
     onClose(); // Close the modal after submission
   };
 
   return (
-    <div className="w3-modal">
+    <div className={`w3-modal ${isOpen ? "w3-show" : ""}`}>
       <div className="w3-modal-content">
         <div className="w3-container">
           <span className="w3-button w3-display-topright" onClick={onClose}>

@@ -22,13 +22,12 @@ const AuthController = {
       }
       const token = jwt.sign(
         {
-          id: user.id,
+          user: user.id,
         },
-        process.env.jwtKEY,
-        { expiresIn: "1h" }
+        process.env.jwtKEY
       );
 
-      res.status(200).json({ token, user });
+      res.status(200).json({ user, token });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

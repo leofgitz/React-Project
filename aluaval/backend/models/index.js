@@ -14,10 +14,10 @@ import Notification from "./notification.js";
 import applyHooks from "./hooks/index.js";
 
 User.hasMany(Enrollment, { foreignKey: "student" });
-User.hasMany(Award, { foreignKey: "giver" });
-User.hasMany(Award, { foreignKey: "recipient" });
-User.hasMany(Evaluation, { foreignKey: "evaluator" });
-User.hasMany(Evaluation, { foreignKey: "evaluated" });
+User.hasMany(Award, { foreignKey: "giver", as: "giverUser" });
+User.hasMany(Award, { foreignKey: "recipient", as: "recipientUser" });
+User.hasMany(Evaluation, { foreignKey: "evaluator", as: "evaluatorUser" });
+User.hasMany(Evaluation, { foreignKey: "evaluated", as: "evaluatedUser" });
 User.belongsToMany(Group, {
   through: Membership,
   foreignKey: "student",
@@ -39,6 +39,7 @@ Classe.hasMany(Group, { foreignKey: "classe" });
 
 Assignment.belongsTo(User, { foreignKey: "teacher" });
 Assignment.belongsTo(Subject, { foreignKey: "subject" });
+Assignment.hasMany(Group, { foreignKey: "assignment" });
 
 Enrollment.belongsTo(Classe, { foreignKey: "classe" });
 Enrollment.belongsTo(User, { foreignKey: "student" });
@@ -48,18 +49,16 @@ Group.belongsToMany(User, {
   through: Membership,
   foreignKey: "group",
 });
+Group.belongsTo(Assignment, { foreignKey: "assignment" });
 
-Award.belongsTo(User, { foreignKey: "giver" });
-Award.belongsTo(User, { foreignKey: "recipient" });
+Award.belongsTo(User, { foreignKey: "giver", as: "giverUser" });
+Award.belongsTo(User, { foreignKey: "recipient", as: "recipientUser" });
 Award.belongsTo(Group, { foreignKey: "group" });
 Award.belongsTo(Badge, { foreignKey: "badge" });
 
-Evaluation.belongsTo(User, { foreignKey: "evaluator" });
-Evaluation.belongsTo(User, { foreignKey: "evaluated" });
+Evaluation.belongsTo(User, { foreignKey: "evaluator", as: "evaluatorUser" });
+Evaluation.belongsTo(User, { foreignKey: "evaluated", as: "evaluatedUser" });
 Evaluation.belongsTo(Group, { foreignKey: "group" });
-
-Membership.belongsTo(User, { foreignKey: "student" });
-Membership.belongsTo(Group, { foreignKey: "group" });
 
 Notification.belongsTo(User, { foreignKey: "user" });
 

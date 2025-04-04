@@ -45,7 +45,7 @@ const GroupCreation = () => {
     try {
       let params = [subjectID, "classe"];
       let data = await fetchDynamicRoute("teacher", params);
-      setClasse(data);
+      setClasse(data.id);
 
       params = ["subjects", subjectID, "assignments"];
       data = await fetchDynamicRoute("teacher", params);
@@ -65,7 +65,7 @@ const GroupCreation = () => {
       setStudents(data);
 
       data = await fetchDynamicRoute("teacher", ["lastgroupno", classe], "GET");
-      setLastNumber(data);
+      setLastNumber(data.groupNumber);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -82,7 +82,7 @@ const GroupCreation = () => {
       };
       const newAssignment = await create("assignments", body);
       console.log("Created new assignment: " + newAssignment);
-
+      
       const params = ["subjects", selectedSubject, "assignments"];
       let data = await fetchDynamicRoute("teacher", params);
       setAssignments(data);
@@ -105,6 +105,7 @@ const GroupCreation = () => {
         classe,
         assignment: selectedAssignment,
       });
+      let group = lastNumber + 1;
       await fetchDynamicRoute("memberships", "addmembers", "POST", {
         group,
         students: selectedStudents,
@@ -165,7 +166,7 @@ const GroupCreation = () => {
             onSelectAssignment={handleAssignmentSelect}
             onBack={handleBack}
           />
-          <button onClick={() => setIsModalOpen(true)}>
+          <button onClick={() => setIsAssignmentModalOpen(true)}>
             Create Assignment
           </button>
         </>
@@ -192,6 +193,7 @@ const GroupCreation = () => {
         <AssignmentModal
           onClose={() => setIsAssignmentModalOpen(false)}
           onCreate={handleCreateAssignment}
+          isOpen={true}
         />
       )}
 

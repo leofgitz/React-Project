@@ -1,6 +1,5 @@
 import React from "react";
 import { titles, possibleAnswers } from "../constants/Questionnaire.js";
-import "w3-css/w3.css";
 
 const EvaluationCard = ({ evaluation }) => {
   const isSelfEvaluation = evaluation.evaluator === evaluation.evaluated;

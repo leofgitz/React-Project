@@ -3,9 +3,19 @@ import {
   Group,
   Membership,
   Subject,
+  Classe,
 } from "../models/index.js";
 
 const err500 = "Internal Server Error";
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0"); // Get day and pad with zero if needed
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-indexed) and pad
+  const year = date.getFullYear(); // Get full year
+
+  return `${day}/${month}/${year}`; // Format as 'dd mm yyyy'
+};
 
 const AssignmentController = {
   createAssignment: async (req, res) => {
@@ -95,7 +105,7 @@ const AssignmentController = {
 
     try {
       const assignments = await Assignment.findAll({
-        attributes: ["id", "title", "duedate"], // Include the assignment fields you want
+        attributes: ["id", "title", "dueDate"], // Include the assignment fields you want
         where: {
           subject, // Filter by the subject ID
           teacher, // Filter by the teacher ID
@@ -121,7 +131,7 @@ const AssignmentController = {
       const result = assignments.map((assignment) => ({
         id: assignment.id,
         title: assignment.title,
-        dueDate: assignment.duedate,
+        dueDate: formatDate(assignment.dueDate),
       }));
 
       res.status(200).json(result);
@@ -167,7 +177,7 @@ const AssignmentController = {
       const result = assignments.map((assignment) => ({
         id: assignment.id,
         title: assignment.title,
-        dueDate: assignment.duedate,
+        dueDate: formatDate(assignment.dueDate),
       }));
 
       res.status(200).json(result);
@@ -176,7 +186,6 @@ const AssignmentController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
-
 
   getAssignmentsForStudents: async (req, res) => {
     const student = req.user;
@@ -207,30 +216,34 @@ const AssignmentController = {
   },
 
   getTeacherAssignmentsForHomepage: async (req, res) => {
-    const teacher = req.user; // Get the logged-in teacher
+    const teacher = req.user; // Get the logged-in teacher's ID
 
     try {
       const assignments = await Assignment.findAll({
-        where: { teacher }, // Ensure assignments are for the logged-in teacher
+        where: { teacher }, // Filter by the logged-in teacher
         include: [
           {
-            model: Group,
-            attributes: ["id", "number", "submissionDate"], // Get group details
-          },
-          {
             model: Subject,
-            attributes: ["name"], // Include subject name directly from Assignment
+            attributes: ["name"], // Include subject details
+            /* include: {
+              model: Classe,
+              attributes: [], // You can adjust or remove this as needed
+              include: {
+                model: Group,
+                attributes: ["id", "number", "submissionDate"], // Include group attributes
+              },
+            }, */
           },
         ],
-        group: ["Assignment.id"], // Group by assignment ID
+        group: ["Assignment.id"], // Group by these to avoid duplicates
         order: [["createdAt", "DESC"]], // Order by creation date
         limit: 3, // Limit results to the latest 3 assignments
       });
 
-      res.status(200).json(assignments); // Return assignments
+      res.status(200).json(assignments); // Return the filtered assignments
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err500 });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 

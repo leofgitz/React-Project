@@ -67,20 +67,22 @@ const StudentsSection = ({
                   </div>
                 ))}
               </div>
-              <div className="w3-container">
-                <button
-                  className="w3-button w3-light-blue w3-round"
-                  onClick={() => onCheckBadges(groupId)} // Call the function with groupId
-                >
-                  Check Badges
-                </button>
-                <button
-                  className="w3-button w3-light-blue w3-round w3-margin-left"
-                  onClick={() => onCheckEvalHistory(groupId)} // Call the function with groupId
-                >
-                  Check Evaluation History
-                </button>
-              </div>
+              {groupNumber !== "Ungrouped" && (
+                <div className="w3-container">
+                  <button
+                    className="w3-button w3-light-blue w3-round"
+                    onClick={() => onCheckBadges(groupId)} // Call the function with groupId
+                  >
+                    Check Badges
+                  </button>
+                  <button
+                    className="w3-button w3-light-blue w3-round w3-margin-left"
+                    onClick={() => onCheckEvalHistory(groupId)} // Call the function with groupId
+                  >
+                    Check Evaluation History
+                  </button>
+                </div>
+              )}
             </div>
           )
         )}
