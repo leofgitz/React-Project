@@ -34,7 +34,7 @@ const Notifications = ({}) => {
       setNotifications((prevNotifications) =>
         prevNotifications.map((notification) =>
           notification.id === id
-            ? { ...notification, read: true }
+            ? { ...notification, isRead: true }
             : notification
         )
       );
@@ -49,7 +49,7 @@ const Notifications = ({}) => {
       setNotifications((prevNotifications) =>
         prevNotifications.map((notification) => ({
           ...notification,
-          read: true,
+          isRead: true,
         }))
       );
     } catch (err) {

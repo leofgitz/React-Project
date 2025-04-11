@@ -64,7 +64,11 @@ const GroupCreation = () => {
       let data = await fetchDynamicRoute("teacher", params);
       setStudents(data);
 
-      data = await fetchDynamicRoute("teacher", ["lastgroupno", classe], "GET");
+      data = await fetchDynamicRoute(
+        "teacher",
+        ["lastgroupno", classe, assignmentID],
+        "GET"
+      );
       setLastNumber(data.groupNumber);
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -82,7 +86,7 @@ const GroupCreation = () => {
       };
       const newAssignment = await create("assignments", body);
       console.log("Created new assignment: " + newAssignment);
-      
+
       const params = ["subjects", selectedSubject, "assignments"];
       let data = await fetchDynamicRoute("teacher", params);
       setAssignments(data);
@@ -105,22 +109,29 @@ const GroupCreation = () => {
         classe,
         assignment: selectedAssignment,
       });
-      let group = lastNumber + 1;
+      let group = newGroup.id;
       await fetchDynamicRoute("memberships", "addmembers", "POST", {
         group,
         students: selectedStudents,
       });
 
-      console.log("Created new group: " + newGroup);
+      console.log("Created new group: ", newGroup);
       console.log("Group created with students:", selectedStudents);
       setSelectedStudents([]);
 
-      let data = await fetchDynamicRoute(
+      const params = [selectedSubject, selectedAssignment];
+      let data = await fetchDynamicRoute("teacher", params);
+      console.log("Before updating students:", students);
+      setStudents(data);
+      console.log("After updating students:", data);
+
+      data = await fetchDynamicRoute(
         "teacher",
-        ["lastgroupno", classe],
+        ["lastgroupno", classe, selectedAssignment],
         "GET"
       );
-      setLastNumber(data);
+      console.log("lastgroupno data:", data);
+      setLastNumber(data.groupNumber);
     } catch (err) {
       console.error("Error creating group:", err);
     }

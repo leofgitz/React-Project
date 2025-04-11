@@ -42,12 +42,6 @@ const Group = sequelize.define(
   },
   {
     timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ["classe", "number"],
-      },
-    ],
   }
 );
 export default Group;

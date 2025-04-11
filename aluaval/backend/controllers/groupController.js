@@ -11,7 +11,7 @@ const GroupController = {
 
     try {
       const lastGroup = await Group.findOne({
-        where: { classe },
+        where: { classe, assignment },
         order: [["number", "DESC"]],
       });
 
@@ -236,11 +236,11 @@ const GroupController = {
   },
 
   getLastNumberForGroupMaking: async (req, res) => {
-    const { classe } = req.params;
+    const { classe, assignment } = req.params;
 
     try {
       const number = await Group.findOne({
-        where: { classe },
+        where: { classe, assignment },
         attributes: ["number"],
         order: [["number", "DESC"]],
       });

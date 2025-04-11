@@ -10,6 +10,8 @@ const Navbar = () => {
   const role = user?.role;
   const name = user?.name;
 
+  const isNotificationsPage = location.pathname === "/notifications";
+
   const hiddenPaths = ["/login", "/register", "/evaluation/"];
   const showNavbar = !hiddenPaths.some((path) =>
     location.pathname.startsWith(path)
@@ -18,7 +20,7 @@ const Navbar = () => {
 
   const fetchNotifs = async () => {
     try {
-      let data = await fetchDynamicRoute("notifications", ["three"]);
+      let data = await fetchDynamicRoute("notifications", "three");
       setNotifs(data);
     } catch (error) {
       console.error("Error fetching notifications:" + error);
@@ -26,8 +28,10 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    fetchNotifs();
-  }, []);
+    if (user) {
+      fetchNotifs();
+    }
+  }, [user]);
 
   const handleLogout = async (event) => {
     event.preventDefault();
@@ -88,8 +92,15 @@ const Navbar = () => {
           <i className="fa fa-sign-out-alt"></i> Logout
         </button>
 
-        <div className="w3-dropdown-hover w3-right w3-round-large">
-          <button className="w3-button w3-card w3-blue w3-round-xxlarge w3-margin-left">
+        <div
+          className={`w3-dropdown-hover w3-right w3-round-large ${
+            isNotificationsPage ? "w3-disabled" : ""
+          }`}
+        >
+          <button
+            className="w3-button w3-card w3-blue w3-round-xxlarge w3-margin-left"
+            disabled={isNotificationsPage} // Disable button if on the notifications page
+          >
             <i className="fa fa-bell"></i> Notifications
           </button>
           <div
@@ -97,15 +108,18 @@ const Navbar = () => {
             style={{ position: "fixed" }}
           >
             {notifs.length > 0 &&
+              !isNotificationsPage &&
               notifs.map((notif) => (
                 <NotificationMessage key={notif.id} notification={notif} />
               ))}
-            <NavLink
-              to="/notifications"
-              className="w3-bar-item w3-button w3-blue w3-round-large"
-            >
-              View All
-            </NavLink>
+            {!isNotificationsPage && (
+              <NavLink
+                to="/notifications"
+                className={`w3-bar-item w3-button w3-blue w3-round-large`}
+              >
+                View All
+              </NavLink>
+            )}
           </div>
         </div>
 

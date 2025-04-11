@@ -23,7 +23,7 @@ teacherRouter.get(
   GroupController.getTeacherGroupsForHomepage
 );
 teacherRouter.get(
-  "/lastgroupno/:classe",
+  "/lastgroupno/:classe/:assignment",
   GroupController.getLastNumberForGroupMaking
 );
 teacherRouter.get("/:subject/classe", ClasseController.getClassForGroupMaking);
