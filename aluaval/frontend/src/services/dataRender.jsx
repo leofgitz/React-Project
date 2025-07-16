@@ -4,10 +4,9 @@ export const AssignmentItem = (assignments) => {
   return (
     <>
       {assignments.map((assignment) => (
-        <div key={assignment.id} className="w3-card w3-padding">
-          <h4>
-            {assignment.title} - Subject: {assignment.Subject?.name}
-          </h4>
+        <div key={assignment.id} className="w3-card w3-round-xlarge w3-center">
+          <h4>Title: {assignment.title}</h4>
+          <h5>Subject: {assignment.Subject?.name}</h5>
         </div>
       ))}
     </>
@@ -18,7 +17,7 @@ export const AwardItem = (awards) => {
   return (
     <>
       {awards.map((award) => (
-        <div key={award.id} className="w3-card w3-padding">
+        <div key={award.id} className="w3-card w3-round-xlarge w3-center">
           <h4>Awarded Badge: {award.badge}</h4>
           <div className="w3-padding">
             <p>
@@ -38,7 +37,7 @@ export const EvaluationItem = (evaluations) => {
   return (
     <>
       {evaluations.map((evaluation) => (
-        <div key={evaluation.id} className="w3-card w3-padding">
+        <div key={evaluation.id} className="w3-card w3-round-xlarge  w3-center">
           <h4>Assignment: {evaluation.assignment}</h4>
           <div className="w3-padding">
             <p>

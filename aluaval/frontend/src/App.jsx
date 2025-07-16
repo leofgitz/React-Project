@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import LoginForm from "./pages/LoginForm.jsx";
 import Homepage from "./pages/Homepage.jsx";
@@ -15,15 +17,7 @@ import RegisterForm from "./pages/RegisterForm.jsx";
 import { AuthProvider, useAuth } from "./context/authProvider.jsx";
 import GroupsPage from "./pages/GroupsPage.jsx";
 import Notifications from "./pages/Notifications.jsx";
-
-function ProtectedRoute({ element }) {
-  const { user, loading } = useAuth();
-  console.log("ProtectedRoute - User:", user, "Loading:", loading);
-  if (loading) {
-    return <div>Loading...</div>; // Show loading indicator while checking auth
-  }
-  return user ? element : <Navigate to="/login" />;
-}
+import NotFound from "./pages/NotFound.jsx";
 
 function RedirectIfLoggedIn({ element }) {
   const { user } = useAuth();
@@ -36,12 +30,55 @@ function RedirectIfLoggedIn({ element }) {
   return element;
 }
 
+function ProtectedRoute({ element, allowedRoles }) {
+  const { user, loading } = useAuth();
+  console.log("ProtectedRoute - User:", user, "Loading:", loading);
+  if (loading) {
+    return <div>Loading...</div>; // Show loading indicator while checking auth
+  }
+
+  if (!user) {
+    return <Navigate to="/login" />;
+  } else if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="*" replace />;
+  }
+  return element;
+}
+
+function TitleManager() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const APP_NAME = "AluAval";
+
+    const pathTitleMap = {
+      "/": "Control Panel",
+      "/login": "Login",
+      "/register": "Register",
+      "/group-creation": "Assignments and Groups",
+      "/groups-page": "Assignments, Badges and Evaluations",
+      "/notifications": "Notifications",
+      "/evaluation": "Evaluation",
+      "/eval-history": "Evaluation History",
+    };
+
+    const pageTitle = pathTitleMap[location.pathname];
+    document.title = pageTitle ? `${APP_NAME} - ${pageTitle}` : APP_NAME;
+  }, [location]);
+
+  return null; // This component does not render anything
+}
+
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <TitleManager />
         <Navbar />
-        <div>
+        <div
+          className="w3-container"
+          style={{ width: "75%", display: "flex", margin: "auto" }}
+        >
           <Routes>
             <Route
               path="/login"
@@ -56,24 +93,38 @@ function App() {
               element={<ProtectedRoute element={<Homepage />} />}
             />
             <Route
-              path="/evaluation/:id/:group/"
+              path="/evaluation"
               element={<ProtectedRoute element={<Questionnaire />} />}
             />
             <Route
-              path="/evaluation-history/:group"
+              path="/eval-history"
               element={<ProtectedRoute element={<EvalHistory />} />}
             />
             <Route
               path="/group-creation"
-              element={<ProtectedRoute element={<GroupCreation />} />}
+              element={
+                <ProtectedRoute
+                  element={<GroupCreation />}
+                  allowedRoles={"Teacher"}
+                />
+              }
             />
             <Route
               path="/groups-page"
-              element={<ProtectedRoute element={<GroupsPage />} />}
+              element={
+                <ProtectedRoute
+                  element={<GroupsPage />}
+                  allowedRoles={"Student"}
+                />
+              }
             />
             <Route
               path="/notifications"
               element={<ProtectedRoute element={<Notifications />} />}
+            />
+            <Route
+              path="*"
+              element={<ProtectedRoute element={<NotFound />} />}
             />
           </Routes>
         </div>

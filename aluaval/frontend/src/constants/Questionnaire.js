@@ -61,7 +61,7 @@ export const possibleAnswers = [
     "Often negative or disrespectful",
     "Always negative or disrespectful",
   ],
-  ["Very well", "Well", "Adequately", "Poorly", "Did not answer"],
+  ["Very well", "Well", "Adequately", "Poorly", "Very Poorly"],
   ["Excellent", "Good", "Satisfactory", "Needs improvement", "Unsatisfactory"],
 ];
 

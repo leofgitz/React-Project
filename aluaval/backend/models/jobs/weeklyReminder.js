@@ -7,7 +7,7 @@ import {
   Evaluation,
 } from "../index.js";
 
-const seconds = 300; // for demo purposes
+const seconds = 21600;
 const mili = 1000;
 
 const weeklyReminder = async () => {

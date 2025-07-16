@@ -82,10 +82,10 @@ const Homepage = () => {
   };
 
   return (
-    <div className="main-content">
-      <div className="w3-container w3-margin-top">
-        <h2>Control Panel</h2>
-        <div className="w3-card w3-light-grey w3-padding w3-margin-bottom">
+    <div className="main-content w3-animate-opacity">
+      <div className="w3-card w3-round-xlarge w3-container w3-margin-top">
+        <h2 className="w3-text-brown">Control Panel</h2>
+        <div className="w3-card w3-padding-small w3-margin-bottom w3-round-xlarge">
           <div className="w3-container">
             <h3>Welcome, {name}.</h3>
             <UserRoleMessage />

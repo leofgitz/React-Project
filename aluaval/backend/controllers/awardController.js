@@ -6,6 +6,7 @@ import {
   Assignment,
   Classe,
 } from "../models/index.js";
+import { fn, col, Op, Sequelize } from "sequelize";
 const err500 = "Internal Server Error";
 
 const AwardController = {
@@ -18,7 +19,6 @@ const AwardController = {
           giver,
           badge,
           group,
-          recipient,
         },
       });
 
@@ -140,6 +140,7 @@ const AwardController = {
           },
           {
             model: User,
+            as: "recipientUser",
             attributes: ["id", "name"], // Student details
           },
         ],
@@ -153,7 +154,7 @@ const AwardController = {
       // Format result into nested structure
       const nestedResult = badges.reduce((acc, badge) => {
         const studentId = badge.recipient;
-        const studentName = badge.User.name;
+        const studentName = badge.recipientUser.name;
         const badgeData = {
           badgeId: badge.Badge.id,
           badgeName: badge.Badge.name,
@@ -247,7 +248,7 @@ const AwardController = {
     try {
       const awards = await Award.findAll({
         where: {
-          [Op.or]: [{ student }, { recipient: student }],
+          [Op.or]: [{ giver: student }, { recipient: student }],
         },
         include: [
           {
@@ -256,12 +257,12 @@ const AwardController = {
           },
           {
             model: User,
-            as: "giver", // Assuming 'giver' is defined as an alias in your model
+            as: "giverUser", // Assuming 'giver' is defined as an alias in your model
             attributes: ["name"], // Get only the name of the giver
           },
           {
             model: User,
-            as: "recipient", // Assuming 'recipient' is defined as an alias in your model
+            as: "recipientUser", // Assuming 'recipient' is defined as an alias in your model
             attributes: ["name"], // Get only the name of the recipient
           },
           {
@@ -282,8 +283,8 @@ const AwardController = {
       // Transform the result to extract the required fields
       const result = awards.map((award) => ({
         badge: award.Badge.name,
-        giver: award.giver.name,
-        recipient: award.recipient.name,
+        giver: award.giverUser.name,
+        recipient: award.recipientUser.name,
         groupNumber: award.Group.number, // Accessing the first group number
         assignmentTitle: award.Group.Assignment.title, // Accessing the title of the first assignment
       }));
@@ -303,7 +304,8 @@ const AwardController = {
         include: [
           {
             model: Group,
-            attributes: [], // You can keep this empty since you only want class details later
+            required: true,
+            attributes: ["number"], // You can keep this empty since you only want class details later
             include: [
               {
                 model: Classe,
@@ -338,10 +340,10 @@ const AwardController = {
       // Transform the result to extract the required fields
       const result = awards.map((award) => ({
         badge: award.Badge.name,
-        giver: award.giver.name,
-        recipient: award.recipient.name,
+        giver: award.giverUser.name,
+        recipient: award.recipientUser.name,
         groupNumber: award.Group.number, // Accessing the group number
-        assignmentTitle: award.Group.Assignment?.title, // Accessing the assignment title
+        assignmentTitle: award.Group?.Assignment.title, // Accessing the assignment title
       }));
 
       res.status(200).json(result);
@@ -353,15 +355,28 @@ const AwardController = {
 
   getUnawardedBadges: async (req, res) => {
     const { group } = req.params;
+    const user = req.user;
 
     try {
-      const unawardedBadges = Badge.findAll({
+      const unawardedBadges = await Badge.findAll({
         where: {
           id: {
-            [Op.notIn]: Sequelize.literal(`(
-                SELECT badge FROM Awards WHERE group = ${group}
-            )`), // Exclude awarded badges for the group
+            [Op.notIn]: Sequelize.literal(
+              `(SELECT badge FROM Awards WHERE \`group\` = ${group} AND \`giver\` = ${user})`
+            ), // Exclude awarded badges for the group
           },
+        },
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+          SELECT COUNT(*)
+          FROM Awards AS award
+          WHERE award.badge = Badge.id AND award.\`group\` = ${group}
+        )`),
+              "awardCount",
+            ],
+          ],
         },
       });
 

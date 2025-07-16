@@ -6,6 +6,7 @@ import AssignmentModal from "../components/AssignmentModal.jsx";
 import BadgeModal from "../components/BadgeModal.jsx";
 import { create, fetchDynamicRoute } from "../services/dataFetch.js";
 import { useAuth } from "../context/authProvider.jsx";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const GroupCreation = () => {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ const GroupCreation = () => {
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
   const [lastNumber, setLastNumber] = useState(0);
   const [classe, setClasse] = useState(0);
+  const navigate = useNavigate();
 
   const fetchSubjects = async () => {
     try {
@@ -35,6 +37,21 @@ const GroupCreation = () => {
   useEffect(() => {
     fetchSubjects();
   }, []);
+
+  useEffect(() => {
+    const { state } = location;
+
+    if (state?.returningFromHist && state?.previousState) {
+      const prev = state.previousState;
+
+      setSelectedSubject(prev.selectedSubject);
+      setSelectedAssignment(prev.selectedAssignment);
+      setStudents(prev.students);
+      setGroup(prev.group);
+      setCurrentStep(prev.currentStep);
+      setAssignments(prev.assignments);
+    }
+  }, [location]);
 
   const handleSubjectSelect = async (subjectID) => {
     setSelectedSubject(subjectID);
@@ -85,7 +102,7 @@ const GroupCreation = () => {
         teacher,
       };
       const newAssignment = await create("assignments", body);
-      console.log("Created new assignment: " + newAssignment);
+      console.log("Created new assignment: ", JSON.stringify(newAssignment));
 
       const params = ["subjects", selectedSubject, "assignments"];
       let data = await fetchDynamicRoute("teacher", params);
@@ -154,11 +171,20 @@ const GroupCreation = () => {
   };
 
   const handleCheckEvalHistory = async (group) => {
-    history.push(`/evaluation-history/${group}`);
+    navigate("/eval-history", {
+      state: {
+        group,
+        selectedSubject,
+        selectedAssignment,
+        currentStep,
+        students,
+        assignments,
+      },
+    });
   };
 
   return (
-    <div className="w3-container main-content">
+    <div className="w3-container main-content w3-animate-opacity">
       {currentStep === "subjects" && (
         <SubjectsSection
           subjects={subjects}
@@ -177,7 +203,10 @@ const GroupCreation = () => {
             onSelectAssignment={handleAssignmentSelect}
             onBack={handleBack}
           />
-          <button onClick={() => setIsAssignmentModalOpen(true)}>
+          <button
+            className="w3-button w3-margin-bottom w3-margin-left w3-animate-zoom w3-round-xxlarge w3-olive"
+            onClick={() => setIsAssignmentModalOpen(true)}
+          >
             Create Assignment
           </button>
         </>
@@ -204,7 +233,7 @@ const GroupCreation = () => {
         <AssignmentModal
           onClose={() => setIsAssignmentModalOpen(false)}
           onCreate={handleCreateAssignment}
-          isOpen={true}
+          isOpen={isAssignmentModalOpen}
         />
       )}
 
@@ -215,6 +244,7 @@ const GroupCreation = () => {
             setIsBadgeModalOpen(false);
             setSelectedGroup(null);
           }}
+          isOpen={isBadgeModalOpen}
         />
       )}
     </div>

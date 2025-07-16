@@ -2,8 +2,11 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="w3-container w3-center w3-orange w3-bottom">
-      <p>&copy; ISPGAYA 1990-2024</p>
+    <footer
+      style={{ background: "#fcf8ee" }}
+      className="w3-container w3-card w3-center  w3-bottom"
+    >
+      <p>&copy; ISPGAYA 1990-2025</p>
     </footer>
   );
 };

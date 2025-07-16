@@ -20,7 +20,7 @@ export const badges = [
   { name: "Tech Savvy", icon: "fa-laptop-code" },
   { name: "Community Helper", icon: "fa-handshake" },
   { name: "Team Spirit", icon: "fa-heart" },
-  { name: "Best Presenter", icon: "fa-podium" },
+  { name: "Best Presenter", icon: "fa-user-tie" },
   { name: "Green Thumb", icon: "fa-leaf" },
   { name: "Artistic Talent", icon: "fa-palette" },
   { name: "Literary Genius", icon: "fa-book" },

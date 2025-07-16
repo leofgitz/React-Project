@@ -3,9 +3,11 @@ import {
   Classe,
   Evaluation,
   Group,
+  Membership,
   Subject,
   User,
 } from "../models/index.js";
+import { Op } from "sequelize";
 const err500 = "Internal Server Error";
 
 const EvaluationController = {
@@ -291,12 +293,12 @@ const EvaluationController = {
         include: [
           {
             model: User, // Include evaluator
-            as: "evaluator",
+            as: "evaluatorUser",
             attributes: ["name"],
           },
           {
             model: User, // Include evaluated
-            as: "evaluated",
+            as: "evaluatedUser",
             attributes: ["name"],
           },
         ],
@@ -340,8 +342,8 @@ const EvaluationController = {
           id: evaluation.id,
           evaluator: evaluator,
           evaluated: evaluated,
-          evaluatorName: evaluation.evaluator.name, // Add evaluator's name
-          evaluatedName: evaluation.evaluated.name, // Add evaluated's name
+          evaluatorName: evaluation.evaluatorUser.name, // Add evaluator's name
+          evaluatedName: evaluation.evaluatedUser.name, // Add evaluated's name
           answers: scores,
           comments: comments,
           isFinal: evaluation.isFinal,
@@ -389,46 +391,6 @@ const EvaluationController = {
       res.status(500).json({ error: err500 });
     }
   },
-
-  /* calculateAverageScores: async (req, res) => {
-    const { group } = req.params;
-
-    try {
-      const evaluations = await Evaluation.findAll({ where: { group } });
-
-      const averageScores = evaluations.reduce(
-        (acc, evaluation) => {
-          acc.attendanceScore += evaluation.attendanceScore;
-          acc.participationScore += evaluation.participationScore;
-          acc.teamworkScore += evaluation.teamworkScore;
-          acc.qualityScore += evaluation.qualityScore;
-          acc.attitudeScore += evaluation.attitudeScore;
-          acc.feedbackScore += evaluation.feedbackScore;
-          acc.impressionScore += evaluation.impressionScore;
-          return acc;
-        },
-        {
-          attendanceScore: 0,
-          participationScore: 0,
-          teamworkScore: 0,
-          qualityScore: 0,
-          attitudeScore: 0,
-          feedbackScore: 0,
-          impressionScore: 0,
-        }
-      );
-
-      const count = evaluations.length;
-      Object.keys(averageScores).forEach((key) => {
-        averageScores[key] = averageScores[key] / count;
-      });
-
-      res.status(200).json(averageScores);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err500 });
-    }
-  }, */
 
   getEvaluationsByGroupsForTeacher: async (req, res) => {
     const teacher = req.user;
@@ -528,8 +490,8 @@ const EvaluationController = {
 
       // Format the output
       const formattedEvaluations = evaluations.map((evaluation) => ({
-        evaluator: evaluation.evaluator.name,
-        evaluated: evaluation.evaluated.name,
+        evaluator: evaluation.evaluatorUser.name,
+        evaluated: evaluation.evaluatedUser.name,
         groupNumber: evaluation.Group.number,
         assignment: evaluation.Group.Assignment.title,
         createdAt: evaluation.createdAt,
@@ -578,12 +540,12 @@ const EvaluationController = {
           },
           {
             model: User,
-            as: "evaluator", // Assuming you have an alias for evaluator
+            as: "evaluatorUser", // Assuming you have an alias for evaluator
             attributes: ["name"], // Get the evaluator's name
           },
           {
             model: User,
-            as: "evaluated", // Assuming you have an alias for evaluated
+            as: "evaluatedUser", // Assuming you have an alias for evaluated
             attributes: ["name"], // Get the evaluated user's name
           },
         ],
@@ -599,8 +561,8 @@ const EvaluationController = {
 
       // Format the output
       const formattedEvaluations = evaluations.map((evaluation) => ({
-        evaluator: evaluation.evaluator.name,
-        evaluated: evaluation.evaluated.name,
+        evaluator: evaluation.evaluatorUser.name,
+        evaluated: evaluation.evaluatedUser.name,
         groupNumber: evaluation.Group.number,
         assignment: evaluation.Group.Assignment.title,
         createdAt: evaluation.createdAt,
@@ -618,35 +580,189 @@ const EvaluationController = {
     }
   },
 
-  checkEvalExists: async (req, res) => {
-    const { user, assignment } = req.params;
+  evalcheck: async (req, res) => {
+    const user = req.user;
+    const { students, group, assignment } = req.body;
+    const error = { error: "Unauthorized access" };
 
-    const startWeek = new Date();
-    startWeek.setDate(startWeek.getDate() - startWeek.getDay);
+    const assignmentRecord = await Assignment.findByPk(assignment);
+    if (!assignmentRecord) {
+      return res.status(404).json({ error: "Assignment not found" });
+    }
+
+    const assignmentCreationDate = new Date(assignmentRecord.createdAt);
+    const assignmentCreationDateWeekday = assignmentCreationDate.getDay(); // 0 (Sun) to 6 (Sat)
+
+    const assignmentDueDate = new Date(assignmentRecord.dueDate);
+
+    const now = new Date();
+    const day = now.getDay(); // 0 (Sun) - 6 (Sat)
+    const diffToMonday = (day + 6) % 7; // How many days to subtract to reach Monday
+
+    const startWeek = new Date(now);
+    startWeek.setDate(now.getDate() - diffToMonday);
+    startWeek.setHours(0, 0, 0, 0); // Use setUTCHours if you're dealing with UTC consistently
+
     const endWeek = new Date(startWeek);
-    endWeek.setDate(endWeek.getDate + 6);
+    endWeek.setDate(startWeek.getDate() + 6); // End of Sunday
+    endWeek.setHours(23, 59, 59, 999);
 
     try {
-      // Query to find if the user has completed the evaluation this week
-      const evaluation = await Evaluation.findOne({
+      const isMember = await Membership.findOne({
+        where: { student: user, group },
+      });
+
+      if (!isMember) {
+        return res.status(403).json(error);
+      }
+
+      const isGroupInAssignment = await Group.findOne({
+        where: { id: group, assignment },
+      });
+
+      if (!isGroupInAssignment) {
+        return res.status(403).json(error);
+      }
+
+      const studentIds = students.map((s) => s.id);
+      const memberships = await Membership.findAll({
         where: {
-          user,
-          assignment,
-          createdAt: {
-            [Op.between]: [startWeek, endWeek],
-          },
+          student: studentIds,
+          group,
         },
       });
 
-      // If an evaluation exists, the user has already completed it for the week
-      if (evaluation) {
-        return res.status(200).json({ evaluated: true });
-      } else {
-        return res.status(200).json({ evaluated: false });
+      if (memberships.length !== studentIds.length) {
+        return res.status(403).json(error);
       }
+
+      const loopLimit = now < assignmentDueDate ? now : assignmentDueDate;
+      const results = await Promise.all(
+        students.map(async (student) => {
+          let missed = 0;
+          let finalMiss = -1;
+
+          for (
+            let weekStart = new Date(assignmentCreationDate);
+            weekStart < loopLimit;
+            weekStart.setDate(weekStart.getDate() + 7)
+          ) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            weekEnd.setHours(23, 59, 59, 999);
+
+            const isFinal =
+              assignmentDueDate >= weekStart && assignmentDueDate <= weekEnd;
+
+            const pastWeekEvaluation = await Evaluation.findOne({
+              where: {
+                evaluator: user,
+                evaluated: student.id,
+                group,
+                createdAt: {
+                  [Op.between]: [weekStart, weekEnd],
+                },
+              },
+            });
+
+            if (!pastWeekEvaluation) {
+              if (isFinal) {
+                finalMiss = 1;
+              } else {
+                missed++;
+              }
+            }
+          }
+
+          const currentWeekEvaluation = await Evaluation.findOne({
+            where: {
+              evaluator: user,
+              evaluated: student.id,
+              group,
+              createdAt: {
+                [Op.between]: [startWeek, endWeek],
+              },
+            },
+          });
+
+          // After the for-loop over weeks (which increments missed, sets finalMiss=1 if no eval in final week)
+          const finalWeekStart = new Date(assignmentDueDate);
+          finalWeekStart.setDate(
+            finalWeekStart.getDate() - finalWeekStart.getDay()
+          ); // Sunday start of final week
+          finalWeekStart.setHours(0, 0, 0, 0);
+
+          const finalWeekEnd = new Date(finalWeekStart);
+          finalWeekEnd.setDate(finalWeekStart.getDate() + 6); // Saturday end of final week
+          finalWeekEnd.setHours(23, 59, 59, 999);
+
+          const now = new Date();
+
+          if (now < finalWeekStart) {
+            finalMiss = -1; // final week not started yet
+          } else {
+            // Check if evaluation was submitted during final week
+            const finalWeekEvaluation = await Evaluation.findOne({
+              where: {
+                evaluator: user,
+                evaluated: student.id,
+                group,
+                createdAt: {
+                  [Op.between]: [finalWeekStart, finalWeekEnd],
+                },
+              },
+            });
+
+            if (finalWeekEvaluation) {
+              if (finalWeekEvaluation.createdAt <= assignmentDueDate) {
+                finalMiss = 0; // on time submission
+              } else {
+                finalMiss = 2; // late submission but within final week
+              }
+            } else {
+              if (now > finalWeekEnd) {
+                finalMiss = 1; // missed final evaluation after final week passed
+              } else {
+                finalMiss = -1; // still time left in final week
+              }
+            }
+          }
+
+          return {
+            student: student.id,
+            complete: !!currentWeekEvaluation,
+            finalmissed: finalMiss,
+            missed,
+          };
+        })
+      );
+
+      const resultsMap = {};
+      results.forEach((entry) => {
+        resultsMap[entry.student] = {
+          complete: entry.complete,
+          finalmissed: entry.finalmissed,
+          missed: entry.missed,
+          message:
+            entry.finalmissed === 1 && entry.missed > 0
+              ? `Missed final evaluation and ${entry.missed} other evaluations.`
+              : entry.finalmissed === 2 && entry.missed > 0
+              ? `Final evaluation submitted late. ${entry.missed} evaluations missed.`
+              : entry.finalmissed === 1
+              ? "Missed final evaluation."
+              : entry.finalmissed === 2
+              ? "Final evaluation submitted late."
+              : entry.missed > 0
+              ? `${entry.missed} evaluations missed.`
+              : "All evaluations complete.",
+          color: entry.missed !== 0 ? "#cc3300" : "#339900",
+        };
+      });
+
+      res.status(200).json(resultsMap);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err500 });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };

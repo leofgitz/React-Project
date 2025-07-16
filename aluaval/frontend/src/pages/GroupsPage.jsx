@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
+import AssignmentsSection from "../components/AssignmentsSection.jsx";
+import GroupSection from "../components/GroupSection.jsx";
 import { create, fetchDynamicRoute } from "../services/dataFetch.js";
 import { useAuth } from "../context/authProvider.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import SubjectsSection from "../components/SubjectsSection.jsx";
 import BadgeModal from "../components/BadgeModal.jsx";
 import BadgeAwardingModal from "../components/BadgeAwardingModal.jsx";
 
 const GroupsPage = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const uid = user.id;
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -34,6 +37,32 @@ const GroupsPage = () => {
     fetchSubjects();
   }, []);
 
+  useEffect(() => {
+    const { state } = location;
+
+    if (state?.returningFromEval && state?.previousState) {
+      const prev = state.previousState;
+
+      setGroup(prev.group);
+      setSelectedSubject(prev.selectedSubject);
+      setSelectedAssignment(prev.selectedAssignment);
+      setStudents(prev.students);
+      setSelectedStudent(prev.selectedStudent);
+      setCurrentStep(prev.currentStep);
+      setAssignments(prev.assignments);
+    } else if (state?.returningFromHist && state?.previousState) {
+      const prev = state.previousState;
+
+      setGroup(prev.group);
+      setSelectedSubject(prev.selectedSubject);
+      setSelectedAssignment(prev.selectedAssignment);
+      setStudents(prev.students);
+      setSelectedStudent(prev.selectedStudent);
+      setCurrentStep(prev.currentStep);
+      setAssignments(prev.assignments);
+    }
+  }, [location]);
+
   const handleSubjectSelect = async (subjectID) => {
     setSelectedSubject(subjectID);
     setCurrentStep("assignments");
@@ -41,7 +70,8 @@ const GroupsPage = () => {
 
     try {
       let params = ["subjects", subjectID, "assignments"];
-      let data = await fetchDynamicRoute("student ", params);
+      let data = await fetchDynamicRoute("student", params);
+      console.log("Assignment data: " + JSON.stringify(data));
       setAssignments(data);
     } catch (error) {
       console.error("Error fetching assignments:", error);
@@ -53,25 +83,49 @@ const GroupsPage = () => {
     setCurrentStep("group");
 
     try {
-      const params = [selectedSubject, assignmentID];
+      const params = ["assignments", assignmentID];
       let data = await fetchDynamicRoute("student", params);
       setStudents(data);
-      setGroup(students[0].groupId);
+      console.log(
+        "Student data upon assignment select: " + JSON.stringify(data)
+      );
+
+      setGroup(data[0].groupId);
     } catch (error) {
       console.error("Error fetching group:", error);
     }
   };
 
-  const handleEvaluateMember = (student) => {
-    navigate(`/questionnaire/${student}/${group}`);
+  const handleEvaluateMember = (student, isFinal) => {
+    navigate(`/evaluation`, {
+      state: {
+        student,
+        group,
+        selectedSubject,
+        selectedAssignment,
+        currentStep,
+        students,
+        assignments,
+        isFinal,
+      },
+    });
   };
 
   const handleCheckBadges = async () => {
     setBadgeViewingModal(true);
   };
-  
+
   const handleCheckEvalHistory = async (group) => {
-    history.push(`/evaluation-history/${group}`);
+    navigate("/eval-history", {
+      state: {
+        group,
+        selectedSubject,
+        selectedAssignment,
+        currentStep,
+        students,
+        assignments,
+      },
+    });
   };
 
   const handleAwardStudent = async (student) => {
@@ -99,6 +153,7 @@ const GroupsPage = () => {
       setCurrentStep("subjects");
     } else if (currentStep === "group") {
       setSelectedAssignment(null);
+      setStudents([]);
       setCurrentStep("assignments");
     }
   };
@@ -114,7 +169,7 @@ const GroupsPage = () => {
       )}
 
       {currentStep === "assignments" && selectedSubject && (
-        <AssignmentSection
+        <AssignmentsSection
           subjects={subjects}
           selectedSubject={selectedSubject}
           assignments={assignments}
@@ -131,6 +186,7 @@ const GroupsPage = () => {
           selectedSubject={selectedSubject}
           selectedAssignment={selectedAssignment}
           students={students}
+          group={group}
           onBack={handleBack}
           currentUser={uid}
           onCheckBadges={handleCheckBadges}
@@ -141,13 +197,18 @@ const GroupsPage = () => {
       )}
 
       {badgeViewingModal && (
-        <BadgeModal group={group} onClose={() => setBadgeViewingModal(false)} />
+        <BadgeModal
+          group={group}
+          onClose={() => setBadgeViewingModal(false)}
+          isOpen={badgeViewingModal}
+        />
       )}
 
       {badgeAwardingModal && (
         <BadgeAwardingModal
           student={selectedStudent}
           group={group}
+          isOpen={badgeAwardingModal}
           onCreate={handleCreateAward}
           onClose={() => {
             setBadgeAwardingModal(false);

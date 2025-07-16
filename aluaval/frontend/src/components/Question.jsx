@@ -1,4 +1,3 @@
-import React from "react";
 import ConfirmationDialog from "./ConfirmationDialog.jsx";
 
 const Question = ({
@@ -14,7 +13,11 @@ const Question = ({
   isSkippable,
   possibleAnswers,
   answeredQuestions,
-  setAnsweredQuestions
+  setAnsweredQuestions,
+  onCancelClick,
+  showConfirm,
+  onConfirmCancel,
+  onCloseConfirm,
 }) => {
   const getTitle = (index) => {
     if (isPeer) {
@@ -47,10 +50,15 @@ const Question = ({
         {!isSkippable(currentQuestion) ? (
           <span style={{ color: "red" }}>
             {" "}
-            <small>*</small>{" "}
+            <small>* Required!</small>{" "}
           </span>
         ) : null}
-        <ConfirmationDialog />
+        <ConfirmationDialog
+          onCancelClick={onCancelClick}
+          showConfirm={showConfirm}
+          onConfirmCancel={onConfirmCancel}
+          onCloseConfirm={onCloseConfirm}
+        />
       </h2>
       <div>
         <h3>{getTitle(currentQuestion)}</h3>

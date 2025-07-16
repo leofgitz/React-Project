@@ -8,7 +8,7 @@ import {
   answerKeys,
   commentKeys,
 } from "../constants/Questionnaire.js";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Question from "../components/Question.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import Navigation from "../components/NavigationButtons.jsx";
@@ -17,8 +17,19 @@ import { getById, updateById, create } from "../services/dataFetch.js";
 
 const Questionnaire = () => {
   const { user } = useAuth();
-  const { id, group } = useParams();
-  const isPeer = id !== user.id;
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const { student, group, isFinal } = location.state || {};
+
+  useEffect(() => {
+    if (!student || !group) {
+      navigate("/");
+    }
+  }, [student, group, navigate]);
+
+  const isPeer = student !== user.id;
+
   const questions = isPeer ? peerQuestions : selfQuestions;
   const commentTitles = isPeer
     ? commentHeaders
@@ -30,9 +41,10 @@ const Questionnaire = () => {
   const [question7Answered, setQuestion7Answered] = useState(false);
   const [question8Answered, setQuestion8Answered] = useState(false);
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
-  const navigate = useNavigate();
+  const [warning, setWarning] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const fetchExistingAnswers = async () => {
       if (evaluation) {
         try {
@@ -51,7 +63,7 @@ const Questionnaire = () => {
     };
 
     fetchExistingAnswers();
-  }, [evaluation]);
+  }, [evaluation]); */
 
   useEffect(() => {
     if (currentQuestion === 6 && !isPeer) {
@@ -64,7 +76,7 @@ const Questionnaire = () => {
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
       if (!isSkippable(currentQuestion) && answers[currentQuestion] === "") {
-        alert("Please select an answer before proceeding.");
+        setWarning("Please select an answer before proceeding.");
         return;
       }
 
@@ -86,36 +98,49 @@ const Questionnaire = () => {
     }
   };
 
+  const handleCancelClick = () => {
+    setShowConfirm(true); // Show the confirmation dialog
+  };
+
+  const handleConfirmCancel = () => {
+    // User confirmed - navigate away
+    navigate("/groups-page", {
+      state: {
+        returningFromEval: true,
+        previousState: location.state,
+      },
+    });
+  };
+
+  const handleCloseConfirm = () => {
+    // User canceled the confirmation dialog
+    setShowConfirm(false);
+  };
+
   const handleSubmit = async () => {
     const evaluationData = {
       group: group,
       evaluator: user.id,
-      evaluated: id,
+      evaluated: student,
+      answers,
+      comments,
+      isFinal,
     };
 
-    const answerKeysToUse = isPeer ? answerKeys : answerKeys.slice(0, 6);
-    const commentKeysToUse = isPeer
-      ? commentKeys.slice(0, 6)
-      : commentKeys.filter((key) => key !== "impressionComment");
-
-    // Map through answerKeysToUse and commentKeysToUse to add answers and comments to evaluationData
-    answerKeysToUse.forEach((key, index) => {
-      evaluationData[key] = answers[index]; // Assuming answers is an array with corresponding scores
-    });
-
-    commentKeysToUse.forEach((key, index) => {
-      evaluationData[key] = comments[index]; // Assuming comments is an array with corresponding comments
-    });
-
     try {
-      if (evaluation) {
+      /* if (evaluation) {
         await updateById("evaluations", evaluation, evaluationData);
-      } else {
-        await create("evaluations", evaluationData);
-      }
-      navigate("/");
+      } else { */
+      await create("evaluations", evaluationData);
+      /* } */
+      navigate("/groups-page", {
+        state: {
+          returningFromEval: true,
+          previousState: location.state,
+        },
+      });
     } catch (err) {
-      console.error("Error submitting evaluation:", error);
+      console.error("Error submitting evaluation:", err);
     }
   };
 
@@ -146,6 +171,11 @@ const Questionnaire = () => {
     <div className="question-card w3-display-middle">
       <div className={`question-container ${slideDirection}`}>
         <div className="w3-container w3-card-4 w3-padding w3-margin-top w3-display-middle w3-round-xlarge">
+          <h3 className="w3-center">
+            {isPeer ? "Peer Evaluation" : "Self-Evaluation"}{" "}
+            {isFinal && " - Final Evaluation"}
+          </h3>
+
           <Question
             currentQuestion={currentQuestion}
             questions={questions}
@@ -160,7 +190,34 @@ const Questionnaire = () => {
             possibleAnswers={possibleAnswers}
             answeredQuestions={answeredQuestions}
             setAnsweredQuestions={setAnsweredQuestions}
+            onCancelClick={handleCancelClick} // pass down cancel click handler
+            showConfirm={showConfirm} // pass down showConfirm state
+            onConfirmCancel={handleConfirmCancel} // pass down confirm action
+            onCloseConfirm={handleCloseConfirm} // pass down cancel/close dialog
           />
+          {warning && (
+            <div
+              className="w3-modal w3-round-xlarge w3-animate-opacity"
+              style={{ display: "block", backgroundColor: "rgba(0,0,0,0.3)" }}
+              onClick={() => setWarning("")}
+            >
+              <div
+                className="w3-card-4 w3-pale-red w3-border-red w3-round-xxlarge w3-padding"
+                style={{ maxWidth: "350px", margin: "15% auto" }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <p className="w3-center w3-large">{warning}</p>
+                <div className="w3-center">
+                  <button
+                    className="w3-small w3-button w3-red w3-round-xxlarge"
+                    onClick={() => setWarning("")}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <Navigation
             handlePrevious={handlePrevious}
             handleNext={handleNext}
@@ -169,6 +226,7 @@ const Questionnaire = () => {
             handleSubmit={handleSubmit}
             questions={questions}
           />
+
           <ProgressBar progress={progress} />
         </div>
       </div>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { fetchDynamicRoute } from "../services/dataFetch.js";
+import { useEffect, useState } from "react";
+import { fetchDynamicRoute, getById } from "../services/dataFetch.js";
 
 const isDateThisWeek = (date) => {
   const today = new Date();
@@ -8,12 +8,16 @@ const isDateThisWeek = (date) => {
   return date >= startOfWeek && date <= endOfWeek;
 };
 
+const isLate = (date) => {
+  const today = new Date();
+  return today > date;
+};
+
 const GroupSection = ({
-  subjects,
-  assignments,
   selectedSubject,
   selectedAssignment,
   students,
+  group,
   onBack,
   currentUser,
   onCheckBadges,
@@ -22,89 +26,139 @@ const GroupSection = ({
   onEvalMember,
 }) => {
   const [evaluatedStatus, setEvaluatedStatus] = useState({});
+  const [subject, setSubject] = useState([]);
+  const [assignment, setAssignment] = useState([]);
 
   useEffect(() => {
-    const fetchEvaluatedStatus = async () => {
-      const statusMap = {};
+    if (
+      !Array.isArray(students) ||
+      students.length === 0 ||
+      !group ||
+      !selectedAssignment
+    ) {
+      return;
+    }
+
+    if (!students || students.length === 0 || !group || !selectedAssignment)
+      return;
+
+    const fetchAll = async () => {
       try {
-        await Promise.all(
-          students.map(async (student) => {
-            const studentid = student.id;
-            const evaluated = await fetchDynamicRoute("student", [
-              studentid,
-              selectedAssignment,
-            ]);
-            statusMap[student.id] = evaluated;
-          })
+        const subjectData = await getById("subjects", selectedSubject);
+        const assignmentData = await getById("assignments", selectedAssignment);
+
+        const reqbody = { students, group, assignment: selectedAssignment };
+        const evaluatedStatusData = await fetchDynamicRoute(
+          "student",
+          "evalcheck",
+          "POST",
+          reqbody
         );
+        setSubject(subjectData);
+        setAssignment(assignmentData);
+
+        setEvaluatedStatus(evaluatedStatusData);
       } catch (error) {
         console.error("Error fetching evaluated status:", error);
       }
-      setEvaluatedStatus(statusMap);
     };
 
-    fetchEvaluatedStatus();
-  }, [students, selectedAssignment]);
+    fetchAll();
+  }, [students, group, selectedAssignment]);
 
-  const dueDate = new Date(assignments[selectedAssignment - 1]?.dueDate);
+  const dueDate = new Date(assignment.dueDate);
 
   return (
-    <div className="w3-card-4 w3-margin w3-animate-opacity w3-round-xxlarge">
-      <div className="w3-container w3-blue w3-round-xxlarge">
+    <div className="w3-card-4 w3-margin w3-round-large">
+      <div className="w3-container w3-text-brown w3-round-large">
         <h2>
-          <b>
-            {subjects[selectedSubject - 1].name} -{" "}
-            {assignments[selectedAssignment - 1].title}
-          </b>{" "}
-          - Group {students[0]?.groupNumber}{" "}
+          <i>Subject:</i> <b>{subject.name}</b> - <i>Assignment:</i>{" "}
+          <b>{assignment.title}</b> - Group {students[0]?.groupNumber}{" "}
           {/* Assuming all students belong to the same group */}
         </h2>
       </div>
-      <div className="w3-container w3-padding">
+      <div className="w3-container w3-margin w3-round-large">
         {students.map((student) => (
-          <div key={student.id} className="w3-margin-bottom">
-            <label className="w3-margin-left">{student.name}</label>
-            <button
-              className="w3-button w3-light-blue w3-round w3-margin-left"
-              onClick={() => onAwardStudent(student.id)} // Award badge to the student
-            >
-              Award Badge
-            </button>
-            {!evaluatedStatus[student.id] && ( // Check if evaluation is not done
+          <div
+            key={student.id}
+            className="w3-margin w3-card w3-padding w3-round-large"
+          >
+            <label>{student.name}</label>
+
+            {currentUser !== student.id && (
               <button
-                className="w3-button w3-light-blue w3-round w3-margin-left"
-                onClick={() => onEvalMember(student.id)} // Evaluate group members
+                className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
+                style={{ background: "#5e403f" }}
+                onClick={() => onAwardStudent(student.id)} // Award badge to the student
+              >
+                Award Badge
+              </button>
+            )}
+
+            {((!evaluatedStatus[student.id]?.complete &&
+              evaluatedStatus[student.id]?.finalmissed === -1) ||
+              (!evaluatedStatus[student.id]?.complete &&
+                evaluatedStatus[student.id]?.finalmissed === 1 &&
+                isDateThisWeek(dueDate))) && (
+              <button
+                className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
+                style={{ background: "#5e403f" }}
+                onClick={() =>
+                  onEvalMember(student.id, isDateThisWeek(dueDate))
+                }
               >
                 {currentUser === student.id
                   ? "Self Evaluate"
                   : "Evaluate Member"}
-                {isDateThisWeek(dueDate) && " (Final Evaluation)"}
-                {/* Add "(Final Evaluation)" if due this week */}
+                {isDateThisWeek(dueDate) && " (Final)"}
+                {isLate(dueDate) && " - OVERDUE"}
               </button>
             )}
+
+            {evaluatedStatus[student.id]?.complete && (
+              <button
+                className="w3-button w3-hover-brown w3-text-white w3-round-xlarge w3-margin-left"
+                style={{ background: "#5e403f" }}
+              >
+                {evaluatedStatus[student.id]?.finalmissed === 0
+                  ? "Final "
+                  : "Weekly "}{" "}
+                Evaluation Done!
+              </button>
+            )}
+
+            <p style={{ color: evaluatedStatus[student.id]?.color }}>
+              {evaluatedStatus[student.id]?.message}
+            </p>
           </div>
         ))}
       </div>
-      <div className="w3-container">
+      <div className="w3-container w3-margin-left">
         <button
-          className="w3-button w3-light-blue w3-round"
-          onClick={onCheckBadges} // Check badges for the group
+          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge"
+          onClick={onCheckBadges}
+          style={{ background: "#5e403f" }} // Check badges for the group
         >
-          Check Badges
+          Check Group Badges
         </button>
         <button
-          className="w3-button w3-light-blue w3-round w3-margin-left"
-          onClick={onCheckEvalHistory} // Check evaluation history for the group
+          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
+          style={{ background: "#5e403f" }}
+          onClick={() => onCheckEvalHistory(group)} // Check evaluation history for the group
         >
-          Check Evaluation History
+          Check Group Evaluation History
         </button>
       </div>
-      <div className="w3-container w3-padding">
+      <div className="w3-padding">
         <button
-          className="w3-button w3-margin-left w3-light-blue w3-round"
+          className="w3-button w3-card w3-hover-pale-yellow w3-round-large"
+          style={{ background: "#e4d3a4" }}
           onClick={onBack} // Go back to assignments
         >
-          Back to Assignments
+          Back to{" "}
+          <b>
+            <i>Assignments</i>
+          </b>
         </button>
       </div>
     </div>

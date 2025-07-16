@@ -32,6 +32,9 @@ teacherRouter.get(
   "/evaluations/history",
   EvaluationController.teacherEvaluationHistory
 );
+
+teacherRouter.get("/awards", AwardController.getAwardsForTeacher);
+
 teacherRouter.get(
   "/awards/homepage",
   AwardController.getBadgesTeacherForHomepage
@@ -52,7 +55,5 @@ teacherRouter.get(
   "/evaluations",
   EvaluationController.getEvaluationsByGroupsForTeacher
 );
-
-teacherRouter.get("/awards", AwardController.getAwardsForTeacher);
 
 export default teacherRouter;

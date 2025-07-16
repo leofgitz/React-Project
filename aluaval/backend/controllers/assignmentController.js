@@ -4,7 +4,9 @@ import {
   Membership,
   Subject,
   Classe,
+  Enrollment,
 } from "../models/index.js";
+import { Op } from "sequelize";
 
 const err500 = "Internal Server Error";
 
@@ -145,39 +147,36 @@ const AssignmentController = {
     const student = req.user; // Get the logged-in student's ID
     const { subject } = req.params; // Get the subject ID from the route parameter
 
+    // PLS CHECK OTHER POSSIBLE WAYS TO DO THIS
     try {
       const assignments = await Assignment.findAll({
-        attributes: ["id", "title", "duedate"], // Include the fields needed
+        attributes: ["id", "title", "dueDate", "createdAt"], // Include the fields needed
         where: { subject }, // Filter by subject ID
         include: [
           {
             model: Group,
-            attributes: [], // Exclude unnecessary Group attributes
-            required: true,
-            include: [
-              {
-                model: Classe,
-                attributes: [], // Exclude unnecessary Classe attributes
-                where: { subject }, // Additional filter for subject
-                include: [
-                  {
-                    model: Enrollment,
-                    where: { student: student }, // Filter by enrolled student ID
-                    attributes: [], // Exclude unnecessary Enrollment attributes
-                  },
-                ],
-              },
-            ],
+            attributes: ["id"],
           },
         ],
-        group: ["Assignment.id"], // Group by Assignment ID to avoid duplicates
+        group: ["Assignment.id", "Groups.id"], // Group by Assignment ID to avoid duplicates
       });
 
-      // Transform the result to extract the required fields
-      const result = assignments.map((assignment) => ({
+      const memberships = await Membership.findAll({
+        attributes: ["group"],
+        where: { student },
+      });
+
+      const groupIds = memberships.map((m) => m.group);
+
+      const filteredAssignments = assignments.filter((assignment) =>
+        assignment.Groups.some((group) => groupIds.includes(group.id))
+      );
+
+      const result = filteredAssignments.map((assignment) => ({
         id: assignment.id,
         title: assignment.title,
         dueDate: formatDate(assignment.dueDate),
+        creationDate: formatDate(assignment.createdAt),
       }));
 
       res.status(200).json(result);
@@ -195,14 +194,12 @@ const AssignmentController = {
         include: [
           {
             model: Group,
-            include: [
-              {
-                model: Membership,
-                where: { student },
-                attributes: [],
-              },
-            ],
             attributes: ["id", "submissionDate"],
+          },
+          {
+            model: Membership,
+            where: { student },
+            attributes: [],
           },
         ],
         group: ["Assignment.id"],
@@ -251,30 +248,49 @@ const AssignmentController = {
     const student = req.user; // Get the logged-in student
 
     try {
-      const assignments = await Assignment.findAll({
-        include: [
-          {
-            model: Group,
-            include: [
-              {
-                model: Membership,
-                where: { student: student.id }, // Ensure the membership is for the logged-in student
-                attributes: [],
-              },
-            ],
-            attributes: ["id", "submissionDate"], // Include group attributes for the assignment
-          },
-          {
-            model: Subject,
-            attributes: ["name"], // Include subject name directly from Assignment
-          },
-        ],
-        group: ["Assignment.id"], // Group by assignment ID
-        order: [["createdAt", "DESC"]], // Order by creation date
-        limit: 3, // Limit results to the latest 3 assignments
+      // Step 1: Get all groups the student is a member of
+      const memberships = await Membership.findAll({
+        where: { student },
+        attributes: ["group"],
       });
 
-      res.status(200).json(assignments); // Return assignments
+      const groupIDs = memberships.map((m) => m.group);
+
+      if (groupIDs.length === 0) {
+        return res.status(200).json([]); // No groups, no assignments
+      }
+
+      // Step 2: Get groups (with their assignments) the student is part of
+      const groups = await Group.findAll({
+        where: {
+          id: {
+            [Op.in]: groupIDs,
+          },
+          assignment: {
+            [Op.ne]: null,
+          }, // just in case
+        },
+        include: [
+          {
+            model: Assignment,
+            include: [
+              {
+                model: Subject, // or go via Classe if needed
+                attributes: ["name"],
+              },
+            ],
+          },
+        ],
+      });
+
+      // Step 3: Flatten assignments, remove nulls, and sort by date
+      const assignments = groups
+        .map((g) => g.Assignment)
+        .filter((a) => a !== null)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
+
+      res.status(200).json(assignments);
     } catch (err) {
       console.error(err);
       res

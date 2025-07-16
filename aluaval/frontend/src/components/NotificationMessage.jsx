@@ -4,7 +4,7 @@ const NotificationMessage = ({ notification, handleSetAsRead }) => {
   const { type, message } = notification;
   return (
     <div
-      className={`w3-card-4 w3-margin w3-padding ${
+      className={`w3-card-4 w3-round-xxlarge w3-margin w3-padding ${
         notification.isRead ? "w3-light-grey" : "w3-white"
       }`}
       style={{

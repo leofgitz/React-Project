@@ -1,4 +1,4 @@
-import { Classe, Subject } from "../models/index.js";
+import { Classe, Subject, Enrollment } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -125,7 +125,7 @@ const SubjectController = {
 
     try {
       const subjects = await Subject.findAll({
-        attributes: ["id", "name"],
+        attributes: ["id", "name", "year", "course"],
         include: [
           {
             model: Classe,
@@ -139,6 +139,8 @@ const SubjectController = {
       const result = subjects.map((subject) => ({
         id: subject.id,
         name: subject.name,
+        year: subject.year,
+        course: subject.course,
       }));
 
       res.status(200).json(result);
@@ -153,7 +155,7 @@ const SubjectController = {
 
     try {
       const subjects = await Subject.findAll({
-        attributes: ["id", "name"],
+        attributes: ["id", "name", "year", "course"],
         include: [
           {
             model: Classe,
@@ -173,6 +175,8 @@ const SubjectController = {
       const result = subjects.map((subject) => ({
         id: subject.id,
         name: subject.name,
+        course: subject.course,
+        year: subject.year,
       }));
 
       res.status(200).json(result);

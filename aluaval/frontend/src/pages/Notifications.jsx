@@ -63,7 +63,7 @@ const Notifications = ({}) => {
     <div className="main-content">
       <div className="w3-container w3-padding-32">
         <h2 className="w3-center w3-text-theme">Notifications</h2>
-        <div className="w3-panel w3-card-4 w3-padding">
+        <div className="w3-panel w3-round-xxlarge w3-card-4 w3-padding">
           <button
             className="w3-button w3-theme-d3 w3-margin-top"
             onClick={() => handleSetAllAsRead()}

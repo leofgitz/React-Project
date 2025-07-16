@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { json, Op } from "sequelize";
 import {
   Classe,
   Enrollment,
@@ -244,50 +244,69 @@ const UserController = {
   },
 
   getUsersInGroupForAssignment: async (req, res) => {
-    const { subject, assignment } = req.params; // Get subject and assignment from route parameters
+    const student = req.user;
+    const { assignment } = req.params; // Get subject and assignment from route parameters
 
     try {
+      console.log("ASSIGNMENT ID: " + JSON.stringify(assignment));
       // Find all users in the group for the specified subject and assignment
-      const usersInGroup = await User.findAll({
-        attributes: ["id", "name"], // Get student details
-        include: [
-          {
-            model: Enrollment,
-            attributes: [], // We don’t need attributes from Enrollment
-            include: [
-              {
-                model: Classe,
-                where: { teacher, subject }, // Filter by teacher and subject
-                attributes: [], // We don’t need attributes from Classe
-                include: [
-                  {
-                    model: Group,
-                    attributes: ["id", "number"], // Get group details if they exist
-                    where: { assignment }, // Filter by assignment
-                    required: false, // Include students even if they are not part of a group
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            model: Group, // Include Group directly
-            attributes: ["id", "number"],
-            through: { attributes: [] }, // Exclude attributes from Membership
-            required: false, // Include students even if not part of any group
-          },
-        ],
+      const groups = await Group.findAll({
+        where: { assignment },
+        attributes: ["id", "number"],
       });
 
-      // Transform the result to include group details
-      const result = usersInGroup.map((user) => ({
-        id: user.id,
-        name: user.name,
-        groupId: user.Memberships[0]?.group?.id || null, // Group ID or null
-        groupNumber: user.Memberships[0]?.group?.number || null, // Group number or null
-      }));
+      const groupIds = groups.map((group) => group.id);
 
-      res.status(200).json(result); // Return the result
+      console.log("GROUP IDS: " + JSON.stringify(groupIds));
+
+      // Step 2: Find the logged-in student's membership (their group)
+      const studentMembership = await Membership.findOne({
+        where: {
+          student,
+          group: {
+            [Op.in]: groupIds,
+          },
+        },
+      });
+
+      console.log(
+        "ENTRY FROM MEMBERSHIP: " + JSON.stringify(studentMembership)
+      );
+
+      const studentGroupId = studentMembership.group;
+
+      // Step 3: Fetch the group to get its number
+      const group = await Group.findByPk(studentGroupId, {
+        attributes: ["id", "number"],
+      });
+
+      if (!group) {
+        return res.status(404).json({ error: "Group not found." });
+      }
+
+      // Step 4: Find all students in that group
+      const memberships = await Membership.findAll({
+        where: {
+          group: studentGroupId,
+        },
+      });
+
+      // Step 5: Fetch users for these memberships manually
+      const students = [];
+      for (const membership of memberships) {
+        const user = await User.findByPk(membership.student, {
+          attributes: ["id", "name"],
+        });
+
+        students.push({
+          id: user.id,
+          name: user.name,
+          groupId: studentGroupId,
+          groupNumber: group.number,
+        });
+      }
+
+      res.status(200).json(students);
     } catch (err) {
       console.error(err);
       res.status(500).json({

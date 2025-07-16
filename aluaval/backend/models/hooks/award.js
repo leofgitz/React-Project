@@ -1,9 +1,11 @@
-import { Award, Notification, Group, User } from "../index.js";
+import { Award, Notification, Group, User, Badge } from "../index.js";
 
 const badgeHooks = () => {
   Award.afterCreate(async (award, options) => {
     try {
       const group = await Group.findByPk(award.group);
+
+      const badge = await Badge.findByPk(award.badge);
 
       if (group) {
         const giver = await User.findByPk(award.giver, {
@@ -19,7 +21,7 @@ const badgeHooks = () => {
             user: recipient.id,
             type: "Badge",
             reference: award.id,
-            message: `You have received the badge: ${award.badge}, awarded by ${giver.name}.`,
+            message: `You have received the badge: ${badge.name}, awarded by ${giver.name}.`,
           });
         }
       }

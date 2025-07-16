@@ -16,18 +16,19 @@ studentRouter.get(
   "/assignments/homepage",
   AssignmentController.getStudentAssignmentsForHomepage
 );
+studentRouter.get("/groups", GroupController.getGroupsForStudent);
+
+studentRouter.get("/subjects", SubjectController.getSubjectsForStudent);
+
 studentRouter.get(
   "/subjects/:subject/assignments",
   AssignmentController.getAssignmentsForStudentBasedOnSubject
 );
 
-studentRouter.get("/groups", GroupController.getGroupsForStudent);
 studentRouter.get(
-  "/:subject/:assignment",
+  "/assignments/:assignment",
   UserController.getUsersInGroupForAssignment
 );
-
-studentRouter.get("/subjects", SubjectController.getSubjectsForStudent);
 
 studentRouter.get("/courses", CourseController.getStudentCourseForStudent);
 
@@ -39,7 +40,7 @@ studentRouter.get(
   "/evaluations/history",
   EvaluationController.studentEvaluationHistory
 );
-studentRouter.get("/:user/:assignment", EvaluationController.checkEvalExists);
+studentRouter.post("/evalcheck", EvaluationController.evalcheck);
 
 /* studentRouter.get("/badges", AwardController.getAwardsForStudent); */
 studentRouter.get(
