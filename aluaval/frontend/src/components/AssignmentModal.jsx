@@ -11,21 +11,21 @@ const AssignmentModal = ({ onClose, onCreate, isOpen }) => {
   };
 
   return (
-    <div className={`w3-modal w3-animate-opacity ${isOpen ? "w3-show" : ""}`}>
-      <div className="w3-modal-content w3-animate-opacity w3-container w3-card w3-round-large w3-padding">
+    <div className={`w3-modal ${isOpen ? "w3-show" : ""}`}>
+      <div className="w3-modal-content w3-container w3-card w3-round-large w3-padding">
         <span
-          className="w3-button w3-border w3-red w3-display-topright w3-hover-pale-yellow w3-round-large"
+          className="w3-button w3-border w3-border-black w3-margin w3-red w3-display-topright w3-hover-pale-yellow w3-round-large"
           onClick={onClose}
         >
           Close
         </span>
-        <h2>Create Assignment</h2>
+        <h2 className="w3-text-brown">Create Assignment</h2>
         <form onSubmit={handleSubmit}>
           <div className="w3-section">
             <label>
               Title:
               <input
-                className="w3-input w3-border"
+                className="w3-input w3-border w3-border-black w3-round-large"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -37,7 +37,7 @@ const AssignmentModal = ({ onClose, onCreate, isOpen }) => {
             <label>
               Due Date:
               <input
-                className="w3-input w3-border"
+                className="w3-input w3-border w3-border-black w3-round-large"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
@@ -45,7 +45,11 @@ const AssignmentModal = ({ onClose, onCreate, isOpen }) => {
               />
             </label>
           </div>
-          <button className="w3-button w3-round-xxlarge" type="submit">
+          <button
+            className="w3-button w3-text-white w3-margin w3-hover-khaki w3-round-xxlarge"
+            type="submit"
+            style={{ background: "#5e403f" }}
+          >
             Create Assignment
           </button>
         </form>

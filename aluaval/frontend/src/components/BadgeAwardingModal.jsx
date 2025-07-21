@@ -66,12 +66,12 @@ const BadgeAwardingModal = ({ student, group, onCreate, onClose, isOpen }) => {
   return (
     <div className={`w3-modal  ${isOpen ? "w3-show" : ""} `}>
       <div
-        className="w3-modal-content  w3-container w3-card w3-round-large w3-padding"
+        className="w3-modal-content w3-container w3-card w3-round-large w3-padding"
         style={{ background: "#fffef3" }}
         ref={modalRef}
       >
         <span
-          className="w3-button w3-border w3-red w3-display-topright w3-hover-pale-yellow w3-round-large"
+          className="w3-button w3-border w3-border-black w3-margin w3-red w3-display-topright w3-hover-pale-yellow w3-round-large"
           onClick={onClose}
         >
           Close
@@ -100,7 +100,7 @@ const BadgeAwardingModal = ({ student, group, onCreate, onClose, isOpen }) => {
                       gap: "4px",
                       position: "relative",
                     }}
-                    title={badge.name}
+                    title={`${badge.name}, ${badge.awardCount} awarded in group`}
                   >
                     <div
                       style={{
@@ -144,7 +144,7 @@ const BadgeAwardingModal = ({ student, group, onCreate, onClose, isOpen }) => {
                           backgroundColor: "rgba(255,255,255,0.3)",
                           fontWeight: "bold",
                         }}
-                        title={`${badge.awardCount} awarded in group`}
+                        title={`${badge.name}, ${badge.awardCount} awarded in group`}
                       >
                         {badge.awardCount}
                       </span>

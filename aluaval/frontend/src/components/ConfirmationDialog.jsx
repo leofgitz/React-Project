@@ -7,7 +7,7 @@ const ConfirmationDialog = ({
   return (
     <>
       <button
-        className="w3-small w3-button w3-right w3-red w3-round-xxlarge"
+        className="w3-small w3-button w3-border w3-border-red w3-hover-pale-red w3-right w3-red w3-round-xxlarge"
         onClick={onCancelClick}
       >
         Cancel
@@ -25,13 +25,13 @@ const ConfirmationDialog = ({
             <div className="w3-container w3-center w3-padding">
               <h4>Are you sure you want to cancel and go back?</h4>
               <button
-                className="w3-button w3-emerald w3-hover-green w3-margin-right"
+                className="w3-button w3-border w3-border-black w3-emerald w3-hover-green w3-margin-right w3-round-xlarge"
                 onClick={onConfirmCancel}
               >
                 Yes
               </button>
               <button
-                className="w3-button w3-crimson w3-hover-red"
+                className="w3-button w3-border w3-border-black w3-crimson w3-hover-red w3-round-xlarge"
                 onClick={onCloseConfirm}
               >
                 No

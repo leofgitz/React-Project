@@ -7,10 +7,12 @@ import FloatingGoBackButton from "../components/FloatingGoBack.jsx";
 
 const EvalHistory = () => {
   const { user } = useAuth();
+  const uid = user.id;
   const role = user.role;
   console.log("user role: " + role);
   const [evaluations, setEvaluations] = useState([]);
   const [groupNumber, setGroupNumber] = useState(0);
+  const [assignmentTitle, setAssignmentTitle] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { group } = location.state || {};
@@ -25,7 +27,8 @@ const EvalHistory = () => {
     const fetchEvaluations = async () => {
       try {
         let data = await fetchDynamicRoute("evaluations", ["group", group]);
-        setEvaluations(data);
+        setEvaluations(data.evaluationData);
+        setAssignmentTitle(data.assignmentTitle);
 
         data = await getById("groups", group);
         setGroupNumber(data.number);
@@ -39,16 +42,26 @@ const EvalHistory = () => {
     }
   }, [group]);
 
+  const filteredEvals = evaluations.filter((evaluation) =>
+    role === "Teacher" ? true : evaluation.evaluator === uid
+  );
+
   return (
     <div className="w3-container main-content">
       <h2 className="w3-text-brown w3-center">
-        Evaluation History for Group {groupNumber}{" "}
+        {role === "Student" && "Your "}Evaluation History for{" "}
+        <b>Group {groupNumber}</b>, Assignment: <b>{assignmentTitle}</b>
       </h2>
 
-      {evaluations.map((evaluation) => (
-        <EvaluationCard key={evaluation.id} evaluation={evaluation} />
-      ))}
+      {filteredEvals.length > 0 ? (
+        filteredEvals.map((evaluation) => (
+          <EvaluationCard key={evaluation.id} evaluation={evaluation} />
+        ))
+      ) : (
+        <p className="w3-center">No evaluations were submitted yet.</p>
+      )}
       <div
+        className="w3-border w3-border-black"
         style={{
           position: "fixed",
           bottom: "64px",

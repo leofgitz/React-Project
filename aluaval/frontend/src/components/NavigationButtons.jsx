@@ -1,5 +1,3 @@
-import React from "react";
-
 const Navigation = ({
   handlePrevious,
   handleNext,
@@ -11,7 +9,7 @@ const Navigation = ({
   return (
     <div className="w3-bar w3-margin-top">
       <button
-        className="w3-button w3-left w3-blue w3-margin-right w3-round-xxlarge"
+        className="w3-button w3-border w3-border-blue-gray w3-hover-pale-blue w3-left w3-blue w3-margin-right w3-round-xxlarge"
         onClick={handlePrevious}
         disabled={currentQuestion === 0}
       >
@@ -19,14 +17,14 @@ const Navigation = ({
       </button>
       {currentQuestion < questions.length - 1 ? (
         <button
-          className="w3-button w3-right w3-blue w3-round-xxlarge"
+          className="w3-button w3-right w3-border w3-border-blue-gray w3-hover-pale-blue w3-blue w3-round-xxlarge"
           onClick={handleNext}
         >
           {getButtonText()}
         </button>
       ) : (
         <button
-          className="w3-button w3-right w3-green w3-round-xxlarge"
+          className="w3-button w3-right w3-border w3-border-black w3-green w3-round-xxlarge"
           onClick={handleSubmit}
         >
           Submit

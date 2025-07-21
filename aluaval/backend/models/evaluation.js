@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import User from "./user.js";
-import Group from "./assignment.js";
+import Group from "./group.js";
 
 const Evaluation = sequelize.define(
   "Evaluation",

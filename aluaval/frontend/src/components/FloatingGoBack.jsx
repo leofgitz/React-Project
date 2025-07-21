@@ -26,7 +26,7 @@ const FloatingGoBackButton = ({ userRole }) => {
 
   return (
     <button
-      className="w3-small w3-button w3-brown w3-round-xxlarge w3-hover-khaki"
+      className="w3-small w3-border w3-border-brown w3-button w3-brown w3-round-xxlarge w3-hover-khaki"
       onClick={handleGoBack}
       style={{
         position: "fixed",

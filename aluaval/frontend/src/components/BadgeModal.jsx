@@ -55,7 +55,7 @@ const BadgeModal = ({ group, onClose, isOpen }) => {
         ref={modalRef}
       >
         <span
-          className="w3-button w3-border w3-red w3-display-topright w3-hover-pale-yellow w3-round-large"
+          className="w3-button w3-border w3-border-black w3-red w3-display-topright w3-margin w3-hover-pale-yellow w3-round-large"
           onClick={onClose}
         >
           Close

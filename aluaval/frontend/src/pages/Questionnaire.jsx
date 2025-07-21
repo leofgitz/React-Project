@@ -209,7 +209,7 @@ const Questionnaire = () => {
                 <p className="w3-center w3-large">{warning}</p>
                 <div className="w3-center">
                   <button
-                    className="w3-small w3-button w3-red w3-round-xxlarge"
+                    className="w3-small w3-border w3-border-red w3-hover-pale-red w3-button w3-red w3-round-xxlarge"
                     onClick={() => setWarning("")}
                   >
                     Close

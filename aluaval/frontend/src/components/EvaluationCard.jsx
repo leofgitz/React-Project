@@ -12,46 +12,67 @@ const EvaluationCard = ({ evaluation }) => {
   // Answer section
   const answerSection = (
     <div className="w3-row w3-row-padding">
-      {evaluation.answers.map((answer, idx) => (
-        <div key={idx} className="w3-col s12 m6 l3 w3-margin-bottom">
-          <div
-            className="w3-card w3-padding w3-hover-pale-yellow"
-            style={{
-              background: "#fffef3",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "100%",
-              textAlign: "center",
-              borderRadius: "8px",
-              overflow: "hidden",
-              paddingTop: "16px",
-            }}
-            title={`${filteredTitles[idx]} – Score ${answer}: ${
-              possibleAnswers[idx][answer - 1]
-            }`}
-          >
-            {/* Title */}
-            <strong className="w3-small w3-text-brown">
-              {filteredTitles[idx]}
-            </strong>
+      {filteredTitles.map((title, idx) => {
+        const hasScore = evaluation.answers[idx] !== undefined;
+        const score = evaluation.answers[idx];
+        const comment = evaluation.comments[idx];
 
-            {/* Answer meaning */}
-            <span className="w3-small" style={{ fontSize: "0.85em" }}>
-              ({answer}) {possibleAnswers[idx][answer - 1]}
-            </span>
+        return (
+          <div key={idx} className="w3-col s12 m6 l3 w3-margin-bottom">
+            <div
+              className="w3-card w3-border w3-border-brown w3-padding w3-hover-pale-yellow w3-round-xlarge"
+              style={{
+                background: "#fffef3",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between", // use space-between to help alignment
+                gap: "6px",
+                height: "150px", // optional: set a minimum height for visual consistency
+                textAlign: "center",
+                overflow: "hidden",
+                padding: "16px 8px",
+              }}
+              title={
+                hasScore
+                  ? `${title} – Score ${score}: ${
+                      possibleAnswers[idx][score - 1]
+                    }`
+                  : title
+              }
+            >
+              {/* Title */}
+              <strong className="w3-small w3-text-brown">{title}</strong>
 
-            {/* Optional comment */}
-            {evaluation.comments[idx] && (
-              <p className="w3-small w3-text-gray" style={{ marginTop: "4px" }}>
-                <i>“{evaluation.comments[idx]}”</i>
+              {/* Answer (if available) */}
+              {hasScore && (
+                <span className=" w3-small" style={{ fontSize: "0.85em" }}>
+                  <b className="w3-tag w3-small w3-round w3-white w3-text-black w3-border w3-border-black">
+                    {score}
+                  </b>{" "}
+                  <br /> {possibleAnswers[idx][score - 1]}
+                </span>
+              )}
+
+              {/* Comment */}
+
+              <p
+                className="w3-small w3-text-gray"
+                style={{ marginTop: "0px", textAlign: "center" }}
+              >
+                {comment ? (
+                  <>
+                    {" "}
+                    Comment: <i> “{comment}”</i>{" "}
+                  </>
+                ) : (
+                  "No comment"
+                )}
               </p>
-            )}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 
@@ -71,10 +92,14 @@ const EvaluationCard = ({ evaluation }) => {
           )}
         </h4>
         <p className="w3-small">
-          Completed on {new Date(evaluation.createdAt).toLocaleString()}
+          Completed on {new Date(evaluation.createdAt).toLocaleDateString()} at{" "}
+          {new Date(evaluation.createdAt).toLocaleTimeString()}
         </p>
         <p className="w3-small">
           Type: {evaluation.isFinal ? "Final Evaluation" : "Weekly Evaluation"}
+          {evaluation.isLate && (
+            <span className="text-red-500"> - Submitted Late</span>
+          )}
         </p>
         <p className="w3-small">
           Average Score: {evaluation.averageScore.toFixed(2)}

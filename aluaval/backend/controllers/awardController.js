@@ -5,6 +5,7 @@ import {
   Group,
   Assignment,
   Classe,
+  Subject,
 } from "../models/index.js";
 import { fn, col, Op, Sequelize } from "sequelize";
 const err500 = "Internal Server Error";
@@ -253,7 +254,7 @@ const AwardController = {
         include: [
           {
             model: Badge,
-            attributes: ["name"], // Get only the name of the Badge
+            attributes: ["name", "icon"], // Get only the name of the Badge
           },
           {
             model: User,
@@ -283,6 +284,7 @@ const AwardController = {
       // Transform the result to extract the required fields
       const result = awards.map((award) => ({
         badge: award.Badge.name,
+        icon: award.Badge.icon,
         giver: award.giverUser.name,
         recipient: award.recipientUser.name,
         groupNumber: award.Group.number, // Accessing the first group number
@@ -310,7 +312,14 @@ const AwardController = {
               {
                 model: Classe,
                 attributes: ["id"], // Include any relevant attributes from Classe if needed
-                where: { teacher }, // Filter by teacher here
+                where: { teacher },
+                include: [
+                  {
+                    model: Subject,
+                    required: true,
+                    attributes: ["name"],
+                  },
+                ], // Filter by teacher here
               },
               {
                 model: Assignment,
@@ -320,7 +329,7 @@ const AwardController = {
           },
           {
             model: Badge,
-            attributes: ["name"], // Get only the name of the Badge
+            attributes: ["name", "icon"], // Get only the name of the Badge
           },
           {
             model: User,
@@ -340,10 +349,12 @@ const AwardController = {
       // Transform the result to extract the required fields
       const result = awards.map((award) => ({
         badge: award.Badge.name,
+        icon: award.Badge.icon,
         giver: award.giverUser.name,
         recipient: award.recipientUser.name,
         groupNumber: award.Group.number, // Accessing the group number
         assignmentTitle: award.Group?.Assignment.title, // Accessing the assignment title
+        subjectName: award.Group.Classe?.Subject?.name,
       }));
 
       res.status(200).json(result);

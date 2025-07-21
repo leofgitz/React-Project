@@ -23,13 +23,16 @@ const AssignmentsSection = ({
           style={{ background: "#5e403f" }}
           onClick={() => onSelectAssignment(assignment.id)}
         >
-          <i>{assignment.title}</i> <br /> Creation Date: {assignment.creationDate}{" "}
-          <br /> Due Date: {assignment.dueDate}
+          <b>
+            <i>{assignment.title}</i>
+          </b>{" "}
+          <br /> Creation Date: {assignment.creationDate} <br /> Due Date:{" "}
+          {assignment.dueDate}
         </button>
       ))}
       <br />
       <button
-        className="w3-button w3-card w3-margin-bottom w3-margin-right w3-hover-pale-yellow w3-round-large"
+        className="w3-button w3-card w3-margin-bottom w3-hover-pale-yellow w3-round-large"
         style={{ background: "#e4d3a4" }}
         onClick={onBack}
       >

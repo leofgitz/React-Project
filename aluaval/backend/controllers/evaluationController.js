@@ -15,18 +15,34 @@ const EvaluationController = {
     const { group, evaluator, evaluated, answers, comments, isFinal } =
       req.body;
 
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
     try {
       const existingEvaluation = await Evaluation.findOne({
         where: {
           evaluator,
           evaluated,
+          createdAt: {
+            [Op.between]: [startOfWeek, endOfWeek],
+          },
+          group,
         },
       });
 
       if (existingEvaluation) {
         return res
           .status(400)
-          .json({ error: "Student has already evaluated this other student" });
+          .json({
+            error: "Student has already evaluated this other student this week",
+          });
       }
 
       let evaluationData = {
@@ -301,6 +317,26 @@ const EvaluationController = {
             as: "evaluatedUser",
             attributes: ["name"],
           },
+          /* {
+            model: Group,
+            attributes: ["id"],
+            include: [
+              {
+                model: Assignment,
+                attributes: ["id", "title"],
+              },
+            ],
+          }, */
+        ],
+      });
+
+      const assignment = await Group.findOne({
+        where: { id: group },
+        include: [
+          {
+            model: Assignment,
+            attributes: ["title"],
+          },
         ],
       });
 
@@ -338,6 +374,13 @@ const EvaluationController = {
             ? scores.reduce((sum, score) => sum + score, 0) / scores.length
             : 0;
 
+        console.log(JSON.stringify(comments));
+
+        const assignmentDue = evaluation.Group?.Assignment?.dueDate;
+        const submittedAt = evaluation.createdAt;
+
+        const isLate = assignmentDue ? submittedAt > assignmentDue : false;
+
         return {
           id: evaluation.id,
           evaluator: evaluator,
@@ -345,15 +388,19 @@ const EvaluationController = {
           evaluatorName: evaluation.evaluatorUser.name, // Add evaluator's name
           evaluatedName: evaluation.evaluatedUser.name, // Add evaluated's name
           answers: scores,
-          comments: comments,
+          comments,
           isFinal: evaluation.isFinal,
           averageScore: averageScore,
           createdAt: evaluation.createdAt,
           updatedAt: evaluation.updatedAt,
+          isLate,
         };
       });
+      const assignmentTitle = assignment.Assignment.title;
 
-      res.status(200).json(evaluationData);
+      console.log(JSON.stringify(evaluationData));
+
+      res.status(200).json({ evaluationData, assignmentTitle });
     } catch (err) {
       console.error(err);
       res.status(500).json({
@@ -452,10 +499,11 @@ const EvaluationController = {
               {
                 model: Classe,
                 where: { teacher },
-                attributes: [],
+                attributes: ["id"],
                 include: [
                   {
                     model: Subject,
+                    required: true,
                     attributes: ["name"],
                   },
                 ],
@@ -485,7 +533,7 @@ const EvaluationController = {
         ],
         group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
-        limit: 5,
+        limit: 3,
       });
 
       // Format the output
@@ -500,6 +548,7 @@ const EvaluationController = {
             ? evaluation.updatedAt
             : null,
         isFinal: evaluation.isFinal,
+        subjectName: evaluation.Group.Classe?.Subject?.name,
       }));
 
       res.status(200).json(formattedEvaluations);
@@ -556,7 +605,7 @@ const EvaluationController = {
         ],
         group: ["Evaluation.id"],
         order: [["createdAt", "DESC"]],
-        limit: 5,
+        limit: 3,
       });
 
       // Format the output

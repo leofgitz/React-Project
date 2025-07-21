@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const GroupCreation = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const uid = user.id;
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -47,7 +48,6 @@ const GroupCreation = () => {
       setSelectedSubject(prev.selectedSubject);
       setSelectedAssignment(prev.selectedAssignment);
       setStudents(prev.students);
-      setGroup(prev.group);
       setCurrentStep(prev.currentStep);
       setAssignments(prev.assignments);
     }
@@ -126,14 +126,20 @@ const GroupCreation = () => {
         classe,
         assignment: selectedAssignment,
       });
-      let group = newGroup.id;
-      await fetchDynamicRoute("memberships", "addmembers", "POST", {
-        group,
-        students: selectedStudents,
-      });
+      let newGroupID = newGroup.id;
+      const newMembers = await fetchDynamicRoute(
+        "memberships",
+        "addmembers",
+        "POST",
+        {
+          group: newGroupID,
+          students: selectedStudents,
+        }
+      );
 
       console.log("Created new group: ", newGroup);
       console.log("Group created with students:", selectedStudents);
+      console.log("New members added: ", newMembers);
       setSelectedStudents([]);
 
       const params = [selectedSubject, selectedAssignment];
@@ -151,6 +157,32 @@ const GroupCreation = () => {
       setLastNumber(data.groupNumber);
     } catch (err) {
       console.error("Error creating group:", err);
+    }
+  };
+
+  const handleAddToGroup = async (groupID) => {
+    try {
+      const addedMembers = await fetchDynamicRoute(
+        "memberships",
+        "addmembers",
+        "POST",
+        {
+          group: groupID,
+          students: selectedStudents,
+        }
+      );
+
+      console.log("Added to group:", groupID);
+      console.log("Students added:", selectedStudents);
+      console.log("Membership result:", addedMembers);
+
+      setSelectedStudents([]);
+
+      const params = [selectedSubject, selectedAssignment];
+      const updatedData = await fetchDynamicRoute("teacher", params);
+      setStudents(updatedData);
+    } catch (err) {
+      console.error("Error adding to group: ", err);
     }
   };
 
@@ -223,6 +255,7 @@ const GroupCreation = () => {
           onSelectStudent={handleStudentSelect}
           lastNumber={lastNumber}
           onCreateGroup={handleCreateGroup}
+          onAddToGroup={handleAddToGroup}
           onBack={handleBack}
           onCheckBadges={handleCheckBadges}
           onCheckEvalHistory={handleCheckEvalHistory}

@@ -44,6 +44,11 @@ const RegisterForm = () => {
         />{" "}
         <label htmlFor="role">Is Student?</label>
         <SubmitButton text="Register" />
+        <div className="w3-center">
+          <a className="w3-button w3-brown w3-hover-khaki w3-round-xxlarge w3-margin" href="/login">
+            Login Here
+          </a>
+        </div>
       </form>
     </div>
   );

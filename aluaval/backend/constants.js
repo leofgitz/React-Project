@@ -27,6 +27,6 @@ export const badges = [
   { name: "Science Whiz", icon: "fa-atom" },
   { name: "Mathematical Mind", icon: "fa-calculator" },
   { name: "Most Enthusiastic", icon: "fa-grin-stars" },
-  { name: "Critical Thinker ", icon: "fa-brain" },
+  { name: "Critical Thinker", icon: "fa-brain" },
   { name: "Diligent Researcher ", icon: "fa-search" },
 ];

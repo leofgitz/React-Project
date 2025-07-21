@@ -13,6 +13,23 @@ const isLate = (date) => {
   return today > date;
 };
 
+function isPastFinalWeek(dueDate) {
+  const due = new Date(dueDate);
+  // Find Monday of due date's week
+  const weekStart = new Date(due);
+  weekStart.setDate(due.getDate() - ((due.getDay() + 6) % 7));
+  weekStart.setHours(0, 0, 0, 0);
+
+  // Find Sunday of due date's week
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  const now = new Date();
+
+  return now > weekEnd; // true only after the entire final week is over
+}
+
 const GroupSection = ({
   selectedSubject,
   selectedAssignment,
@@ -68,6 +85,56 @@ const GroupSection = ({
 
   const dueDate = new Date(assignment.dueDate);
 
+  const renderEvaluationStatus = (studentId) => {
+    const status = evaluatedStatus[studentId];
+    if (!status) return null;
+
+    const { finalmissed: finalMissed, complete } = status;
+    const pastFinal = isPastFinalWeek(dueDate);
+
+    if (pastFinal) {
+      // After final week ended
+      if (finalMissed === 0 || finalMissed === 2) {
+        // Final evaluation was done on time or late during final week
+        return (
+          <button
+            className="w3-button w3-hover-brown w3-text-white w3-round-xlarge w3-margin-left"
+            style={{ background: "#5e403f", cursor: "default" }}
+          >
+            Final Evaluation Done!
+          </button>
+        );
+      }
+      if (finalMissed === 1) {
+        // Missed final evaluation entirely
+        return (
+          <button
+            className="w3-button w3-red w3-text-white w3-round-xlarge w3-margin-left"
+            style={{ cursor: "default" }}
+          >
+            Final Evaluation Missed!
+          </button>
+        );
+      }
+      // If finalMissed === -1 (final week not started or ongoing), fall through to next block
+    }
+
+    // Before or during final week: show either Final or Weekly if evaluation complete this week
+    if (complete) {
+      const isFinalEvalDone = [0, 2].includes(finalMissed);
+      return (
+        <button
+          className="w3-button w3-hover-brown w3-text-white w3-round-xlarge w3-margin-left"
+          style={{ background: "#5e403f", cursor: "default" }}
+        >
+          {isFinalEvalDone ? "Final" : "Weekly"} Evaluation Done!
+        </button>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="w3-card-4 w3-margin w3-round-large">
       <div className="w3-container w3-text-brown w3-round-large">
@@ -77,7 +144,23 @@ const GroupSection = ({
           {/* Assuming all students belong to the same group */}
         </h2>
       </div>
-      <div className="w3-container w3-margin w3-round-large">
+      <div className="w3-container w3-margin-top w3-margin-left">
+        <button
+          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge"
+          onClick={onCheckBadges}
+          style={{ background: "#5e403f" }} // Check badges for the group
+        >
+          Check Group Badges
+        </button>
+        <button
+          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
+          style={{ background: "#5e403f" }}
+          onClick={() => onCheckEvalHistory(group)} // Check evaluation history for the group
+        >
+          Check Evaluation History
+        </button>
+      </div>
+      <div className="w3-container w3-margin-left w3-margin-right w3-round-large">
         {students.map((student) => (
           <div
             key={student.id}
@@ -85,7 +168,7 @@ const GroupSection = ({
           >
             <label>{student.name}</label>
 
-            {currentUser !== student.id && (
+            {currentUser !== student.id && isPastFinalWeek(dueDate) && (
               <button
                 className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
                 style={{ background: "#5e403f" }}
@@ -115,43 +198,18 @@ const GroupSection = ({
               </button>
             )}
 
-            {evaluatedStatus[student.id]?.complete && (
-              <button
-                className="w3-button w3-hover-brown w3-text-white w3-round-xlarge w3-margin-left"
-                style={{ background: "#5e403f" }}
-              >
-                {evaluatedStatus[student.id]?.finalmissed === 0
-                  ? "Final "
-                  : "Weekly "}{" "}
-                Evaluation Done!
-              </button>
-            )}
+            {renderEvaluationStatus(student.id)}
 
-            <p style={{ color: evaluatedStatus[student.id]?.color }}>
+            {/* <p style={{ color: evaluatedStatus[student.id]?.color }}>
               {evaluatedStatus[student.id]?.message}
-            </p>
+            </p> */}
           </div>
         ))}
       </div>
-      <div className="w3-container w3-margin-left">
-        <button
-          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge"
-          onClick={onCheckBadges}
-          style={{ background: "#5e403f" }} // Check badges for the group
-        >
-          Check Group Badges
-        </button>
-        <button
-          className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
-          style={{ background: "#5e403f" }}
-          onClick={() => onCheckEvalHistory(group)} // Check evaluation history for the group
-        >
-          Check Group Evaluation History
-        </button>
-      </div>
+
       <div className="w3-padding">
         <button
-          className="w3-button w3-card w3-hover-pale-yellow w3-round-large"
+          className="w3-button w3-card  w3-margin-bottom w3-hover-pale-yellow w3-round-large"
           style={{ background: "#e4d3a4" }}
           onClick={onBack} // Go back to assignments
         >

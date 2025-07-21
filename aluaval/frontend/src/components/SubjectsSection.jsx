@@ -14,7 +14,7 @@ const SubjectsSection = ({ subjects, selectedSubject, onSelectSubject }) => (
           onClick={() => onSelectSubject(subject.id)}
         >
           <i>{subject.name}</i><br />
-          Year: {subject.course}
+          Year: {subject.year}
         </button>
       ))}
     </div>

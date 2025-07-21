@@ -107,7 +107,7 @@ const AssignmentController = {
 
     try {
       const assignments = await Assignment.findAll({
-        attributes: ["id", "title", "dueDate"], // Include the assignment fields you want
+        attributes: ["id", "title", "dueDate", "createdAt"], // Include the assignment fields you want
         where: {
           subject, // Filter by the subject ID
           teacher, // Filter by the teacher ID
@@ -134,6 +134,7 @@ const AssignmentController = {
         id: assignment.id,
         title: assignment.title,
         dueDate: formatDate(assignment.dueDate),
+        creationDate: formatDate(assignment.createdAt),
       }));
 
       res.status(200).json(result);
