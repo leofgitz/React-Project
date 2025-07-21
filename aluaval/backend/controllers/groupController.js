@@ -239,6 +239,8 @@ const GroupController = {
     const { classe, assignment } = req.params;
 
     try {
+      console.log("CLASSE: ", classe);
+      console.log("ASSIGNMENT: ", assignment);
       const number = await Group.findOne({
         where: { classe, assignment },
         attributes: ["number"],
@@ -247,7 +249,7 @@ const GroupController = {
 
       const groupNumber = number ? number.number : 0;
 
-      res.status(200).json({ groupNumber });
+      res.status(200).json(groupNumber);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

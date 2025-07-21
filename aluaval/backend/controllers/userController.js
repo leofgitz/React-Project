@@ -203,14 +203,18 @@ const UserController = {
     try {
       const students = await User.findAll({
         attributes: ["id", "name"],
-        where: { role: "Student" }, // Select student details
+        where: {
+          role: "Student",
+        }, // Select student details
         include: [
           {
             model: Enrollment,
+            required: true,
             attributes: [], // No need to return enrollment details
             include: [
               {
                 model: Classe,
+                required: true,
                 where: { teacher, subject }, // Filter by teacher and subject
                 attributes: [], // No need to return class details
               },

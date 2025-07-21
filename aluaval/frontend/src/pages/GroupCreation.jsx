@@ -60,7 +60,7 @@ const GroupCreation = () => {
     setSelectedStudents([]);
 
     try {
-      let params = [subjectID, "classe"];
+      let params = ["classe", subjectID, "classe"];
       let data = await fetchDynamicRoute("teacher", params);
       setClasse(data.id);
 
@@ -77,16 +77,17 @@ const GroupCreation = () => {
     setCurrentStep("students");
 
     try {
-      const params = [selectedSubject, assignmentID];
+      const params = ["assignment", selectedSubject, assignmentID];
       let data = await fetchDynamicRoute("teacher", params);
       setStudents(data);
 
-      data = await fetchDynamicRoute(
+      let groupdata = await fetchDynamicRoute(
         "teacher",
         ["lastgroupno", classe, assignmentID],
         "GET"
       );
-      setLastNumber(data.groupNumber);
+      console.log("groupdata: ", JSON.stringify(groupdata));
+      setLastNumber(groupdata);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -142,7 +143,7 @@ const GroupCreation = () => {
       console.log("New members added: ", newMembers);
       setSelectedStudents([]);
 
-      const params = [selectedSubject, selectedAssignment];
+      const params = ["assignment", selectedSubject, selectedAssignment];
       let data = await fetchDynamicRoute("teacher", params);
       console.log("Before updating students:", students);
       setStudents(data);
@@ -178,7 +179,7 @@ const GroupCreation = () => {
 
       setSelectedStudents([]);
 
-      const params = [selectedSubject, selectedAssignment];
+      const params = ["assignment", selectedSubject, selectedAssignment];
       const updatedData = await fetchDynamicRoute("teacher", params);
       setStudents(updatedData);
     } catch (err) {
@@ -189,8 +190,10 @@ const GroupCreation = () => {
   const handleBack = () => {
     if (currentStep === "assignments") {
       setSelectedSubject(null);
+      setAssignments([]);
       setCurrentStep("subjects");
     } else if (currentStep === "students") {
+      setStudents([]);
       setSelectedAssignment(null);
       setCurrentStep("assignments");
       setSelectedStudents([]);

@@ -150,6 +150,7 @@ const GroupsPage = () => {
   const handleBack = () => {
     if (currentStep === "assignments") {
       setSelectedSubject(null);
+      setAssignments([]);
       setCurrentStep("subjects");
     } else if (currentStep === "group") {
       setSelectedAssignment(null);

@@ -26,7 +26,7 @@ teacherRouter.get(
   "/lastgroupno/:classe/:assignment",
   GroupController.getLastNumberForGroupMaking
 );
-teacherRouter.get("/:subject/classe", ClasseController.getClassForGroupMaking);
+teacherRouter.get("/classe/:subject/classe", ClasseController.getClassForGroupMaking);
 
 teacherRouter.get(
   "/evaluations/history",
@@ -41,7 +41,7 @@ teacherRouter.get(
 );
 
 teacherRouter.get(
-  "/:subject/:assignment",
+  "/assignment/:subject/:assignment",
   UserController.getStudentsAndGroupsForAssignment
 );
 

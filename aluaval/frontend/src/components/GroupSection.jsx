@@ -109,7 +109,7 @@ const GroupSection = ({
         // Missed final evaluation entirely
         return (
           <button
-            className="w3-button w3-red w3-text-white w3-round-xlarge w3-margin-left"
+            className="w3-button w3-red w3-hover-red w3-border w3-hover-border-red w3-text-white w3-round-xlarge w3-margin-left"
             style={{ cursor: "default" }}
           >
             Final Evaluation Missed!
@@ -168,7 +168,7 @@ const GroupSection = ({
           >
             <label>{student.name}</label>
 
-            {currentUser !== student.id && isPastFinalWeek(dueDate) && (
+            {currentUser !== student.id && !isPastFinalWeek(dueDate) && (
               <button
                 className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge w3-margin-left"
                 style={{ background: "#5e403f" }}
