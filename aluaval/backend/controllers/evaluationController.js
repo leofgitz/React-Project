@@ -335,7 +335,7 @@ const EvaluationController = {
         include: [
           {
             model: Assignment,
-            attributes: ["title"],
+            attributes: ["title", "dueDate"],
           },
         ],
       });
@@ -376,7 +376,7 @@ const EvaluationController = {
 
         console.log(JSON.stringify(comments));
 
-        const assignmentDue = evaluation.Group?.Assignment?.dueDate;
+        const assignmentDue = assignment.Assignment.dueDate;
         const submittedAt = evaluation.createdAt;
 
         const isLate = assignmentDue ? submittedAt > assignmentDue : false;
