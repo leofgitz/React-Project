@@ -12,16 +12,24 @@ const GroupCreation = () => {
   const { user } = useAuth();
   const location = useLocation();
   const uid = user.id;
+  const role = user.role;
+  const isTeacher = role === "Teacher";
+
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
+
   const [assignments, setAssignments] = useState([]);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+
   const [students, setStudents] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(-1);
   const [selectedStudents, setSelectedStudents] = useState([]);
+
   const [currentStep, setCurrentStep] = useState("subjects");
+
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isBadgeModalOpen, setIsBadgeModalOpen] = useState(false);
+
   const [lastNumber, setLastNumber] = useState(0);
   const [classe, setClasse] = useState(0);
   const navigate = useNavigate();
@@ -229,22 +237,18 @@ const GroupCreation = () => {
       )}
 
       {currentStep === "assignments" && selectedSubject && (
-        <>
-          <AssignmentsSection
-            subjects={subjects}
-            selectedSubject={selectedSubject}
-            assignments={assignments}
-            selectedAssignment={selectedAssignment}
-            onSelectAssignment={handleAssignmentSelect}
-            onBack={handleBack}
-          />
-          <button
-            className="w3-button w3-margin-bottom w3-margin-left w3-animate-zoom w3-round-xxlarge w3-olive"
-            onClick={() => setIsAssignmentModalOpen(true)}
-          >
-            Create Assignment
-          </button>
-        </>
+        <AssignmentsSection
+          subjects={subjects}
+          selectedSubject={selectedSubject}
+          assignments={assignments}
+          selectedAssignment={selectedAssignment}
+          onSelectAssignment={handleAssignmentSelect}
+          onCreateAssignment={() => setIsAssignmentModalOpen(true)}
+          onBack={handleBack}
+          {...(role === "Teacher" && {
+            onCreateAssignment: () => setIsAssignmentModalOpen(true),
+          })}
+        />
       )}
 
       {currentStep === "students" && selectedAssignment && (
@@ -262,6 +266,7 @@ const GroupCreation = () => {
           onBack={handleBack}
           onCheckBadges={handleCheckBadges}
           onCheckEvalHistory={handleCheckEvalHistory}
+          studentSetter={setSelectedStudents}
         />
       )}
 

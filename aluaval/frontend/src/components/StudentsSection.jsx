@@ -15,10 +15,12 @@ const StudentsSection = ({
   onBack,
   onCheckBadges,
   onCheckEvalHistory,
+  studentSetter,
 }) => {
   const [subject, setSubject] = useState([]);
   const [assignment, setAssignment] = useState([]);
   const [addMode, setAddMode] = useState(false);
+
   // Group students by their group ID
   const groupedByID = students.reduce((acc, student) => {
     const groupID = student.groupID || "Ungrouped"; // Use groupID from the controller
@@ -52,6 +54,16 @@ const StudentsSection = ({
     fetchAll();
   }, [selectedAssignment]);
 
+  useEffect(() => {
+    if (selectedStudents.length === 0 && addMode) {
+      setAddMode(false);
+    }
+  }, [selectedStudents, addMode]);
+
+  const ungrouped = groupedByID["Ungrouped"]?.students || [];
+  const allSelected =
+    ungrouped.length > 0 && selectedStudents.length === ungrouped.length;
+
   return (
     <div className="w3-card-4 w3-margin w3-round-large">
       <div className="w3-container w3-text-brown w3-round-large">
@@ -73,7 +85,7 @@ const StudentsSection = ({
                 {groupedByID["Ungrouped"].students.map((student) => (
                   <div
                     key={student.id}
-                    className="w3-col s12 m4 l2 w3-padding-small"
+                    className="w3-col s12 m4 l3 w3-padding-small"
                   >
                     <div className="w3-card w3-padding w3-round-large ">
                       <input
@@ -87,29 +99,43 @@ const StudentsSection = ({
                   </div>
                 ))}
               </div>
-              {selectedStudents.length > 0 && (
-                <div className="w3-margin-top">
-                  <button
-                    className="w3-button w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
-                    onClick={async () => {
-                      await onCreateGroup();
-                      setAddMode(false); // Ensure add mode is turned off
-                    }}
-                  >
-                    Create Group {lastNumber + 1}
-                  </button>
-                  {hasRealGroups && (
+              <div className="w3-margin-top">
+                <button
+                  className="w3-button w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                  onClick={() => {
+                    if (allSelected) {
+                      studentSetter([]);
+                    } else {
+                      studentSetter(ungrouped.map((s) => s.id));
+                    }
+                  }}
+                >
+                  {allSelected ? "Deselect All" : "Select All"}
+                </button>
+                {selectedStudents.length > 0 && (
+                  <>
                     <button
-                      className="w3-button w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
-                      onClick={() => setAddMode((prev) => !prev)}
+                      className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                      onClick={async () => {
+                        await onCreateGroup();
+                        setAddMode(false); // Ensure add mode is turned off
+                      }}
                     >
-                      {addMode ? "Cancel" : "Add to Existing Group"}
+                      Create Group {lastNumber + 1}
                     </button>
-                  )}
+                    {hasRealGroups && (
+                      <button
+                        className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                        onClick={() => setAddMode((prev) => !prev)}
+                      >
+                        {addMode ? "Cancel" : "Add to Existing Group"}
+                      </button>
+                    )}
 
-                  <br />
-                </div>
-              )}
+                    <br />
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -127,7 +153,7 @@ const StudentsSection = ({
                   {addMode && (
                     <div className="w3-center">
                       <button
-                        className="w3-button w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                        className="w3-button w3-animate-opacity w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
                         onClick={async () => {
                           await onAddToGroup(groupId);
                           setAddMode(false);
@@ -159,14 +185,14 @@ const StudentsSection = ({
                     }}
                   >
                     <button
-                      className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge"
+                      className="w3-button w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
                       style={{ background: "#5e403f" }}
                       onClick={() => onCheckBadges(groupId)}
                     >
                       Badges
                     </button>
                     <button
-                      className="w3-button w3-hover-khaki w3-text-white w3-round-xlarge"
+                      className="w3-button  w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
                       style={{ background: "#5e403f" }}
                       onClick={() => onCheckEvalHistory(groupId)}
                     >

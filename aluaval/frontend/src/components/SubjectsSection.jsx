@@ -9,11 +9,14 @@ const SubjectsSection = ({ subjects, selectedSubject, onSelectSubject }) => (
       {subjects.map((subject) => (
         <button
           key={subject.id}
-          className="w3-button w3-margin-bottom w3-margin-right w3-round-xlarge w3-text-white w3-hover-khaki"
+          className="w3-button w3-border w3-border-black w3-margin-bottom w3-margin-right w3-round-xlarge w3-text-white w3-hover-khaki"
           style={{ background: "#5e403f" }}
           onClick={() => onSelectSubject(subject.id)}
         >
-          <i>{subject.name}</i><br />
+          <>
+            <b>{subject.name}</b>
+          </>
+          <br />
           Year: {subject.year}
         </button>
       ))}

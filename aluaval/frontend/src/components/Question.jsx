@@ -74,19 +74,22 @@ const Question = ({
             />
           </>
         ) : (
-          possibleAnswers[currentQuestion].map((option, index) => (
-            <p key={index}>
-              <input
-                className="w3-radio"
-                type="radio"
-                name={`question-${currentQuestion}`}
-                value={index + 1}
-                checked={parseInt(answers[currentQuestion], 10) === index + 1}
-                onChange={handleRadioChange}
-              />
-              <label className="w3-margin-left">{option}</label>
-            </p>
-          ))
+          possibleAnswers[currentQuestion]
+            .slice()
+            .reverse()
+            .map((option, index) => (
+              <p key={index}>
+                <input
+                  className="w3-radio"
+                  type="radio"
+                  name={`question-${currentQuestion + 1}`}
+                  value={index + 1}
+                  checked={parseInt(answers[currentQuestion], 10) === index + 1}
+                  onChange={handleRadioChange}
+                />
+                <label className="w3-margin-left">{option}</label>
+              </p>
+            ))
         )}
 
         {!isPeer && currentQuestion >= 6 ? null : (

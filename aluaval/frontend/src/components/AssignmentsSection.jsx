@@ -9,6 +9,7 @@ const AssignmentsSection = ({
   selectedAssignment,
   onSelectAssignment,
   onBack,
+  onCreateAssignment,
 }) => {
   const [subject, setSubject] = useState([]);
 
@@ -38,12 +39,12 @@ const AssignmentsSection = ({
         {assignments.map((assignment) => (
           <button
             key={assignment.id}
-            className="w3-button w3-margin-bottom w3-margin-right w3-round-xlarge w3-text-white w3-hover-khaki"
+            className="w3-button w3-border w3-border-black w3-margin-bottom w3-margin-right w3-round-xlarge w3-text-white w3-hover-khaki"
             style={{ background: "#5e403f" }}
             onClick={() => onSelectAssignment(assignment.id)}
           >
             <b>
-              <i>{assignment.title}</i>
+              <>{assignment.title}</>
             </b>{" "}
             <br /> Creation Date: {assignment.creationDate} <br /> Due Date:{" "}
             {assignment.dueDate}
@@ -58,7 +59,16 @@ const AssignmentsSection = ({
             </p>
           </div>
         )}
+        {onCreateAssignment && (
+          <button
+            className="w3-button w3-margin-bottom w3-round-xxlarge w3-olive w3-border w3-border-black w3-hover-pale-green w3-hover-border-green w3hover"
+            onClick={onCreateAssignment}
+          >
+            Create Assignment
+          </button>
+        )}
         <br />
+
         <button
           className="w3-button w3-card w3-margin-bottom w3-hover-pale-yellow w3-round-large"
           style={{ background: "#e4d3a4" }}
