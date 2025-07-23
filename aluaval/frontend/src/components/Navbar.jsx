@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, NavLink, useNavigate } from "react-router-dom";
-import { fetchDynamicRoute } from "../services/dataFetch.js";
 import { useAuth } from "../context/authProvider.jsx";
 
 const Navbar = () => {
@@ -80,7 +79,7 @@ const Navbar = () => {
           className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
             location.pathname === "/" ? "w3-disabled" : ""
           }`}
-          title="Control Panel"
+          title="Homepage"
           style={{ background: "#e4d3a4" }}
         >
           <i className="fa fa-home w3-xlarge"></i>
@@ -104,7 +103,7 @@ const Navbar = () => {
               className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
                 location.pathname === "/subject-creation" ? "w3-disabled" : ""
               }`}
-              title="Subject Creation"
+              title="Subject Management"
               style={{ background: "#e4d3a4" }}
             >
               <i className="fa fa-chalkboard-teacher w3-xlarge"></i>{" "}

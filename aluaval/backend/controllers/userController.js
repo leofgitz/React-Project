@@ -320,6 +320,41 @@ const UserController = {
     }
   },
 
+  getStudentsForClasse: async (req, res) => {
+    const { classeID } = req.body;
+
+    try {
+      // First, find all enrolled student IDs
+      const enrolled = await Enrollment.findAll({
+        where: { classe: classeID },
+        include: [{ model: User, attributes: ["id", "name", "email"] }],
+      });
+
+      const enrolledStudents = enrolled.map((e) => e.User);
+
+      const enrolledIDs = enrolledStudents.map((s) => s.id);
+
+      // Now find available students (not in the enrolledIDs list)
+      const availableStudents = await User.findAll({
+        where: {
+          role: "student",
+          id: {
+            [Op.notIn]: enrolledIDs,
+          },
+        },
+        attributes: ["id", "name", "email"],
+      });
+
+      res.status(200).json({
+        enrolled: enrolledStudents,
+        available: availableStudents,
+      });
+    } catch (err) {
+      console.error("Error getting students for class:", err);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
+
   /* resetPassword: async (req, res) => {}, */
 };
 

@@ -3,7 +3,9 @@ const err500 = "Internal Server Error";
 
 const CourseController = {
   createCourse: async (req, res) => {
-    const { name, responsibleTeacher } = req.body;
+    const { name } = req.body;
+    const teacher = req.user;
+    const responsibleTeacher = teacher;
 
     if (!name || !responsibleTeacher) {
       return res.status(400).json({ error: "All fields required" });
@@ -110,8 +112,10 @@ const CourseController = {
       res.status(500).json({ error: err500 });
     }
   },
+
+  // AVAILABLE COURSES
   getCoursesByTeacher: async (req, res) => {
-    const { teacher } = req.params;
+    const teacher = req.user;
 
     try {
       const courses = await Course.findAll({

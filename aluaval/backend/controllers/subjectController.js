@@ -1,4 +1,4 @@
-import { Classe, Subject, Enrollment } from "../models/index.js";
+import { Classe, Subject, Enrollment, Course } from "../models/index.js";
 const err500 = "Internal Server Error";
 
 const SubjectController = {
@@ -110,6 +110,7 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getSubjectsByYear: async (req, res) => {
     const { year } = req.params;
     try {
@@ -120,33 +121,40 @@ const SubjectController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getSubjectsForTeacher: async (req, res) => {
     const teacher = req.user;
+    const { courseID } = req.body;
 
     try {
       const subjects = await Subject.findAll({
-        attributes: ["id", "name", "year", "course"],
+        where: courseID ? { course: courseID } : {},
         include: [
           {
             model: Classe,
             where: { teacher },
             attributes: [],
           },
+          {
+            model: Course,
+            attributes: ["name"],
+          },
         ],
-        group: ["Subject.id"],
+        group: ["Subject.id", "Course.id"], // important to avoid grouping issues
       });
 
       const result = subjects.map((subject) => ({
         id: subject.id,
         name: subject.name,
+        description: subject.description,
         year: subject.year,
-        course: subject.course,
+        courseName: subject.Course?.name ?? "Unknown",
       }));
 
       res.status(200).json(result);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err500 });
+      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 

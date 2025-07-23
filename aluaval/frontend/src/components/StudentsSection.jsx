@@ -104,20 +104,22 @@ const StudentsSection = ({
                     className="w3-col s12 m4 l3 w3-padding-small"
                   >
                     <div className="w3-card w3-padding w3-round-large ">
-                      <input
-                        className="w3-check"
-                        type="checkbox"
-                        checked={selectedStudents.includes(student.id)}
-                        onChange={() => onSelectStudent(student.id)}
-                      />
-                      <label> {student.name}</label>
+                      <label className="w3-block w3-w3-padding-small">
+                        <input
+                          className="w3-check w3-margin-right"
+                          type="checkbox"
+                          checked={selectedStudents.includes(student.id)}
+                          onChange={() => onSelectStudent(student.id)}
+                        />
+                        {student.name}
+                      </label>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="w3-margin-top">
                 <button
-                  className="w3-button w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                  className="w3-button w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge"
                   onClick={() => {
                     if (allSelected) {
                       studentSetter([]);
@@ -131,7 +133,7 @@ const StudentsSection = ({
                 {selectedStudents.length > 0 && (
                   <>
                     <button
-                      className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                      className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge"
                       onClick={async () => {
                         await onCreateGroup();
                         setAddMode(false); // Ensure add mode is turned off
@@ -141,7 +143,7 @@ const StudentsSection = ({
                     </button>
                     {hasRealGroups && (
                       <button
-                        className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                        className="w3-button w3-animate-opacity w3-margin-left w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge"
                         onClick={() => setAddMode((prev) => !prev)}
                       >
                         {addMode ? "Cancel" : "Add to Existing Group"}

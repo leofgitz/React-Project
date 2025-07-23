@@ -138,6 +138,13 @@ const GroupSection = ({
   return (
     <div className="w3-card-4 w3-margin w3-round-large">
       <div className="w3-container w3-text-brown w3-round-large">
+        <button
+          className="w3-button w3-text-black w3-margin w3-right w3-card w3-round-large w3-hover-pale-yellow"
+          onClick={onBack}
+          style={{ background: "#e4d3a4" }}
+        >
+          <i class="fa fa-arrow-left" aria-hidden="true"></i> <b>Assignments</b>
+        </button>
         <h2>
           <i>Subject:</i> <b>{subject.name}</b> - <i>Assignment:</i>{" "}
           <b>{assignment.title}</b> - Group {students[0]?.groupNumber}{" "}
@@ -164,7 +171,7 @@ const GroupSection = ({
         {students.map((student) => (
           <div
             key={student.id}
-            className="w3-margin w3-card w3-padding w3-round-large"
+            className="w3-margin w3-card w3-border w3-border-black w3-padding w3-round-large"
           >
             <label>{student.name}</label>
 
@@ -205,19 +212,6 @@ const GroupSection = ({
             </p> */}
           </div>
         ))}
-      </div>
-
-      <div className="w3-padding">
-        <button
-          className="w3-button w3-card  w3-margin-bottom w3-hover-pale-yellow w3-round-large"
-          style={{ background: "#e4d3a4" }}
-          onClick={onBack} // Go back to assignments
-        >
-          Back to{" "}
-          <b>
-            <i>Assignments</i>
-          </b>
-        </button>
       </div>
     </div>
   );

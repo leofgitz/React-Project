@@ -22,6 +22,8 @@ const SubjectsSection = ({
             <b>{subject.name}</b>
           </>
           <br />
+          Course: {subject.courseName}
+          <br />
           Year: {subject.year}
         </button>
       ))}

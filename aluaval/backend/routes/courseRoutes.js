@@ -9,6 +9,6 @@ courseRouter.patch("/:id", CourseController.updateCourseByID);
 courseRouter.delete("/:id", CourseController.deleteCourse);
 
 courseRouter.get("/:id/responsible-teacher", CourseController.getResponsibleTeacher);
-courseRouter.get("/teacher/:teacher", CourseController.getCoursesByTeacher);
+
 
 export default courseRouter;

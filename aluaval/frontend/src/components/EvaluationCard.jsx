@@ -36,7 +36,8 @@ const EvaluationCard = ({ evaluation }) => {
               title={
                 hasScore
                   ? `${title} – Score ${score}: ${
-                      possibleAnswers[idx][score - 1]
+                      possibleAnswers[idx].slice().reverse()[score - 1]
+
                     }`
                   : title
               }
@@ -50,7 +51,8 @@ const EvaluationCard = ({ evaluation }) => {
                   <b className="w3-tag w3-small w3-round w3-white w3-text-black w3-border w3-border-black">
                     {score}
                   </b>{" "}
-                  <br /> {possibleAnswers[idx][score - 1]}
+                  <br /> {possibleAnswers[idx].slice().reverse()[score - 1]
+}
                 </span>
               )}
 
@@ -106,7 +108,7 @@ const EvaluationCard = ({ evaluation }) => {
         </p>
       </header>
       <section className="w3-container w3-padding">
-        <h3 className="w3-text-brown">
+        <h3 className="w3-text-brown w3-center">
           {" "}
           <b>Answers</b>
         </h3>

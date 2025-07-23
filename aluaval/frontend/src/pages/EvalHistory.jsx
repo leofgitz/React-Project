@@ -76,7 +76,7 @@ const EvalHistory = () => {
           width: "180px",
         }}
       >
-        <p style={{ margin: 0 }}>Low score = GOOD High score = BAD</p>
+        <p style={{ margin: 0 }}>High score = GOOD Low score = BAD</p>
       </div>
       <FloatingGoBackButton userRole={role} />
     </div>

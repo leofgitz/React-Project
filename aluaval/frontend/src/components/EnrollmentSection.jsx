@@ -1,5 +1,3 @@
-import React from "react";
-
 const EnrollmentSection = ({
   enrolledStudents,
   selectedStudents,
@@ -8,12 +6,14 @@ const EnrollmentSection = ({
   onSelectStudent,
   onEnrollStudents,
   onStudentSearch,
-  availableCourses,
   selectedCourse,
-  createdSubjects,
   selectedSubject,
   onBack,
 }) => {
+  const filteredAvailable = availableStudents.filter((student) =>
+    student.name.toLowerCase().includes(studentSearch.toLowerCase())
+  );
+
   return (
     <div className="w3-card-4 w3-margin w3-round-large">
       <div className="w3-container w3-text-brown w3-round-large">
@@ -26,13 +26,13 @@ const EnrollmentSection = ({
           <b>Subjects</b>
         </button>
         <h2>
-          Subject Creation - <b>Enrollment</b>
+          Subject Management - <b>Enrollment</b>
         </h2>
         <h3>
-          Course: <b>{availableCourses[selectedCourse].name}</b>
+          Course: <b>{selectedCourse.name}</b>
         </h3>
         <h3>
-          Subject: <b>{createdSubjects[selectedSubject].name}</b>
+          Subject: <b>{selectedSubject.name}</b>
         </h3>
       </div>
 
@@ -64,7 +64,7 @@ const EnrollmentSection = ({
 
         {/* Available Students - RIGHT */}
         <div className="w3-half w3-container">
-          <h4>Select students to enroll: </h4>
+          <h4>Selected students: {selectedStudents.length}</h4>
 
           <input
             className="w3-input w3-border w3-round-large w3-margin-bottom"
@@ -78,10 +78,16 @@ const EnrollmentSection = ({
             className="w3-border w3-round-large w3-padding-small"
             style={{ maxHeight: "240px", overflowY: "auto" }}
           >
-            {availableStudents.length === 0 ? (
-              <p className="w3-text-grey">No available students.</p>
+            {filteredAvailable.length === 0 ? (
+              availableStudents.length === 0 ? (
+                <p className="w3-text-grey">
+                  No available students at this moment.
+                </p>
+              ) : (
+                <p className="w3-text-grey">No matching students.</p>
+              )
             ) : (
-              availableStudents.map((student) => (
+              filteredAvailable.map((student) => (
                 <label key={student.id} className="w3-block w3-padding-small">
                   <input
                     className="w3-check w3-margin-right"
@@ -94,9 +100,8 @@ const EnrollmentSection = ({
               ))
             )}
           </div>
-
           <button
-            className="w3-button w3-green w3-margin-top w3-round-large w3-hover-light-green w3-border"
+            className="w3-button w3-margin-top w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge"
             onClick={onEnrollStudents}
             disabled={selectedStudents.length === 0}
           >

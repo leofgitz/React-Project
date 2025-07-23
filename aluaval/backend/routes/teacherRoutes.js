@@ -6,6 +6,7 @@ import EvaluationController from "../controllers/evaluationController.js";
 import AwardController from "../controllers/awardController.js";
 import UserController from "../controllers/userController.js";
 import ClasseController from "../controllers/classController.js";
+import CourseController from "../controllers/courseController.js";
 const teacherRouter = express.Router();
 
 teacherRouter.get(
@@ -22,11 +23,16 @@ teacherRouter.get(
   "/groups/homepage",
   GroupController.getTeacherGroupsForHomepage
 );
+
 teacherRouter.get(
   "/lastgroupno/:classe/:assignment",
   GroupController.getLastNumberForGroupMaking
 );
-teacherRouter.get("/classe/:subject/classe", ClasseController.getClassForGroupMaking);
+
+teacherRouter.get(
+  "/classe/:subject/classe",
+  ClasseController.getClassForGroupMaking
+);
 
 teacherRouter.get(
   "/evaluations/history",
@@ -45,7 +51,7 @@ teacherRouter.get(
   UserController.getStudentsAndGroupsForAssignment
 );
 
-teacherRouter.get("/subjects", SubjectController.getSubjectsForTeacher);
+teacherRouter.post("/subjects", SubjectController.getSubjectsForTeacher);
 teacherRouter.get(
   "/subjects/homepage",
   SubjectController.getTeacherSubjectsForHomepage
@@ -54,6 +60,14 @@ teacherRouter.get(
 teacherRouter.get(
   "/evaluations",
   EvaluationController.getEvaluationsByGroupsForTeacher
+);
+
+teacherRouter.get("/courses", CourseController.getCoursesByTeacher);
+
+teacherRouter.post("/students/enrollment", UserController.getStudentsForClasse);
+teacherRouter.post(
+  "/subject/classe",
+  ClasseController.getClassBySubjectAndTeacher
 );
 
 export default teacherRouter;

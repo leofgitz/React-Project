@@ -36,7 +36,7 @@ const GroupCreation = () => {
 
   const fetchSubjects = async () => {
     try {
-      let data = await fetchDynamicRoute("teacher", "subjects");
+      let data = await fetchDynamicRoute("teacher", "subjects", "POST");
       setSubjects(data);
     } catch (error) {
       console.error("Error fetching subjects:", error);
@@ -85,15 +85,12 @@ const GroupCreation = () => {
     setCurrentStep("students");
 
     try {
-      const params = ["assignment", selectedSubject, assignmentID];
+      let params = ["assignment", selectedSubject, assignmentID];
       let data = await fetchDynamicRoute("teacher", params);
       setStudents(data);
 
-      let groupdata = await fetchDynamicRoute(
-        "teacher",
-        ["lastgroupno", classe, assignmentID],
-        "GET"
-      );
+      let secondParams = ["lastgroupno", classe, assignmentID];
+      let groupdata = await fetchDynamicRoute("teacher", secondParams);
       console.log("groupdata: ", JSON.stringify(groupdata));
       setLastNumber(groupdata);
     } catch (error) {
@@ -246,7 +243,6 @@ const GroupCreation = () => {
           assignments={assignments}
           selectedAssignment={selectedAssignment}
           onSelectAssignment={handleAssignmentSelect}
-          onCreateAssignment={() => setIsAssignmentModalOpen(true)}
           onBack={handleBack}
           {...(role === "Teacher" && {
             onCreateAssignment: () => setIsAssignmentModalOpen(true),

@@ -1,7 +1,6 @@
 import { createSearchParams } from "react-router-dom";
 
 const SubjectCreationSection = ({
-  availableCourses,
   selectedCourse,
   createdSubjects,
   onSelectSubject,
@@ -19,17 +18,14 @@ const SubjectCreationSection = ({
           <i class="fa fa-arrow-left" aria-hidden="true"></i> <b>Courses</b>
         </button>
         <h2>
-          Subject Creation - <b>Subjects</b>
+          Subject Management - <b>Subjects</b>
         </h2>
         <h3>
-          Course: <b>{availableCourses[selectedCourse].name}</b>
+          Course: <b>{selectedCourse.name}</b>
         </h3>
       </div>
 
       <div className="w3-container w3-padding">
-        <h4>Created subjects: {createdSubjects.length}</h4>
-        <p>Select a subject to enroll more students or create a new one:</p>
-
         {createdSubjects.map((subject) => (
           <button
             key={subject.id}

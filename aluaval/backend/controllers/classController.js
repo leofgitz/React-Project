@@ -3,7 +3,8 @@ const err500 = "Internal Server Error";
 
 const ClasseController = {
   createClass: async (req, res) => {
-    const { subject, teacher } = req.body;
+    const { subject } = req.body;
+    const teacher = req.user;
 
     if (!subject || !teacher) {
       return res.status(400).json({ error: "All fields required" });
@@ -101,6 +102,21 @@ const ClasseController = {
     try {
       const classes = await Classe.findAll({ where: { teacher } });
       res.status(200).json(classes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err500 });
+    }
+  },
+
+  getClassBySubjectAndTeacher: async (req, res) => {
+    const teacher = req.user;
+    const { subjectID } = req.body;
+
+    try {
+      const classe = await Classe.findOne({
+        where: { teacher, subject: subjectID },
+      });
+      res.status(200).json(classe);
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: err500 });

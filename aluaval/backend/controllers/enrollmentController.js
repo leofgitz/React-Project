@@ -97,6 +97,7 @@ const EnrollmentController = {
       res.status(500).json({ error: err500 });
     }
   },
+  
   bulkEnrollStudents: async (req, res) => {
     const { classe, students } = req.body;
 
@@ -112,6 +113,7 @@ const EnrollmentController = {
       res.status(500).json({ error: err500 });
     }
   },
+
   getEnrollmentsByClasse: async (req, res) => {
     const { classe } = req.params;
 

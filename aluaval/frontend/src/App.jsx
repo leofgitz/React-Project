@@ -61,7 +61,7 @@ function TitleManager() {
       "/notifications": "Notifications",
       "/evaluation": "Evaluation",
       "/eval-history": "Evaluation History",
-      "/subject-creation": "Subject Creation",
+      "/subject-creation": "Subject Management",
     };
 
     const pageTitle = pathTitleMap[location.pathname];
