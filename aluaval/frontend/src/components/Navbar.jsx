@@ -9,6 +9,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const role = user?.role;
   const name = user?.name;
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const hiddenPaths = ["/login", "/register", "/eval"];
   const showNavbar = !hiddenPaths.some((path) =>
@@ -29,10 +30,14 @@ const Navbar = () => {
 
   const showDropdown = () => {
     let x = document.getElementById("user");
-    if (x.className.indexOf("w3-show") == -1) {
-      x.className += " w3-show";
-    } else {
+    const isOpen = x.className.indexOf("w3-show") !== -1;
+
+    if (isOpen) {
       x.className = x.className.replace(" w3-show", "");
+      setDropdownOpen(false);
+    } else {
+      x.className += " w3-show";
+      setDropdownOpen(true);
     }
   };
 
@@ -45,7 +50,8 @@ const Navbar = () => {
       button &&
       !button.contains(event.target)
     ) {
-      dropdown.classList.remove("w3-show"); // Hide dropdown
+      dropdown.classList.remove("w3-show");
+      setDropdownOpen(false);
     }
   };
 
@@ -81,23 +87,36 @@ const Navbar = () => {
         </NavLink>
 
         {role === "Teacher" ? (
-          <NavLink
-            to="/group-creation"
-            className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
-              location.pathname === "/group-creation" ? "w3-disabled" : ""
-            }`}
-            title="Assignments and Groups"
-            style={{ background: "#e4d3a4" }}
-          >
-            <i className="fa fa-users w3-xlarge"></i>{" "}
-          </NavLink>
+          <>
+            <NavLink
+              to="/group-creation"
+              className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
+                location.pathname === "/group-creation" ? "w3-disabled" : ""
+              }`}
+              title="Dashboard"
+              style={{ background: "#e4d3a4" }}
+            >
+              <i className="fa fa-users w3-xlarge"></i>{" "}
+            </NavLink>
+
+            <NavLink
+              to="/subject-creation"
+              className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
+                location.pathname === "/subject-creation" ? "w3-disabled" : ""
+              }`}
+              title="Subject Creation"
+              style={{ background: "#e4d3a4" }}
+            >
+              <i className="fa fa-chalkboard-teacher w3-xlarge"></i>{" "}
+            </NavLink>
+          </>
         ) : (
           <NavLink
             to="/groups-page"
             className={`w3-bar-item w3-button w3-card w3-round-xlarge w3-hover-pale-yellow w3-margin-right ${
               location.pathname === "/groups-page" ? "w3-disabled" : ""
             }`}
-            title="Assignments, Badges and Evaluations"
+            title="Dashboard"
             style={{ background: "#e4d3a4" }}
           >
             <i className="fa fa-users w3-xlarge"></i>
@@ -145,7 +164,14 @@ const Navbar = () => {
             title={`Current user: ` + name}
             onClick={showDropdown}
           >
-            {name} <i className="fas fa-angle-down w3-xlarge"></i>
+            {name}{" "}
+            <i
+              className="fas fa-caret-down w3-xlarge"
+              style={{
+                transform: dropdownOpen ? "rotate(-180deg)" : "rotate(0deg)",
+                transition: "transform 0.3s ease",
+              }}
+            ></i>
           </button>
           <div
             id="user"

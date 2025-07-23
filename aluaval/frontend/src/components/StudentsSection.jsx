@@ -63,17 +63,33 @@ const StudentsSection = ({
   const ungrouped = groupedByID["Ungrouped"]?.students || [];
   const allSelected =
     ungrouped.length > 0 && selectedStudents.length === ungrouped.length;
+  const groupCount = Object.keys(groupedByID).filter(
+    (id) => id !== "Ungrouped"
+  ).length;
 
   return (
     <div className="w3-card-4 w3-margin w3-round-large">
       <div className="w3-container w3-text-brown w3-round-large">
+        <button
+          className="w3-button w3-text-black w3-margin w3-right w3-card w3-round-large w3-hover-pale-yellow"
+          onClick={onBack}
+          style={{ background: "#e4d3a4" }}
+        >
+          <i class="fa fa-arrow-left" aria-hidden="true"></i> <b>Assignments</b>
+        </button>
         <h2>
-          <i>Subject:</i> <b>{subject.name} </b> - <i>Assignment:</i>{" "}
-          <b>{assignment.title}</b> - Groups
+          Dashboard - <b>Groups</b>
         </h2>
+
+        <h3>
+          Subject: <b>{subject.name}</b>
+        </h3>
+        <h3>
+          Assignment: <b>{assignment.title}</b>
+        </h3>
       </div>
       <div className="w3-container">
-        <div className="w3-padding">
+        <div className="">
           {/* First render Ungrouped students (if any) */}
           {groupedByID["Ungrouped"] && (
             <div className="w3-card-4 w3-border w3-border-black w3-margin-top w3-margin-bottom w3-padding w3-round-large">
@@ -121,7 +137,7 @@ const StudentsSection = ({
                         setAddMode(false); // Ensure add mode is turned off
                       }}
                     >
-                      Create Group {lastNumber + 1}
+                      Create New Group
                     </button>
                     {hasRealGroups && (
                       <button
@@ -139,81 +155,71 @@ const StudentsSection = ({
             </div>
           )}
         </div>
+        <div className="w3-card-4 w3-border w3-border-black w3-margin w3-round-large">
+          <p className="w3-margin-left">Created groups: {groupCount} </p>
+          {/* Now render real groups in a grid */}
+          <div className="w3-row">
+            {Object.entries(groupedByID)
+              .filter(([groupId]) => groupId !== "Ungrouped") // Skip Ungrouped
+              .map(([groupId, { groupNumber, students }]) => (
+                <div
+                  key={groupId}
+                  className="w3-col s12 m6 l4 w3-padding w3-responsive"
+                >
+                  <div className="w3-card-4 w3-border w3-border-black w3-margin-bottom w3-padding w3-round-large">
+                    {addMode && (
+                      <div className="w3-center">
+                        <button
+                          className="w3-button w3-animate-opacity w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
+                          onClick={async () => {
+                            await onAddToGroup(groupId);
+                            setAddMode(false);
+                          }}
+                          // Fix here: wrap with arrow function!
+                        >
+                          Add to This Group
+                        </button>
+                      </div>
+                    )}
 
-        {/* Now render real groups in a grid */}
-        <div className="w3-row">
-          {Object.entries(groupedByID)
-            .filter(([groupId]) => groupId !== "Ungrouped") // Skip Ungrouped
-            .map(([groupId, { groupNumber, students }]) => (
-              <div
-                key={groupId}
-                className="w3-col s12 m6 l4 w3-padding w3-responsive"
-              >
-                <div className="w3-card-4 w3-border w3-border-black w3-margin-bottom w3-padding w3-round-large">
-                  {addMode && (
-                    <div className="w3-center">
+                    <h3 className="w3-container w3-center w3-sand w3-round-large">
+                      <b>Group {groupNumber}</b>
+                    </h3>
+                    <div className="w3-row w3-center">
+                      {students.map((student) => (
+                        <div key={student.id} className="w3-col s12">
+                          <label>{student.name}</label>
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      className="w3-padding w3-center"
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "10px",
+                        justifyContent: "center",
+                      }}
+                    >
                       <button
-                        className="w3-button w3-animate-opacity w3-olive w3-border w3-border-green w3-hover-pale-green w3-round-xxlarge w3-round"
-                        onClick={async () => {
-                          await onAddToGroup(groupId);
-                          setAddMode(false);
-                        }}
-                        // Fix here: wrap with arrow function!
+                        className="w3-button w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
+                        style={{ background: "#5e403f" }}
+                        onClick={() => onCheckBadges(groupId)}
                       >
-                        Add to This Group
+                        Badges
+                      </button>
+                      <button
+                        className="w3-button  w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
+                        style={{ background: "#5e403f" }}
+                        onClick={() => onCheckEvalHistory(groupId)}
+                      >
+                        Evaluation History
                       </button>
                     </div>
-                  )}
-
-                  <h3 className="w3-container w3-center w3-sand w3-round-large">
-                    <b>Group {groupNumber}</b>
-                  </h3>
-                  <div className="w3-row w3-center">
-                    {students.map((student) => (
-                      <div key={student.id} className="w3-col s12">
-                        <label>{student.name}</label>
-                      </div>
-                    ))}
-                  </div>
-                  <div
-                    className="w3-padding w3-center"
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "10px",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <button
-                      className="w3-button w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
-                      style={{ background: "#5e403f" }}
-                      onClick={() => onCheckBadges(groupId)}
-                    >
-                      Badges
-                    </button>
-                    <button
-                      className="w3-button  w3-border w3-border-black w3-hover-khaki w3-text-white w3-round-xlarge"
-                      style={{ background: "#5e403f" }}
-                      onClick={() => onCheckEvalHistory(groupId)}
-                    >
-                      Evaluation History
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
-        </div>
-        <div className="w3-padding">
-          <button
-            className="w3-button w3-margin-bottom w3-card w3-round-large w3-hover-pale-yellow w3-round"
-            onClick={onBack}
-            style={{ background: "#e4d3a4" }}
-          >
-            Back to{" "}
-            <b>
-              <i>Assignments</i>
-            </b>
-          </button>
+              ))}
+          </div>
         </div>
       </div>
     </div>

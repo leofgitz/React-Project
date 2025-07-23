@@ -17,6 +17,7 @@ import RegisterForm from "./pages/RegisterForm.jsx";
 import { AuthProvider, useAuth } from "./context/authProvider.jsx";
 import GroupsPage from "./pages/GroupsPage.jsx";
 import Notifications from "./pages/Notifications.jsx";
+import SubjectCreation from "./pages/SubjectCreation.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 function RedirectIfLoggedIn({ element }) {
@@ -52,14 +53,15 @@ function TitleManager() {
     const APP_NAME = "AluAval";
 
     const pathTitleMap = {
-      "/": "Control Panel",
+      "/": "Homepage",
       "/login": "Login",
       "/register": "Register",
-      "/group-creation": "Assignments and Groups",
-      "/groups-page": "Assignments, Badges and Evaluations",
+      "/group-creation": "Dashboard",
+      "/groups-page": "Dashboard",
       "/notifications": "Notifications",
       "/evaluation": "Evaluation",
       "/eval-history": "Evaluation History",
+      "/subject-creation": "Subject Creation",
     };
 
     const pageTitle = pathTitleMap[location.pathname];
@@ -105,6 +107,15 @@ function App() {
               element={
                 <ProtectedRoute
                   element={<GroupCreation />}
+                  allowedRoles={"Teacher"}
+                />
+              }
+            />
+            <Route
+              path="/subject-creation"
+              element={
+                <ProtectedRoute
+                  element={<SubjectCreation />}
                   allowedRoles={"Teacher"}
                 />
               }

@@ -233,6 +233,9 @@ const GroupCreation = () => {
           subjects={subjects}
           selectedSubject={selectedSubject}
           onSelectSubject={handleSubjectSelect}
+          {...(role === "Teacher" && {
+            role,
+          })}
         />
       )}
 

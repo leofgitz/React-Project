@@ -84,7 +84,8 @@ const Homepage = () => {
   return (
     <div className="main-content w3-animate-opacity">
       <div className="w3-card w3-round-xlarge w3-container w3-margin-top">
-        <h2 className="w3-text-brown">Homepage</h2>
+        <h2 className="w3-text-brown ">Homepage</h2>
+
         <div className="w3-card w3-padding-small w3-margin-bottom w3-round-xlarge">
           <div className="w3-container">
             <h3>Welcome, {name}.</h3>
@@ -92,8 +93,12 @@ const Homepage = () => {
             <p>
               Check{" "}
               <i
-                className="fa fa-users w3-xlarge w3-bar-item w3-gray w3-hover-gray w3-button w3-card w3-round-xlarge"
-                style={{ background: "#e4d3a4", cursor: "default" }}
+                className="fa fa-users w3-xlarge w3-bar-item w3-hover-none w3-button w3-card w3-round-xlarge"
+                style={{
+                  background: "#e4d3a4",
+                  cursor: "default",
+                  pointerEvents: "none",
+                }}
               ></i>{" "}
               for more.
             </p>
@@ -101,18 +106,20 @@ const Homepage = () => {
         </div>
 
         <div className="grid-container">
-          {<DataCard
-            title={"Assignments"}
-            items={assignments}
-            renderItems={AssignmentItem}
-          ></DataCard>}
+          {
+            <DataCard
+              title={"Most Recent Assignments"}
+              items={assignments}
+              renderItems={AssignmentItem}
+            ></DataCard>
+          }
           <DataCard
-            title={"Awards"}
+            title={"Most Recent Awards"}
             items={awards}
             renderItems={AwardItem}
           ></DataCard>
           <DataCard
-            title={"Evaluation History"}
+            title={"Most Recent Evaluations"}
             items={evaluations}
             renderItems={EvaluationItem}
           ></DataCard>

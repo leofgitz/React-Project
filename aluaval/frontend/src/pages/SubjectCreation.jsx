@@ -10,18 +10,20 @@ const SubjectCreation = () => {
   const uid = user.role;
   const location = useLocation();
 
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(3);
 
   const [isCreatingCourse, setCreatingCourse] = useState(false);
   const [availableCourses, setAvailableCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const [subject, setSubject] = useState(null);
+  const [subject, setSubject] = useState([]);
+  const [isCreatingSubject, setCreatingSubject] = useState(false);
   const [createdSubjects, setCreatedSubjects] = useState([]);
 
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [availableStudents, setAvailableStudents] = useState([]);
   const [studentSearch, setStudentSearch] = useState("");
+  const [enrolledStudents, setEnrolledStudents] = useState([]);
 
   const fetchCourses = async () => {
     try {
@@ -74,6 +76,13 @@ const SubjectCreation = () => {
     }
   };
 
+  const handleSelectSubject = async () => {
+    try {
+    } catch (err) {
+      console.error("Error selecting a subject: ", err);
+    }
+  };
+
   // STUDENT HANDLES
   const handleStudentSelect = (studentID) => {
     setSelectedStudents((prev) =>
@@ -95,34 +104,40 @@ const SubjectCreation = () => {
   };
 
   return (
-    <div className="w3-container main-content w3-w3-animate-opacity">
+    <div className="w3-container main-content w3-animate-opacity">
       {currentStep === 1 && (
         <CourseSection
           availableCourses={availableCourses}
-          isCreatingCourse={isCreatingCourse}
           selectedCourse={selectedCourse}
-          onCreateCourse={handleCreateCourse}
+          onCreateCourse={() => isCreatingCourse(true)}
           onSelectCourse={handleCourseSelect}
           onNext={handleNext}
         />
       )}
       {currentStep === 2 && (
         <SubjectCreationSection
+          availableCourses={availableCourses}
+          selectedCourse={selectedCourse}
           createdSubjects={createdSubjects}
-          subject={subject}
-          onCreateSubject={handleCreateSubject}
+          onSelectSubject={handleSelectSubject}
+          onCreateSubject={() => isCreatingSubject(true)}
           onBack={handleBack}
           onNext={handleNext}
         />
       )}
       {currentStep === 3 && (
         <EnrollmentSection
+          enrolledStudents={enrolledStudents}
           selectedStudents={selectedStudents}
           availableStudents={availableStudents}
           studentSearch={studentSearch}
           onSelectStudent={handleStudentSelect}
           onEnrollStudents={handleEnrollStudents}
           onStudentSearch={handleStudentSearchChange}
+          availableCourses
+          selectedCourse
+          createdSubjects
+          selectedSubject
           onBack={handleBack}
         />
       )}
