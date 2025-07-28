@@ -159,32 +159,36 @@ const SubjectController = {
   },
 
   getSubjectsForStudent: async (req, res) => {
-    const student = req.user; // Ensure req.user.id is the student's ID
+    const student = req.user;
 
     try {
       const subjects = await Subject.findAll({
-        attributes: ["id", "name", "year", "course"],
+        attributes: ["id", "name", "year"],
         include: [
           {
+            model: Course,
+            attributes: ["name"], // Get course name
+          },
+          {
             model: Classe,
-            attributes: [], // Exclude unnecessary Classe attributes
+            attributes: [],
             include: [
               {
                 model: Enrollment,
-                where: { student: student }, // Filter by student's ID
-                attributes: [], // Exclude unnecessary Enrollment attributes
+                where: { student: student },
+                attributes: [],
               },
             ],
           },
         ],
-        group: ["Subject.id"],
+        group: ["Subject.id", "Course.id"],
       });
 
       const result = subjects.map((subject) => ({
         id: subject.id,
         name: subject.name,
-        course: subject.course,
         year: subject.year,
+        courseName: subject.Course?.name || null, // Safely access Course name
       }));
 
       res.status(200).json(result);

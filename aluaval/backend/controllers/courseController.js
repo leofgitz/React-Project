@@ -96,6 +96,7 @@ const CourseController = {
       res.status(500).json({ error: err500 });
     }
   },
+  
   getResponsibleTeacher: async (req, res) => {
     const { id } = req.params;
 

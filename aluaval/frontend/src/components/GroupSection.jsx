@@ -127,7 +127,7 @@ const GroupSection = ({
           className="w3-button w3-hover-brown w3-text-white w3-round-xlarge w3-margin-left"
           style={{ background: "#5e403f", cursor: "default" }}
         >
-          {isFinalEvalDone ? "Final" : "Weekly"} Evaluation Done!
+          {isFinalEvalDone ? "Final" : "Weekly"} Evaluation S!
         </button>
       );
     }
@@ -146,10 +146,15 @@ const GroupSection = ({
           <i class="fa fa-arrow-left" aria-hidden="true"></i> <b>Assignments</b>
         </button>
         <h2>
-          <i>Subject:</i> <b>{subject.name}</b> - <i>Assignment:</i>{" "}
-          <b>{assignment.title}</b> - Group {students[0]?.groupNumber}{" "}
-          {/* Assuming all students belong to the same group */}
+          Dashboard - <b>Groups</b>
         </h2>
+
+        <h3>
+          Subject: <b>{subject.name}</b>
+        </h3>
+        <h3>
+          Assignment: <b>{assignment.title}</b>
+        </h3>
       </div>
       <div className="w3-container w3-margin-top w3-margin-left">
         <button
